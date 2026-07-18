@@ -1,0 +1,432 @@
+{% extends "school/base.html" %}
+{% load static %}
+
+{% block title %}Learning Resources - {{ student.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .resource-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid #667eea;
+        transition: all 0.3s ease;
+    }
+
+    .resource-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .resource-card.video {
+        border-left-color: #e74c3c;
+    }
+
+    .resource-card.pdf {
+        border-left-color: #e74c3c;
+    }
+
+    .resource-card.notes {
+        border-left-color: #3498db;
+    }
+
+    .resource-card.presentation {
+        border-left-color: #f39c12;
+    }
+
+    .resource-card.coding {
+        border-left-color: #27ae60;
+    }
+
+    .resource-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 0.75rem;
+    }
+
+    .resource-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .resource-title:hover {
+        color: #667eea;
+    }
+
+    .resource-type-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .badge-notes {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .badge-pdf {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .badge-video {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .badge-presentation {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .badge-coding {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .badge-other {
+        background: #e2e3e5;
+        color: #383d41;
+    }
+
+    .resource-meta {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        font-size: 0.85rem;
+        color: #666;
+        margin-top: 0.5rem;
+    }
+
+    .resource-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .resource-description {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.75rem;
+        line-height: 1.5;
+    }
+
+    .resource-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .resource-stats {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.85rem;
+        color: #999;
+    }
+
+    .filter-section {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-box {
+        background: white;
+        padding: 1rem;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+    .stat-box:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        border-color: #667eea;
+    }
+
+    .stat-box.active {
+        border-color: #667eea;
+        background: #f0f4ff;
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #667eea;
+    }
+
+    .stat-label {
+        color: #666;
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+    }
+
+    .search-box {
+        position: relative;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: border-color 0.3s ease;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: #999;
+        background: white;
+        border-radius: 8px;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.3;
+    }
+
+    .btn-action {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    /* Subject Group Styles */
+    .subject-group {
+        margin-bottom: 2.5rem;
+    }
+
+    .subject-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 10px 10px 0 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .subject-header h3 {
+        margin: 0;
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+
+    .subject-header .subject-count {
+        background: rgba(255,255,255,0.2);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+    }
+
+    .subject-body {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 0 0 10px 10px;
+        border: 1px solid #e0e0e0;
+        border-top: none;
+    }
+
+    @media (max-width: 768px) {
+        .resource-header {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .resource-footer {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1><i class="fas fa-book-reader"></i> Learning Resources</h1>
+                <p class="mb-0">Access study materials, notes, videos, and more</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <span class="badge bg-primary">{{ total_resources }} Resources</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid my-4">
+    <!-- Statistics -->
+    <div class="stats-grid">
+        <a href="?{% if search_query %}search={{ search_query }}{% endif %}" class="stat-box {% if not current_type %}active{% endif %}">
+            <div class="stat-number">{{ total_resources }}</div>
+            <div class="stat-label">All Resources</div>
+        </a>
+        <a href="?type=Notes{% if search_query %}&search={{ search_query }}{% endif %}" class="stat-box {% if current_type == 'Notes' %}active{% endif %}">
+            <div class="stat-number">{{ notes_count }}</div>
+            <div class="stat-label">Notes</div>
+        </a>
+        <a href="?type=PDF{% if search_query %}&search={{ search_query }}{% endif %}" class="stat-box {% if current_type == 'PDF' %}active{% endif %}">
+            <div class="stat-number">{{ pdf_count }}</div>
+            <div class="stat-label">PDFs</div>
+        </a>
+        <a href="?type=Video{% if search_query %}&search={{ search_query }}{% endif %}" class="stat-box {% if current_type == 'Video' %}active{% endif %}">
+            <div class="stat-number">{{ video_count }}</div>
+            <div class="stat-label">Videos</div>
+        </a>
+        <a href="?type=Presentation{% if search_query %}&search={{ search_query }}{% endif %}" class="stat-box {% if current_type == 'Presentation' %}active{% endif %}">
+            <div class="stat-number">{{ presentation_count }}</div>
+            <div class="stat-label">Presentations</div>
+        </a>
+        <a href="?type=Coding{% if search_query %}&search={{ search_query }}{% endif %}" class="stat-box {% if current_type == 'Coding' %}active{% endif %}">
+            <div class="stat-number">{{ coding_count }}</div>
+            <div class="stat-label">Coding Files</div>
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-section">
+        <form method="get" action="">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" name="search" class="search-input" placeholder="Search by title, description, tags, or teacher..." value="{{ search_query }}">
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <select name="subject" class="form-select">
+                        <option value="">All Subjects</option>
+                        {% for subj in available_subjects %}
+                        <option value="{{ subj }}" {% if current_subject == subj %}selected{% endif %}>{{ subj }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Subject-wise Resources -->
+    <div class="row">
+        <div class="col-lg-12">
+            {% if subject_groups %}
+                {% for subject, subject_resources in subject_groups.items %}
+                <div class="subject-group">
+                    <div class="subject-header">
+                        <h3>
+                            <i class="fas fa-book"></i> {{ subject }}
+                        </h3>
+                        <span class="subject-count">{{ subject_resources|length }} resource{{ subject_resources|length|pluralize }}</span>
+                    </div>
+                    <div class="subject-body">
+                        {% for resource in subject_resources %}
+                        <div class="resource-card {{ resource.resource_type|lower }}">
+                            <div class="resource-header">
+                                <div>
+                                    <a href="/school/resource/{{ resource.id }}/" class="resource-title">
+                                        <i class="fas {{ resource.get_resource_icon }}"></i> {{ resource.title }}
+                                    </a>
+                                    <span class="resource-type-badge badge-{{ resource.resource_type|lower }}">{{ resource.get_resource_type_display }}</span>
+                                </div>
+                            </div>
+
+                            <div class="resource-meta">
+                                <span><i class="fas fa-user-tie"></i> {{ resource.teacher_name }}</span>
+                                {% if resource.class_name %}
+                                <span><i class="fas fa-users"></i> {{ resource.class_name }}</span>
+                                {% endif %}
+                                <span><i class="fas fa-calendar"></i> {{ resource.created_at|date:"M d, Y" }}</span>
+                            </div>
+
+                            {% if resource.description %}
+                            <p class="resource-description">{{ resource.description|truncatewords:30 }}</p>
+                            {% endif %}
+
+                            <div class="resource-footer">
+                                <div class="resource-stats">
+                                    <span><i class="fas fa-eye"></i> {{ resource.view_count }} views</span>
+                                    <span><i class="fas fa-download"></i> {{ resource.download_count }} downloads</span>
+                                </div>
+                                <div>
+                                    <a href="/school/resource/{{ resource.id }}/" class="btn btn-sm btn-outline-primary btn-action">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    {% if resource.file %}
+                                    <a href="/school/resource/{{ resource.id }}/download/" class="btn btn-sm btn-primary btn-action">
+                                        <i class="fas fa-download"></i> Download
+                                    </a>
+                                    {% endif %}
+                                    {% if resource.video_url %}
+                                    <a href="{{ resource.video_url }}" target="_blank" class="btn btn-sm btn-danger btn-action">
+                                        <i class="fas fa-play"></i> Watch
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <h4>No learning resources found</h4>
+                <p>Try adjusting your filters or check back later for new materials.</p>
+                <a href="/school/resources/" class="btn btn-primary mt-3">
+                    <i class="fas fa-redo"></i> Clear Filters
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

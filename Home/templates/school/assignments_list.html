@@ -1,0 +1,406 @@
+{% extends "school/base.html" %}
+{% load static %}
+
+{% block title %}Assignments - {{ student.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .assignment-item {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid #667eea;
+        transition: all 0.3s ease;
+    }
+
+    .assignment-item:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .assignment-item.overdue {
+        border-left-color: #e74c3c;
+        background: #fef5f5;
+    }
+
+    .assignment-item.completed {
+        border-left-color: #27ae60;
+    }
+
+    .assignment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 0.5rem;
+    }
+
+    .assignment-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .assignment-meta {
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .assignment-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .assignment-status {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status-not-started {
+        background: #e0e0e0;
+        color: #666;
+    }
+
+    .status-submitted {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-reviewed {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .status-resubmit {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .due-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .due-badge.soon {
+        background: #e74c3c;
+        color: white;
+    }
+
+    .due-badge.upcoming {
+        background: #3498db;
+        color: white;
+    }
+
+    .due-badge.overdue {
+        background: #e74c3c;
+        color: white;
+    }
+
+    .tab-content-section {
+        margin-bottom: 2rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-box {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #667eea;
+    }
+
+    .stat-label {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: #999;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.3;
+    }
+
+    .btn-submit {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-submit:hover {
+        background: #764ba2;
+    }
+
+    .view-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+        margin-left: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1><i class="fas fa-tasks"></i> Assignments</h1>
+                <p class="mb-0">View and submit your assignments</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <span class="badge bg-primary">{{ total_assignments }} Total</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid my-4">
+    <!-- Statistics -->
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-number">{{ upcoming_assignments|length }}</div>
+            <div class="stat-label">Upcoming</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">{{ overdue_assignments|length }}</div>
+            <div class="stat-label">Overdue</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">{{ completed_assignments|length }}</div>
+            <div class="stat-label">Completed</div>
+        </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-tabs" role="tablist" style="margin-bottom: 2rem;">
+        <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#upcoming">
+                <i class="fas fa-calendar-alt"></i> Upcoming ({{ upcoming_assignments|length }})
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#overdue">
+                <i class="fas fa-exclamation-circle"></i> Overdue ({{ overdue_assignments|length }})
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#completed">
+                <i class="fas fa-check-circle"></i> Completed ({{ completed_assignments|length }})
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- Upcoming Assignments Tab -->
+        <div id="upcoming" class="tab-pane fade show active">
+            <div class="tab-content-section">
+                {% if upcoming_assignments %}
+                {% for assignment in upcoming_assignments %}
+                <div class="assignment-item">
+                    <div class="assignment-header">
+                        <div>
+                            <div class="assignment-title">{{ assignment.title }}</div>
+                            <div style="font-size: 0.85rem; color: #999; margin-top: 0.25rem;">{{ assignment.subject }}
+                                | {{ assignment.get_assignment_type_display }}</div>
+                        </div>
+                        <div>
+                            {% if assignment.submission_status == 'Not Started' %}
+                            <span class="assignment-status status-not-started">Not Started</span>
+                            {% else %}
+                            <span class="assignment-status status-{{ assignment.submission_status|lower }}">{{
+                                assignment.submission_status }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="assignment-meta">
+                        <span>
+                            <i class="fas fa-calendar"></i>
+                            📅 {{ assignment.due_date|date:"M d, Y H:i" }}
+                        </span>
+                        <span>
+                            <i class="fas fa-star"></i>
+                            ⭐ {{ assignment.total_marks }} marks
+                        </span>
+                        <span>
+                            <i class="fas fa-hourglass-end"></i>
+                            {% if assignment.days_remaining > 7 %}
+                            <span class="due-badge upcoming">{{ assignment.days_remaining }} days left</span>
+                            {% elif assignment.days_remaining > 0 %}
+                            <span class="due-badge soon">{{ assignment.days_remaining }} days left</span>
+                            {% else %}
+                            <span class="due-badge overdue">Deadline passed</span>
+                            {% endif %}
+                        </span>
+                    </div>
+
+                    <p style="margin-top: 1rem; margin-bottom: 0; color: #666;">{{
+                        assignment.description|truncatewords:30 }}</p>
+
+                    <div style="margin-top: 1rem;">
+                        <a href="{% url 'assignment_detail' assignment.id %}"
+                            class="btn btn-sm btn-outline-primary view-btn">
+                            <i class="fas fa-eye"></i> View Details
+                        </a>
+                        {% if assignment.submission_status != 'Submitted' %}
+                        <a href="{% url 'assignment_detail' assignment.id %}" class="btn btn-sm btn-primary view-btn">
+                            <i class="fas fa-upload"></i> Submit Now
+                        </a>
+                        {% else %}
+                        <span class="badge bg-success" style="margin-left: 0.5rem;">Submitted</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>No upcoming assignments</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Overdue Assignments Tab -->
+        <div id="overdue" class="tab-pane fade">
+            <div class="tab-content-section">
+                {% if overdue_assignments %}
+                {% for assignment in overdue_assignments %}
+                <div class="assignment-item overdue">
+                    <div class="assignment-header">
+                        <div>
+                            <div class="assignment-title">{{ assignment.title }}</div>
+                            <div style="font-size: 0.85rem; color: #999; margin-top: 0.25rem;">{{ assignment.subject }}
+                                | {{ assignment.get_assignment_type_display }}</div>
+                        </div>
+                        <div>
+                            <span class="badge bg-danger">Overdue</span>
+                        </div>
+                    </div>
+
+                    <div class="assignment-meta">
+                        <span>
+                            <i class="fas fa-calendar"></i>
+                            📅 {{ assignment.due_date|date:"M d, Y H:i" }}
+                        </span>
+                        <span>
+                            <i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i>
+                            Past Due Date
+                        </span>
+                    </div>
+
+                    <div style="margin-top: 1rem;">
+                        <a href="{% url 'assignment_detail' assignment.id %}" class="btn btn-sm btn-danger">
+                            <i class="fas fa-upload"></i> Submit Late
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-check-circle"></i>
+                    <p>No overdue assignments</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Completed Assignments Tab -->
+        <div id="completed" class="tab-pane fade">
+            <div class="tab-content-section">
+                {% if completed_assignments %}
+                {% for assignment in completed_assignments %}
+                <div class="assignment-item completed">
+                    <div class="assignment-header">
+                        <div>
+                            <div class="assignment-title">{{ assignment.title }}</div>
+                            <div style="font-size: 0.85rem; color: #999; margin-top: 0.25rem;">{{ assignment.subject }}
+                                | {{ assignment.get_assignment_type_display }}</div>
+                        </div>
+                        <div>
+                            {% if assignment.submission.status == 'Reviewed' %}
+                            <span class="assignment-status status-reviewed">Reviewed</span>
+                            {% else %}
+                            <span class="assignment-status status-submitted">Submitted</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="assignment-meta">
+                        <span>
+                            <i class="fas fa-calendar"></i>
+                            📅 {{ assignment.due_date|date:"M d, Y" }}
+                        </span>
+                        {% if assignment.submission.marks_obtained %}
+                        <span>
+                            <i class="fas fa-check-circle" style="color: #27ae60;"></i>
+                            ⭐ {{ assignment.submission.marks_obtained }}/{{ assignment.total_marks }} marks
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <div style="margin-top: 1rem;">
+                        <a href="{% url 'submission_feedback' assignment.submission.id %}"
+                            class="btn btn-sm btn-outline-primary view-btn">
+                            <i class="fas fa-comments"></i> View Feedback
+                        </a>
+                        <a href="{% url 'assignment_detail' assignment.id %}"
+                            class="btn btn-sm btn-outline-secondary view-btn">
+                            <i class="fas fa-eye"></i> View Details
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>No completed assignments</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div style="margin-top: 3rem; text-align: center;">
+        <a href="{% url 'my_submissions' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-folder-open"></i> View All My Submissions
+        </a>
+    </div>
+</div>
+
+{% endblock %}

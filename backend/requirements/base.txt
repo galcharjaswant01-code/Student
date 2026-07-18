@@ -1,0 +1,53 @@
+# ============================================================
+# Student Management System - Python Dependencies
+# ============================================================
+
+# Core Django
+Django==6.0.5
+asgiref==3.11.1
+
+# REST API
+djangorestframework==3.17.1
+djangorestframework-simplejwt==5.5.1
+django-filter==25.2
+drf-spectacular==0.29.0
+django-cors-headers==4.9.0
+
+# Database
+psycopg2-binary==2.9.12
+dj-database-url==0.5.0
+
+# WebSockets / Async
+channels==4.3.2
+channels-redis==4.2.1
+daphne==4.2.1
+
+# Task Queue
+celery==5.6.3
+redis==7.4.0
+
+# Authentication
+PyJWT==2.13.0
+
+# Google AI
+google-generativeai
+google-auth==2.53.0
+
+# Generative AI
+groq==0.4.2
+google-generativeai==0.8.30
+
+# Firebase
+firebase-admin
+
+# File handling
+Pillow==12.2.0
+
+# Environment variables
+python-decouple==3.8
+python-dotenv==1.2.2
+
+# Utilities
+requests==2.34.2
+whitenoise==6.8.2
+

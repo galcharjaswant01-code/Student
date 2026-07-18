@@ -1,0 +1,603 @@
+{% extends "school/base.html" %}
+{% load static %}
+
+{% block title %}{{ assignment.title }} - Submit Assignment{% endblock %}
+
+{% block extra_css %}
+<style>
+    .assignment-header-section {
+        background: white;
+        border-radius: 8px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .assignment-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .detail-item {
+        text-align: center;
+    }
+
+    .detail-label {
+        font-size: 0.85rem;
+        color: #999;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+    }
+
+    .detail-value {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .submission-form-section {
+        background: white;
+        border-radius: 8px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group-custom {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group-custom label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .file-upload-area {
+        border: 2px dashed #667eea;
+        border-radius: 8px;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #f8f9ff;
+    }
+
+    .file-upload-area:hover {
+        border-color: #764ba2;
+        background: #f0f2ff;
+    }
+
+    .file-upload-area.dragover {
+        border-color: #764ba2;
+        background: #e8ebff;
+    }
+
+    .file-upload-icon {
+        font-size: 2.5rem;
+        color: #667eea;
+        margin-bottom: 0.5rem;
+    }
+
+    .file-input-hidden {
+        display: none;
+    }
+
+    .selected-file {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        border-radius: 4px;
+        color: #155724;
+    }
+
+    .file-info {
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .submission-status {
+        background: #d1ecf1;
+        border: 1px solid #bee5eb;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .status-not-submitted {
+        background: #e0e0e0;
+        color: #666;
+    }
+
+    .status-submitted {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-resubmit {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .alert-overdue {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1.5rem;
+    }
+
+    .submission-history {
+        background: white;
+        border-radius: 8px;
+        padding: 2rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .history-item {
+        padding: 1rem;
+        border-left: 3px solid #667eea;
+        margin-bottom: 1rem;
+        background: #f8f9fa;
+        border-radius: 4px;
+    }
+
+    .history-item.late {
+        border-left-color: #e74c3c;
+    }
+
+    .btn-submit-assignment {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 0.75rem 2rem;
+        border: none;
+        border-radius: 4px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .btn-submit-assignment:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-submit-assignment:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .loading-spinner {
+        display: none;
+        text-align: center;
+    }
+
+    .spinner {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .instructions {
+        background: #e8f4f8;
+        border-left: 4px solid #3498db;
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1.5rem;
+    }
+
+    .instructions h5 {
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .assignment-details {
+            grid-template-columns: 1fr;
+        }
+
+        .submission-form-section {
+            padding: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" style="margin-bottom: 1.5rem;">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'student_dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'assignments_list' %}">Assignments</a></li>
+            <li class="breadcrumb-item active">{{ assignment.title }}</li>
+        </ol>
+    </nav>
+
+    <!-- Assignment Header -->
+    <div class="assignment-header-section">
+        <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+                <h1 style="color: #667eea; margin-bottom: 0.5rem;">{{ assignment.title }}</h1>
+                <p style="color: #666; margin: 0;">{{ assignment.subject }} | {{ assignment.get_assignment_type_display
+                    }}</p>
+            </div>
+            <div>
+                {% if is_overdue %}
+                <span class="status-badge status-resubmit">OVERDUE</span>
+                {% else %}
+                {% if submission.status == 'Not Started' %}
+                <span class="status-badge status-not-submitted">NOT SUBMITTED</span>
+                {% elif submission.status == 'Submitted' %}
+                <span class="status-badge status-submitted">SUBMITTED</span>
+                {% elif submission.status == 'Resubmit' %}
+                <span class="status-badge status-resubmit">RESUBMIT REQUIRED</span>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="assignment-details">
+            <div class="detail-item">
+                <div class="detail-label">Due Date</div>
+                <div class="detail-value">{{ assignment.due_date|date:"M d, Y" }}</div>
+                <div class="file-info">{{ assignment.due_date|time:"H:i" }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Total Marks</div>
+                <div class="detail-value">{{ assignment.total_marks }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Days Remaining</div>
+                <div class="detail-value"
+                    style="{% if days_remaining < 0 %}color: #e74c3c;{% elif days_remaining < 7 %}color: #f39c12;{% else %}color: #27ae60;{% endif %}">
+                    {% if days_remaining > 0 %}
+                    {{ days_remaining }}
+                    {% else %}
+                    <i class="fas fa-exclamation-circle"></i> Late
+                    {% endif %}
+                </div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Assignment Type</div>
+                <div class="detail-value">{{ assignment.get_assignment_type_display }}</div>
+            </div>
+        </div>
+    </div>
+
+    {% if is_overdue %}
+    <div class="alert-overdue">
+        <i class="fas fa-exclamation-triangle"></i> <strong>This assignment is overdue!</strong> You can still submit,
+        but it will be marked as late submission.
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Assignment Description -->
+            {% if assignment.description or assignment.instructions %}
+            <div class="submission-form-section">
+                <h3 style="color: #667eea; margin-bottom: 1rem;">Assignment Details</h3>
+
+                {% if assignment.description %}
+                <h5>Description</h5>
+                <p>{{ assignment.description }}</p>
+                {% endif %}
+
+                {% if assignment.instructions %}
+                <h5 style="margin-top: 1.5rem;">Instructions</h5>
+                <p>{{ assignment.instructions }}</p>
+                {% endif %}
+
+                {% if assignment.attachment %}
+                <div style="margin-top: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 4px;">
+                    <strong>📎 Attachment:</strong>
+                    <a href="{{ assignment.attachment.url }}" class="btn btn-sm btn-outline-primary"
+                        style="margin-left: 0.5rem;">
+                        <i class="fas fa-download"></i> Download
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Submission Form -->
+            {% if can_submit %}
+            <div class="submission-form-section">
+                <h3 style="color: #667eea; margin-bottom: 1rem;">Submit Assignment</h3>
+
+                <form id="submissionForm" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="form-group-custom">
+                        <label for="submissionFile">Upload File</label>
+                        <div class="file-upload-area" id="uploadArea" ondrop="handleDrop(event)"
+                            ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                            <div class="file-upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <p style="margin-bottom: 0.5rem;">Drag and drop your file here or click to browse</p>
+                            <p style="font-size: 0.85rem; color: #999;">Supported formats: PDF, DOC, DOCX, XLS, XLSX,
+                                PPT, PPTX, TXT, JPG, PNG, GIF, ZIP</p>
+                            <p style="font-size: 0.85rem; color: #999;">Maximum file size: 10 MB</p>
+                        </div>
+                        <input type="file" id="submissionFile" name="submission_file" class="file-input-hidden"
+                            accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.jpg,.jpeg,.png,.gif,.zip,.rar,.7z">
+
+                        <div id="selectedFileInfo" class="selected-file" style="display: none;">
+                            <div style="margin-bottom: 0.5rem;">
+                                <i class="fas fa-check-circle" style="color: #28a745;"></i> <strong>File
+                                    selected:</strong>
+                            </div>
+                            <div id="fileName" style="word-break: break-all;"></div>
+                            <div class="file-info" id="fileSize"></div>
+                            <button type="button" onclick="clearFile()" class="btn btn-sm btn-outline-danger"
+                                style="margin-top: 0.5rem;">Remove</button>
+                        </div>
+                    </div>
+
+                    <div id="errorMessage" style="display: none; color: #e74c3c; margin-bottom: 1rem;"></div>
+                    <div id="successMessage" style="display: none; color: #27ae60; margin-bottom: 1rem;"></div>
+
+                    <button type="submit" class="btn-submit-assignment" id="submitBtn">
+                        <i class="fas fa-upload"></i> Submit Assignment
+                    </button>
+
+                    <div class="loading-spinner" id="loadingSpinner">
+                        <div class="spinner"></div>
+                        <p style="margin-top: 1rem;">Uploading...</p>
+                    </div>
+                </form>
+            </div>
+            {% else %}
+            <div class="submission-form-section">
+                <div style="text-align: center; padding: 2rem; color: #666;">
+                    <i class="fas fa-lock"
+                        style="font-size: 3rem; opacity: 0.3; margin-bottom: 1rem; display: block;"></i>
+                    <h4>Submission Closed</h4>
+                    <p>The deadline for this assignment has passed and submissions are no longer accepted.</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Submission History -->
+            {% if submission %}
+            <div class="submission-history">
+                <h3 style="color: #667eea; margin-bottom: 1rem;">Submission History</h3>
+
+                <div class="history-item {% if submission.is_late %}late{% endif %}">
+                    <strong>Original Submission</strong>
+                    <div class="file-info">
+                        📅 {{ submission.submission_date|date:"M d, Y H:i" }}
+                        {% if submission.is_late %}
+                        <span style="color: #e74c3c; margin-left: 0.5rem;"><i class="fas fa-clock"></i> {{
+                            submission.late_days }} days late</span>
+                        {% endif %}
+                    </div>
+                    <div style="margin-top: 0.5rem;">
+                        <a href="{{ submission.submission_file.url }}" class="btn btn-sm btn-outline-primary"
+                            target="_blank">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+                </div>
+
+                {% if submission.resubmission_file %}
+                <div class="history-item">
+                    <strong>Resubmission</strong>
+                    <div class="file-info">
+                        📅 {{ submission.resubmission_date|date:"M d, Y H:i" }}
+                    </div>
+                    <div style="margin-top: 0.5rem;">
+                        <a href="{{ submission.resubmission_file.url }}" class="btn btn-sm btn-outline-primary"
+                            target="_blank">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Quick Info -->
+            <div class="submission-form-section">
+                <h5 style="color: #667eea; margin-bottom: 1rem;">Quick Information</h5>
+
+                <div style="margin-bottom: 1rem;">
+                    <strong style="color: #333;">Status</strong>
+                    <div style="margin-top: 0.5rem;">
+                        {% if submission %}
+                        <span class="status-badge status-{{ submission.status|lower }}">{{ submission.get_status_display
+                            }}</span>
+                        {% else %}
+                        <span class="status-badge status-not-submitted">NOT SUBMITTED</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if submission and submission.marks_obtained %}
+                <div style="margin-bottom: 1rem;">
+                    <strong style="color: #333;">Marks</strong>
+                    <div style="margin-top: 0.5rem; font-size: 1.3rem; color: #667eea; font-weight: bold;">
+                        {{ submission.marks_obtained }}/{{ assignment.total_marks }}
+                    </div>
+                    <div style="font-size: 0.85rem; color: #999;">
+                        Percentage: {{ submission.marks_obtained|add:0|mul:100|div:assignment.total_marks|floatformat:1
+                        }}%
+                    </div>
+                </div>
+                {% endif %}
+
+                <hr>
+
+                {% if submission and submission.feedback %}
+                <div style="padding: 1rem; background: #f8f9fa; border-radius: 4px; border-left: 3px solid #667eea;">
+                    <strong style="color: #333; display: block; margin-bottom: 0.5rem;">📝 Teacher Feedback</strong>
+                    <p style="font-size: 0.9rem; margin-bottom: 0; color: #666;">{{ submission.feedback|truncatewords:50
+                        }}</p>
+                    <a href="{% url 'submission_feedback' submission.id %}"
+                        style="font-size: 0.85rem; margin-top: 0.5rem; display: inline-block;">
+                        View full feedback →
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- File Requirements -->
+            <div class="submission-form-section">
+                <h5 style="color: #667eea; margin-bottom: 1rem;">File Requirements</h5>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color: #27ae60;"></i> Maximum
+                        size: 10 MB</li>
+                    <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color: #27ae60;"></i> PDF,
+                        Documents, or Images</li>
+                    <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color: #27ae60;"></i> Clear file
+                        name</li>
+                    <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color: #27ae60;"></i> Single file
+                        only</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('submissionFile');
+    const selectedFileInfo = document.getElementById('selectedFileInfo');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const form = document.getElementById('submissionForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const errorMessage = document.getElementById('errorMessage');
+    const successMessage = document.getElementById('successMessage');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+
+    // File upload click handler
+    uploadArea.addEventListener('click', () => fileInput.click());
+
+    // File input change handler
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            displayFile(e.target.files[0]);
+        }
+    });
+
+    // Drag and drop handlers
+    function handleDragOver(e) {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    }
+
+    function handleDragLeave(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            fileInput.files = files;
+            displayFile(files[0]);
+        }
+    }
+
+    function displayFile(file) {
+        fileName.textContent = file.name;
+        fileSize.textContent = `Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+        selectedFileInfo.style.display = 'block';
+    }
+
+    function clearFile() {
+        fileInput.value = '';
+        selectedFileInfo.style.display = 'none';
+        errorMessage.style.display = 'none';
+    }
+
+    // Form submission
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        if (!fileInput.files.length) {
+            showError('Please select a file');
+            return;
+        }
+
+        const formData = new FormData(form);
+        submitBtn.disabled = true;
+        loadingSpinner.style.display = 'block';
+        errorMessage.style.display = 'none';
+        successMessage.style.display = 'none';
+
+        try {
+            const response = await fetch('{% url "submit_assignment" assignment.id %}', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showSuccess(data.message);
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+            } else {
+                showError(data.error || 'An error occurred');
+            }
+        } catch (error) {
+            showError('Network error. Please try again.');
+        } finally {
+            submitBtn.disabled = false;
+            loadingSpinner.style.display = 'none';
+        }
+    });
+
+    function showError(msg) {
+        errorMessage.textContent = msg;
+        errorMessage.style.display = 'block';
+    }
+
+    function showSuccess(msg) {
+        successMessage.textContent = msg;
+        successMessage.style.display = 'block';
+    }
+</script>
+{% endblock %}

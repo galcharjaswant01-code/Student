@@ -1,0 +1,468 @@
+{% extends "school/base.html" %}
+{% load static %}
+
+{% block title %}Submission Feedback - {{ assignment.title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .feedback-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .feedback-header {
+        background: white;
+        border-radius: 8px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .feedback-section {
+        background: white;
+        border-radius: 8px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .marks-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 8px;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .marks-value {
+        font-size: 3rem;
+        font-weight: bold;
+    }
+
+    .marks-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        margin-top: 0.5rem;
+    }
+
+    .percentage-bar {
+        background: rgba(255, 255, 255, 0.3);
+        height: 8px;
+        border-radius: 4px;
+        margin-top: 1rem;
+        overflow: hidden;
+    }
+
+    .percentage-fill {
+        height: 100%;
+        background: white;
+    }
+
+    .feedback-text {
+        background: #f8f9fa;
+        border-left: 4px solid #667eea;
+        padding: 1.5rem;
+        border-radius: 4px;
+        margin-bottom: 1.5rem;
+        line-height: 1.8;
+    }
+
+    .feedback-text h5 {
+        color: #667eea;
+        margin-bottom: 1rem;
+        margin-top: 0;
+    }
+
+    .submission-info {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1.5rem;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .info-label {
+        color: #666;
+        font-weight: 600;
+    }
+
+    .info-value {
+        color: #333;
+    }
+
+    .file-section {
+        background: #e8f4f8;
+        border: 1px solid #bee5eb;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .file-item {
+        background: white;
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 0.75rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .file-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .file-name {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex: 1;
+    }
+
+    .file-icon {
+        font-size: 1.5rem;
+        color: #667eea;
+    }
+
+    .file-details {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .file-title {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .file-time {
+        font-size: 0.85rem;
+        color: #999;
+        margin-top: 0.25rem;
+    }
+
+    .status-section {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .status-item {
+        flex: 1;
+        background: white;
+        padding: 1rem;
+        border-radius: 4px;
+        border-left: 3px solid #667eea;
+        text-align: center;
+    }
+
+    .status-item.submitted {
+        border-left-color: #27ae60;
+    }
+
+    .status-item.reviewed {
+        border-left-color: #3498db;
+    }
+
+    .status-label {
+        font-size: 0.85rem;
+        color: #999;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+    }
+
+    .status-value {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .btn-group-feedback {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .btn-action {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border-radius: 4px;
+        text-decoration: none;
+        text-align: center;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary-action {
+        background: #667eea;
+        color: white;
+    }
+
+    .btn-primary-action:hover {
+        background: #764ba2;
+    }
+
+    .btn-secondary-action {
+        background: #f0f2ff;
+        color: #667eea;
+        border: 1px solid #667eea;
+    }
+
+    .btn-secondary-action:hover {
+        background: #e8ebff;
+    }
+
+    .rating-section {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 4px;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .stars {
+        font-size: 2rem;
+        color: #f39c12;
+        margin: 1rem 0;
+    }
+
+    .teacher-name {
+        font-size: 0.9rem;
+        color: #999;
+        margin-top: 1rem;
+    }
+
+    .print-button {
+        background: white;
+        border: 1px solid #ddd;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .print-button:hover {
+        background: #f8f9fa;
+    }
+
+    @media print {
+
+        .navbar,
+        .feedback-actions,
+        .btn-group-feedback,
+        .print-button {
+            display: none;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .feedback-header {
+            padding: 1rem;
+        }
+
+        .marks-card {
+            padding: 1.5rem;
+        }
+
+        .marks-value {
+            font-size: 2.5rem;
+        }
+
+        .info-row {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .btn-group-feedback {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1><i class="fas fa-comments"></i> Submission Feedback</h1>
+                <p class="mb-0">{{ assignment.title }}</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <span class="badge bg-info">{{ submission.get_status_display }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid my-4">
+    <div class="feedback-container">
+        <!-- Marks Card -->
+        {% if submission.marks_obtained %}
+        <div class="marks-card">
+            <div class="marks-value">{{ submission.marks_obtained }}/{{ assignment.total_marks }}</div>
+            <div class="marks-label">Marks Obtained</div>
+            <div style="margin-top: 1rem; display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+                <strong style="font-size: 1.2rem;">{{
+                    submission.marks_obtained|add:0|mul:100|div:assignment.total_marks|floatformat:1 }}%</strong>
+            </div>
+            <div class="percentage-bar">
+                <div class="percentage-fill"
+                    style="width: {{ submission.marks_obtained|add:0|mul:100|div:assignment.total_marks|floatformat:0 }}%;">
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Assignment & Submission Info -->
+        <div class="feedback-section">
+            <h3 style="color: #667eea; margin-bottom: 1.5rem;">Assignment Details</h3>
+
+            <div class="submission-info">
+                <div class="info-row">
+                    <span class="info-label">Subject</span>
+                    <span class="info-value">{{ assignment.subject }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Assignment Type</span>
+                    <span class="info-value">{{ assignment.get_assignment_type_display }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Total Marks</span>
+                    <span class="info-value">{{ assignment.total_marks }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Due Date</span>
+                    <span class="info-value">{{ assignment.due_date|date:"M d, Y H:i" }}</span>
+                </div>
+            </div>
+
+            <h4 style="color: #333; margin-top: 1.5rem; margin-bottom: 1rem;">Submission Status</h4>
+            <div class="status-section">
+                <div class="status-item submitted">
+                    <div class="status-label">Submitted</div>
+                    <div class="status-value">{{ submission.submission_date|date:"M d, Y H:i" }}</div>
+                    {% if submission.is_late %}
+                    <div style="color: #e74c3c; font-size: 0.8rem; margin-top: 0.5rem;">
+                        <i class="fas fa-clock"></i> {{ submission.late_days }} days late
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="status-item reviewed">
+                    <div class="status-label">Reviewed</div>
+                    <div class="status-value">{{ submission.feedback_date|date:"M d, Y H:i"|default:"Pending" }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submission Files -->
+        <div class="feedback-section">
+            <h3 style="color: #667eea; margin-bottom: 1.5rem;">Submitted Files</h3>
+
+            <div class="file-section">
+                <div class="file-item">
+                    <div class="file-name">
+                        <div class="file-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div class="file-details">
+                            <div class="file-title">{{ submission.submission_file.name|truncatechars:50 }}</div>
+                            <div class="file-time">{{ submission.submission_date|date:"M d, Y H:i" }}</div>
+                        </div>
+                    </div>
+                    <a href="{{ submission.submission_file.url }}" class="btn btn-sm btn-outline-primary"
+                        target="_blank">
+                        <i class="fas fa-download"></i> Download
+                    </a>
+                </div>
+
+                {% if submission.resubmission_file %}
+                <div class="file-item">
+                    <div class="file-name">
+                        <div class="file-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div class="file-details">
+                            <div class="file-title">{{ submission.resubmission_file.name|truncatechars:50 }}</div>
+                            <div class="file-time">Resubmission: {{ submission.resubmission_date|date:"M d, Y H:i" }}
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{{ submission.resubmission_file.url }}" class="btn btn-sm btn-outline-primary"
+                        target="_blank">
+                        <i class="fas fa-download"></i> Download
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Teacher Feedback -->
+        {% if submission.feedback or submission.feedback_file %}
+        <div class="feedback-section">
+            <h3 style="color: #667eea; margin-bottom: 1.5rem;">Teacher Feedback</h3>
+
+            {% if submission.feedback %}
+            <div class="feedback-text">
+                <h5>Comments</h5>
+                {{ submission.feedback }}
+            </div>
+            {% endif %}
+
+            {% if submission.feedback_file %}
+            <div class="file-section">
+                <h5 style="margin-top: 0; margin-bottom: 1rem;">Feedback Document</h5>
+                <div class="file-item">
+                    <div class="file-name">
+                        <div class="file-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div class="file-details">
+                            <div class="file-title">{{ submission.feedback_file.name|truncatechars:50 }}</div>
+                            <div class="file-time">Uploaded: {{ submission.feedback_date|date:"M d, Y H:i" }}</div>
+                        </div>
+                    </div>
+                    <a href="{{ submission.feedback_file.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                        <i class="fas fa-download"></i> Download
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <!-- Action Buttons -->
+        <div class="btn-group-feedback">
+            {% if submission.status == 'Resubmit' %}
+            <a href="{% url 'assignment_detail' assignment.id %}" class="btn-action btn-primary-action">
+                <i class="fas fa-redo"></i> Resubmit Assignment
+            </a>
+            {% endif %}
+            <a href="{% url 'assignments_list' %}" class="btn-action btn-secondary-action">
+                <i class="fas fa-list"></i> View All Assignments
+            </a>
+            <a href="{% url 'my_submissions' %}" class="btn-action btn-secondary-action">
+                <i class="fas fa-folder-open"></i> My Submissions
+            </a>
+            <button onclick="window.print()" class="btn-action btn-secondary-action print-button">
+                <i class="fas fa-print"></i> Print
+            </button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

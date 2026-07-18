@@ -1,0 +1,25 @@
+{% extends "school/base.html" %}
+
+{% block title %}No Student Found{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <div style="font-size: 4rem; margin-bottom: 1rem;">
+                <i class="fas fa-search"></i>
+            </div>
+            <h1 style="color: #667eea; margin-bottom: 1rem;">No Student Found</h1>
+            <p style="color: #666; font-size: 1.1rem; margin-bottom: 2rem;">
+                {{ message }}
+            </p>
+            <p style="color: #999; margin-bottom: 2rem;">
+                Please contact your administrator to set up your student account.
+            </p>
+            <a href="/" class="btn btn-primary btn-lg">
+                <i class="fas fa-home"></i> Go Home
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

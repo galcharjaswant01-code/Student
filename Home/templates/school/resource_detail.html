@@ -1,0 +1,437 @@
+{% extends "school/base.html" %}
+{% load static %}
+
+{% block title %}{{ resource.title }} - Learning Resource{% endblock %}
+
+{% block extra_css %}
+<style>
+    .resource-detail-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .resource-header-section {
+        background: white;
+        border-radius: 8px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .resource-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .resource-type-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+    }
+
+    .badge-notes {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .badge-pdf {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .badge-video {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .badge-presentation {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .badge-coding {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .badge-other {
+        background: #e2e3e5;
+        color: #383d41;
+    }
+
+    .resource-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e0e0e0;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .resource-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .resource-content-section {
+        background: white;
+        border-radius: 8px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .resource-description {
+        font-size: 1rem;
+        line-height: 1.8;
+        color: #333;
+        margin-bottom: 1.5rem;
+    }
+
+    .file-preview-section {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 2px dashed #e0e0e0;
+        text-align: center;
+    }
+
+    .file-icon-large {
+        font-size: 4rem;
+        color: #667eea;
+        margin-bottom: 1rem;
+    }
+
+    .file-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+        word-break: break-all;
+    }
+
+    .file-size {
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .video-embed {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+    }
+
+    .video-embed iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    .resource-stats-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #667eea;
+    }
+
+    .stat-label {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.25rem;
+    }
+
+    .tags-section {
+        margin-top: 1rem;
+    }
+
+    .tag {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        background: #e9ecef;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        color: #495057;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .related-resources {
+        background: white;
+        border-radius: 8px;
+        padding: 2rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .related-item {
+        padding: 1rem;
+        border-bottom: 1px solid #e0e0e0;
+        transition: background 0.3s ease;
+    }
+
+    .related-item:last-child {
+        border-bottom: none;
+    }
+
+    .related-item:hover {
+        background: #f8f9fa;
+    }
+
+    .related-title {
+        font-weight: 600;
+        color: #333;
+        text-decoration: none;
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    .related-title:hover {
+        color: #667eea;
+    }
+
+    .related-meta {
+        font-size: 0.85rem;
+        color: #666;
+    }
+
+    .btn-group-custom {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .btn-download {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 0.75rem 2rem;
+        border: none;
+        border-radius: 4px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-download:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+
+    .btn-secondary-custom {
+        background: #f0f2ff;
+        color: #667eea;
+        border: 1px solid #667eea;
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary-custom:hover {
+        background: #e8ebff;
+        color: #667eea;
+    }
+
+    @media (max-width: 768px) {
+        .resource-title {
+            font-size: 1.4rem;
+        }
+
+        .resource-meta {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .btn-group-custom {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" style="margin-bottom: 1.5rem;">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/school/dashboard/">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="/school/resources/">Learning Resources</a></li>
+            <li class="breadcrumb-item active">{{ resource.title|truncatechars:30 }}</li>
+        </ol>
+    </nav>
+
+    <div class="resource-detail-container">
+        <!-- Resource Header -->
+        <div class="resource-header-section">
+            <span class="resource-type-badge badge-{{ resource.resource_type|lower }}">
+                <i class="fas {{ resource.get_resource_icon }}"></i> {{ resource.get_resource_type_display }}
+            </span>
+            <h1 class="resource-title">{{ resource.title }}</h1>
+            
+            <div class="resource-meta">
+                <span><i class="fas fa-book"></i> {{ resource.subject }}</span>
+                <span><i class="fas fa-user-tie"></i> {{ resource.teacher_name }}</span>
+                <span><i class="fas fa-calendar"></i> Uploaded: {{ resource.created_at|date:"M d, Y" }}</span>
+                <span><i class="fas fa-clock"></i> Updated: {{ resource.updated_at|date:"M d, Y" }}</span>
+                {% if resource.class_name %}
+                <span><i class="fas fa-users"></i> For: {{ resource.class_name }}</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="resource-stats-section">
+            <div class="stat-card">
+                <div class="stat-value">{{ resource.view_count }}</div>
+                <div class="stat-label">Views</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ resource.download_count }}</div>
+                <div class="stat-label">Downloads</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ resource.get_resource_type_display }}</div>
+                <div class="stat-label">Type</div>
+            </div>
+        </div>
+
+        <!-- Resource Content -->
+        <div class="resource-content-section">
+            <h3 style="color: #667eea; margin-bottom: 1rem;">Description</h3>
+            
+            {% if resource.description %}
+            <div class="resource-description">{{ resource.description }}</div>
+            {% else %}
+            <p style="color: #999; font-style: italic;">No description provided.</p>
+            {% endif %}
+
+            {% if resource.tags %}
+            <div class="tags-section">
+                <strong>Tags:</strong>
+                <span class="tag">{{ resource.tags|truncatechars:100 }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- File/Video Section -->
+        {% if resource.video_url %}
+        <div class="resource-content-section">
+            <h3 style="color: #667eea; margin-bottom: 1rem;">Video</h3>
+            <div class="video-embed">
+                {% if 'youtube.com' in resource.video_url or 'youtu.be' in resource.video_url %}
+                    {% if 'embed' not in resource.video_url %}
+                        {% if 'youtu.be' in resource.video_url %}
+                            {% with video_id=resource.video_url|slice:"-11:" %}
+                            <iframe src="https://www.youtube.com/embed/{{ video_id }}" frameborder="0" allowfullscreen></iframe>
+                            {% endwith %}
+                        {% else %}
+                            {% with video_id=resource.video_url|slice:"-11:" %}
+                            <iframe src="https://www.youtube.com/embed/{{ video_id }}" frameborder="0" allowfullscreen></iframe>
+                            {% endwith %}
+                        {% endif %}
+                    {% else %}
+                    <iframe src="{{ resource.video_url }}" frameborder="0" allowfullscreen></iframe>
+                    {% endif %}
+                {% else %}
+                <iframe src="{{ resource.video_url }}" frameborder="0" allowfullscreen></iframe>
+                {% endif %}
+            </div>
+            <div class="btn-group-custom">
+                <a href="{{ resource.video_url }}" target="_blank" class="btn-download">
+                    <i class="fas fa-external-link-alt"></i> Open Video in New Tab
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if resource.file %}
+        <div class="resource-content-section">
+            <h3 style="color: #667eea; margin-bottom: 1rem;">File</h3>
+            <div class="file-preview-section">
+                <div class="file-icon-large">
+                    <i class="fas {{ resource.get_resource_icon }}"></i>
+                </div>
+                <div class="file-name">{{ resource.file.name|truncatechars:50 }}</div>
+                {% if resource.file_size %}
+                <div class="file-size">Size: {{ resource.file_size|filesizeformat }}</div>
+                {% endif %}
+                <div class="file-size">Extension: {{ resource.file_extension|upper }}</div>
+            </div>
+            
+            <div class="btn-group-custom">
+                <a href="/school/resource/{{ resource.id }}/download/" class="btn-download">
+                    <i class="fas fa-download"></i> Download File
+                </a>
+                <a href="{{ resource.file.url }}" target="_blank" class="btn-secondary-custom">
+                    <i class="fas fa-eye"></i> Preview
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Related Resources -->
+        {% if related_resources %}
+        <div class="related-resources">
+            <h3 style="color: #667eea; margin-bottom: 1.5rem;">
+                <i class="fas fa-related"></i> Related Resources
+            </h3>
+            
+            {% for related in related_resources %}
+            <div class="related-item">
+                <a href="/school/resource/{{ related.id }}/" class="related-title">
+                    <i class="fas {{ related.get_resource_icon }}"></i> {{ related.title }}
+                </a>
+                <div class="related-meta">
+                    <span><i class="fas fa-eye"></i> {{ related.view_count }}</span>
+                    <span><i class="fas fa-download"></i> {{ related.download_count }}</span>
+                    <span><i class="fas fa-calendar"></i> {{ related.created_at|date:"M d, Y" }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Back Button -->
+        <div style="margin-top: 2rem;">
+            <a href="/school/resources/" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Resources
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

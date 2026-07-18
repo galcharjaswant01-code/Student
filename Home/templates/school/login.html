@@ -1,0 +1,180 @@
+{% extends "school/base.html" %}
+{% load static %}
+
+{% block title %}Login - Student Management System{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-yellow: #FFC107;
+        --primary-orange: #FF9800;
+        --primary-blue: #2196F3;
+        --primary-white: #FFFFFF;
+        --light-blue: #E3F2FD;
+        --text-dark: #333333;
+    }
+
+    .auth-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--light-blue) 0%, #BBDEFB 100%);
+        padding: 2rem;
+    }
+
+    .auth-card {
+        background: var(--primary-white);
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        padding: 3rem;
+        max-width: 450px;
+        width: 100%;
+        border-top: 5px solid var(--primary-orange);
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .auth-icon {
+        font-size: 3rem;
+        color: var(--primary-blue);
+        margin-bottom: 1rem;
+    }
+
+    .auth-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+
+    .auth-subtitle {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--text-dark);
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-blue);
+    }
+
+    .btn-primary-custom {
+        width: 100%;
+        padding: 0.875rem;
+        background: linear-gradient(135deg, var(--primary-blue) 0%, #1976D2 100%);
+        color: var(--primary-white);
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+    }
+
+    .auth-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .auth-link {
+        color: var(--primary-blue);
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .auth-link:hover {
+        text-decoration: underline;
+    }
+
+    .alert {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    .alert-error {
+        background: #FFEBEE;
+        color: #F44336;
+        border: 1px solid #F44336;
+    }
+
+    .alert-success {
+        background: #E8F5E9;
+        color: #4CAF50;
+        border: 1px solid #4CAF50;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-icon">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <h1 class="auth-title">Welcome Back</h1>
+            <p class="auth-subtitle">Sign in to your account</p>
+        </div>
+
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label" for="username">Username or Email</label>
+                <input type="text" class="form-control" id="username" name="username" required placeholder="Enter your username or email">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required placeholder="Enter your password">
+            </div>
+
+            <button type="submit" class="btn-primary-custom">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Don't have an account? <a href="{% url 'register' %}" class="auth-link">Register here</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

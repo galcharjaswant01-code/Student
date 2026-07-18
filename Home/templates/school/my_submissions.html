@@ -1,0 +1,462 @@
+{% extends "school/base.html" %}
+{% load static %}
+
+{% block title %}My Submissions - {{ student.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .submission-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border-left: 4px solid #667eea;
+        transition: all 0.3s ease;
+    }
+
+    .submission-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .submission-card.reviewed {
+        border-left-color: #27ae60;
+    }
+
+    .submission-card.pending {
+        border-left-color: #f39c12;
+    }
+
+    .submission-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+
+    .submission-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .submission-meta {
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+        color: #666;
+        flex-wrap: wrap;
+    }
+
+    .submission-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status-submitted {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-reviewed {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-resubmit {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .marks-display {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 4px;
+        margin-top: 1rem;
+    }
+
+    .marks-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #667eea;
+        display: inline-block;
+        margin-right: 0.5rem;
+    }
+
+    .marks-total {
+        color: #999;
+        font-size: 0.9rem;
+    }
+
+    .feedback-preview {
+        background: #e8f4f8;
+        border-left: 3px solid #3498db;
+        padding: 1rem;
+        border-radius: 4px;
+        margin-top: 1rem;
+    }
+
+    .feedback-preview p {
+        margin-bottom: 0;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-box {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #667eea;
+    }
+
+    .stat-label {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .filter-section {
+        background: white;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: #999;
+    }
+
+    .empty-state i {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        opacity: 0.3;
+    }
+
+    .btn-action {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+        margin-left: 0.5rem;
+    }
+
+    .tab-content {
+        margin-bottom: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .submission-header {
+            flex-direction: column;
+        }
+
+        .submission-meta {
+            flex-wrap: wrap;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1><i class="fas fa-file-upload"></i> My Submissions</h1>
+                <p class="mb-0">Track your assignment submissions and feedback</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <span class="badge bg-primary">{{ total_submissions }} Total</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid my-4">
+    <!-- Statistics -->
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-number">{{ total_submissions }}</div>
+            <div class="stat-label">Total Submissions</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">{{ reviewed }}</div>
+            <div class="stat-label">Reviewed</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">{{ pending_review }}</div>
+            <div class="stat-label">Pending Review</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">{{ average_marks }}%</div>
+            <div class="stat-label">Average Marks</div>
+        </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <ul class="nav nav-tabs" role="tablist" style="margin-bottom: 2rem;">
+        <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#all">
+                <i class="fas fa-list"></i> All ({{ submissions|length }})
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#reviewed">
+                <i class="fas fa-check-circle"></i> Reviewed ({{ reviewed_submissions|length }})
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#pending">
+                <i class="fas fa-hourglass-half"></i> Pending ({{ pending_submissions|length }})
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#resubmit">
+                <i class="fas fa-redo"></i> Resubmit ({{ resubmit_submissions|length }})
+            </a>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- All Submissions -->
+        <div id="all" class="tab-pane fade show active">
+            <div class="tab-content">
+                {% if submissions %}
+                {% for submission in submissions %}
+                <div
+                    class="submission-card {% if submission.status == 'Reviewed' %}reviewed{% elif submission.status == 'Pending' %}pending{% endif %}">
+                    <div class="submission-header">
+                        <div>
+                            <div class="submission-title">{{ submission.assignment.title }}</div>
+                            <div style="font-size: 0.85rem; color: #999;">{{ submission.assignment.subject }} | {{
+                                submission.assignment.get_assignment_type_display }}</div>
+                        </div>
+                        <div>
+                            <span class="status-badge status-{{ submission.status|lower }}">{{
+                                submission.get_status_display }}</span>
+                        </div>
+                    </div>
+
+                    <div class="submission-meta">
+                        <span>
+                            <i class="fas fa-calendar"></i>
+                            📅 Submitted: {{ submission.submission_date|date:"M d, Y H:i" }}
+                        </span>
+                        {% if submission.is_late %}
+                        <span style="color: #e74c3c;">
+                            <i class="fas fa-clock"></i>
+                            ⏰ {{ submission.late_days }} days late
+                        </span>
+                        {% endif %}
+                        <span>
+                            <i class="fas fa-file"></i>
+                            📎 <a href="{{ submission.submission_file.url }}" target="_blank">View File</a>
+                        </span>
+                    </div>
+
+                    {% if submission.status == 'Reviewed' and submission.marks_obtained %}
+                    <div class="marks-display">
+                        <strong>Marks Obtained:</strong>
+                        <div class="marks-value">{{ submission.marks_obtained }}</div>
+                        <span class="marks-total">/ {{ submission.assignment.total_marks }}</span>
+                        <div style="margin-top: 0.5rem; font-size: 0.85rem; color: #666;">
+                            Percentage: {{
+                            submission.marks_obtained|add:0|mul:100|div:submission.assignment.total_marks|floatformat:1
+                            }}%
+                        </div>
+                    </div>
+                    {% elif submission.status == 'Pending' %}
+                    <div
+                        style="background: #fff3cd; padding: 0.75rem; border-radius: 4px; margin-top: 1rem; font-size: 0.9rem; color: #856404;">
+                        <i class="fas fa-hourglass-half"></i> Awaiting teacher feedback...
+                    </div>
+                    {% endif %}
+
+                    {% if submission.feedback %}
+                    <div class="feedback-preview">
+                        <strong style="display: block; margin-bottom: 0.5rem;">📝 Feedback</strong>
+                        <p>{{ submission.feedback|truncatewords:40 }}</p>
+                        <a href="{% url 'submission_feedback' submission.id %}"
+                            style="font-size: 0.85rem; margin-top: 0.5rem; display: inline-block;">
+                            View full feedback →
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    <div style="margin-top: 1rem;">
+                        <a href="{% url 'assignment_detail' submission.assignment.id %}"
+                            class="btn btn-sm btn-outline-primary btn-action">
+                            <i class="fas fa-eye"></i> View Assignment
+                        </a>
+                        <a href="{% url 'submission_feedback' submission.id %}"
+                            class="btn btn-sm btn-outline-secondary btn-action">
+                            <i class="fas fa-comments"></i> Full Details
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>No submissions yet</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Reviewed Submissions -->
+        <div id="reviewed" class="tab-pane fade">
+            <div class="tab-content">
+                {% if reviewed_submissions %}
+                {% for submission in reviewed_submissions %}
+                <div class="submission-card reviewed">
+                    <div class="submission-header">
+                        <div>
+                            <div class="submission-title">{{ submission.assignment.title }}</div>
+                            <div style="font-size: 0.85rem; color: #999;">{{ submission.assignment.subject }}</div>
+                        </div>
+                        <span class="status-badge status-reviewed">REVIEWED</span>
+                    </div>
+
+                    <div class="marks-display">
+                        <strong>Marks Obtained:</strong>
+                        <div class="marks-value">{{ submission.marks_obtained }}</div>
+                        <span class="marks-total">/ {{ submission.assignment.total_marks }}</span>
+                    </div>
+
+                    <div style="margin-top: 1rem;">
+                        <a href="{% url 'submission_feedback' submission.id %}"
+                            class="btn btn-sm btn-primary btn-action">
+                            <i class="fas fa-comments"></i> View Feedback
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-check-circle"></i>
+                    <p>No reviewed submissions</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Pending Submissions -->
+        <div id="pending" class="tab-pane fade">
+            <div class="tab-content">
+                {% if pending_submissions %}
+                {% for submission in pending_submissions %}
+                <div class="submission-card pending">
+                    <div class="submission-header">
+                        <div>
+                            <div class="submission-title">{{ submission.assignment.title }}</div>
+                            <div style="font-size: 0.85rem; color: #999;">{{ submission.assignment.subject }}</div>
+                        </div>
+                        <span class="status-badge status-pending">PENDING</span>
+                    </div>
+
+                    <div
+                        style="background: #fff3cd; padding: 0.75rem; border-radius: 4px; margin-top: 1rem; font-size: 0.9rem; color: #856404;">
+                        <i class="fas fa-hourglass-half"></i> Your submission is being reviewed by the teacher...
+                    </div>
+
+                    <div style="margin-top: 1rem;">
+                        <a href="{% url 'assignment_detail' submission.assignment.id %}"
+                            class="btn btn-sm btn-outline-primary btn-action">
+                            <i class="fas fa-eye"></i> View Assignment
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>No pending submissions</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Resubmit Required -->
+        <div id="resubmit" class="tab-pane fade">
+            <div class="tab-content">
+                {% if resubmit_submissions %}
+                {% for submission in resubmit_submissions %}
+                <div class="submission-card">
+                    <div class="submission-header">
+                        <div>
+                            <div class="submission-title">{{ submission.assignment.title }}</div>
+                            <div style="font-size: 0.85rem; color: #999;">{{ submission.assignment.subject }}</div>
+                        </div>
+                        <span class="status-badge status-resubmit">RESUBMIT REQUIRED</span>
+                    </div>
+
+                    {% if submission.feedback %}
+                    <div class="feedback-preview">
+                        <strong style="display: block; margin-bottom: 0.5rem;">📝 Teacher Feedback</strong>
+                        <p>{{ submission.feedback|truncatewords:30 }}</p>
+                    </div>
+                    {% endif %}
+
+                    <div style="margin-top: 1rem;">
+                        <a href="{% url 'assignment_detail' submission.assignment.id %}"
+                            class="btn btn-sm btn-danger btn-action">
+                            <i class="fas fa-redo"></i> Resubmit Now
+                        </a>
+                        <a href="{% url 'submission_feedback' submission.id %}"
+                            class="btn btn-sm btn-outline-primary btn-action">
+                            <i class="fas fa-comments"></i> View Feedback
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-check-circle"></i>
+                    <p>No resubmissions required</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div style="margin-top: 3rem; text-align: center;">
+        <a href="{% url 'assignments_list' %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-tasks"></i> View All Assignments
+        </a>
+    </div>
+</div>
+
+{% endblock %}
