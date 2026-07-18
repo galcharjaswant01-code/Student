@@ -3,7 +3,8 @@ import { useWorkspace } from '../context/WorkspaceContext';
 import useResponsive from '../hooks/useResponsive';
 import { Maximize2, Minimize2, Info } from 'lucide-react';
 
-import AISidebar from '../components/ai/AISidebar';
+import AISidebar from '../components/ai/AiSidebar';
+
 import AIInsightsPanel from '../components/ai/AIInsightsPanel';
 
 // Workspaces
