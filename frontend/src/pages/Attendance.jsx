@@ -9,7 +9,6 @@ import AttendanceStats from '../components/attendance/AttendanceStats';
 import AttendanceCharts from '../components/attendance/AttendanceCharts';
 import AttendanceTable from '../components/attendance/AttendanceTable';
 import AttendanceCalendar from '../components/attendance/AttendanceCalendar';
-import AttendanceCheckIn from '../components/attendance/AttendanceCheckIn';
 
 const Attendance = () => {
   const { isFullscreen, toggleFullscreen } = useWorkspace();
@@ -74,34 +73,25 @@ const Attendance = () => {
       </div>
 
       {/* Complex Detailed Views Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch">
         
         {/* Table taking 2/3 width on large screens */}
-        <div className="xl:col-span-2 flex flex-col min-h-[500px] xl:h-[calc(100vh-150px)] xl:min-h-[800px] relative">
+        <div className="xl:col-span-2 flex flex-col min-h-[600px] relative">
           <WidgetWrapper id="attendance-table" innerClassName="p-0 h-full flex flex-col overflow-y-auto custom-scrollbar">
             <AttendanceTable />
           </WidgetWrapper>
         </div>
 
-        {/* Calendar and Insights taking 1/3 width */}
-        <div className="xl:col-span-1 flex flex-col gap-6 h-auto xl:min-h-[800px] xl:max-h-[calc(100vh-150px)] overflow-y-auto pb-4 custom-scrollbar">
-          {/* Quick Check-in */}
-          <div className="min-h-[280px] shrink-0 relative">
-            <WidgetWrapper id="attendance-checkin" innerClassName="p-6 h-full flex flex-col justify-center overflow-y-auto custom-scrollbar">
-              <AttendanceCheckIn />
-            </WidgetWrapper>
-          </div>
-          
-          <div className="min-h-[420px] shrink-0 relative">
-            <WidgetWrapper id="attendance-calendar" innerClassName="p-6 h-full flex flex-col overflow-y-auto custom-scrollbar">
-              <AttendanceCalendar />
-            </WidgetWrapper>
-          </div>
-          
-
+        {/* Calendar taking 1/3 width */}
+        <div className="xl:col-span-1 flex flex-col relative min-h-[400px]">
+          <WidgetWrapper id="attendance-calendar" innerClassName="p-0 h-full flex flex-col overflow-y-auto custom-scrollbar">
+            <div className="h-full flex flex-col">
+               <AttendanceCalendar />
+            </div>
+          </WidgetWrapper>
         </div>
 
-        </div>
+      </div>
       </div>
   );
 };
