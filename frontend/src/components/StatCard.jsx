@@ -13,29 +13,18 @@ const StatCard = ({ title, value, change, icon: Icon, color, progress = 0 }) => 
 
   return (
     <div
-      className="relative overflow-hidden bg-[#1B2430] border border-slate-800 p-6 rounded-sm flex flex-col justify-between h-full w-full"
+      className="relative overflow-hidden bg-[#1B2430] border border-slate-800 p-6 rounded-sm cursor-pointer"
     >
       
-      <div className="flex justify-between items-center mb-4 relative z-10">
+      <div className="flex justify-between items-center relative z-10">
         <div>
           <h3 className="text-sm font-semibold text-slate-400 mb-1">{title}</h3>
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-extrabold text-white tracking-tight">{value}</span>
+            <span className="text-4xl font-bold text-white tracking-tight">{value}</span>
           </div>
         </div>
         <div className={`w-12 h-12 rounded-md flex items-center justify-center ${solidColor}`}>
           <Icon className="w-6 h-6 text-white" />
-        </div>
-      </div>
-
-      <div className="relative z-10">
-        <div className="flex items-center gap-2 mt-3">
-          <span className={`flex items-center text-xs font-bold px-2 py-1 rounded-md ${isPositive ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'}`}>
-            {isPositive ? '↑' : '↓'} {change}
-          </span>
-          <span className="text-[10px] bg-slate-800 text-slate-400 px-2 py-1 rounded-full font-medium">
-            Prediction: {(parseFloat(value) * 1.05).toFixed(1)}{value.includes('%') ? '%' : ''}
-          </span>
         </div>
       </div>
     </div>

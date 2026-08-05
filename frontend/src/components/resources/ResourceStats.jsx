@@ -10,21 +10,15 @@ const StatCard = ({ title, value, subtitle, icon: Icon, colorClass, gradientClas
     className="relative overflow-hidden bg-[#1B2430] border border-slate-800 p-6 rounded-sm cursor-pointer"
   >
     
-    <div className="flex justify-between items-center mb-4 relative z-10">
+    <div className="flex justify-between items-center relative z-10">
       <div>
         <h3 className="text-sm font-semibold text-slate-400 mb-1">{title}</h3>
         <div className="flex items-baseline gap-2">
-          <span className="text-4xl font-extrabold text-white tracking-tight">{value}</span>
+          <span className="text-4xl font-bold text-white tracking-tight">{value}</span>
         </div>
       </div>
       <div className={`w-12 h-12 rounded-md flex items-center justify-center ${bgColor}`}>
         <Icon className={`w-6 h-6 text-white`} />
-      </div>
-    </div>
-    
-    <div className="relative z-10 mt-2">
-      <div className="flex items-center justify-between text-xs font-medium text-slate-400">
-        <span>{subtitle}</span>
       </div>
     </div>
   </div>
