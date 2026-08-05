@@ -10,11 +10,11 @@ const DEFAULT_LAYOUTS = {
     { i: "performance", x: 0, y: 2, w: 6, h: 4 },
     { i: "study_progress", x: 6, y: 2, w: 3, h: 4 },
     { i: "attendance", x: 9, y: 2, w: 3, h: 4 },
-    { i: "quick_actions", x: 0, y: 6, w: 4, h: 4 },
-    { i: "timeline", x: 4, y: 6, w: 4, h: 4 },
-    { i: "calendar", x: 8, y: 6, w: 4, h: 4 },
+    { i: "quick_actions", x: 0, y: 6, w: 6, h: 4 },
+    { i: "timeline", x: 6, y: 6, w: 6, h: 4 },
     { i: "assignments", x: 0, y: 10, w: 6, h: 4 },
     { i: "courses", x: 6, y: 10, w: 6, h: 4 },
+    { i: "calendar", x: 0, y: 14, w: 6, h: 4 },
     { i: "resources", x: 6, y: 14, w: 6, h: 4 }
   ],
   md: [
@@ -27,10 +27,10 @@ const DEFAULT_LAYOUTS = {
     { i: "attendance", x: 5, y: 8, w: 5, h: 4 },
     { i: "quick_actions", x: 0, y: 12, w: 5, h: 4 },
     { i: "timeline", x: 5, y: 12, w: 5, h: 4 },
-    { i: "calendar", x: 0, y: 16, w: 10, h: 4 },
-    { i: "assignments", x: 0, y: 20, w: 5, h: 4 },
-    { i: "courses", x: 5, y: 20, w: 5, h: 4 },
-    { i: "resources", x: 5, y: 24, w: 5, h: 4 }
+    { i: "assignments", x: 0, y: 16, w: 5, h: 4 },
+    { i: "courses", x: 5, y: 16, w: 5, h: 4 },
+    { i: "calendar", x: 0, y: 20, w: 5, h: 4 },
+    { i: "resources", x: 5, y: 20, w: 5, h: 4 }
   ],
   sm: [
     { i: "stat1", x: 0, y: 0, w: 6, h: 2 },
