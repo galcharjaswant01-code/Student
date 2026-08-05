@@ -9,7 +9,6 @@ import AttendanceStats from '../components/attendance/AttendanceStats';
 import AttendanceCharts from '../components/attendance/AttendanceCharts';
 import AttendanceTable from '../components/attendance/AttendanceTable';
 import AttendanceCalendar from '../components/attendance/AttendanceCalendar';
-import AttendanceInsights from '../components/attendance/AttendanceInsights';
 import AttendanceCheckIn from '../components/attendance/AttendanceCheckIn';
 
 const Attendance = () => {
@@ -99,11 +98,7 @@ const Attendance = () => {
             </WidgetWrapper>
           </div>
           
-          <div className="min-h-[300px] shrink-0 relative flex-1">
-            <WidgetWrapper id="attendance-insights" innerClassName="p-6 h-full overflow-y-auto custom-scrollbar">
-              <AttendanceInsights />
-            </WidgetWrapper>
-          </div>
+
         </div>
 
         </div>
