@@ -50,15 +50,6 @@ const Attendance = () => {
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
           </button>
-
-          <button className="flex items-center bg-white/70 dark:bg-slate-800/70 border border-white/20 dark:border-white/10 text-slate-700 dark:text-slate-300 rounded-sm px-4 py-2.5 text-sm hover:bg-white dark:hover:bg-slate-700 font-semibold">
-            <CalendarIcon className="w-4 h-4 mr-2 text-primary" />
-            May 1 - May 31, 2025
-          </button>
-          <button className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-sm bg-gradient- bg-primary text-white text-sm font-bold -primary/20 hover:-primary/40">
-            <Filter className="w-4 h-4" />
-            Filters
-          </button>
         </div>
       </div>
 

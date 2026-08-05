@@ -60,15 +60,17 @@ const StatusBadge = ({ status }) => {
 const AttendanceTable = ({ isFullscreen = false }) => {
   const { isMobile } = useResponsive();
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = isFullscreen ? 12 : 6;
 
   // Filter logic simulating backend query
-  const filteredRecords = apiResponse.results.filter(record => 
-    record.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    record.teacher.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    record.status.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredRecords = apiResponse.results.filter(record => {
+    const matchesSearch = record.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          record.teacher.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'All' || record.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   const totalPages = Math.ceil(filteredRecords.length / recordsPerPage);
   const startIndex = (currentPage - 1) * recordsPerPage;
@@ -98,9 +100,19 @@ const AttendanceTable = ({ isFullscreen = false }) => {
               className="pl-9 pr-4 py-2 w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white"
             />
           </div>
-          <button className="p-2.5 rounded-sm border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-slate-700/50 text-slate-600 dark:text-slate-300">
-            <Filter className="w-4 h-4" />
-          </button>
+          <div className="relative">
+            <Filter className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
+            <select 
+              value={statusFilter}
+              onChange={(e) => { setStatusFilter(e.target.value); setCurrentPage(1); }}
+              className="pl-9 pr-8 py-2 w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-sm text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white appearance-none cursor-pointer"
+            >
+              <option value="All">All Status</option>
+              <option value="Present">Present</option>
+              <option value="Absent">Absent</option>
+              <option value="Late">Late</option>
+            </select>
+          </div>
           <button className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-sm bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 text-sm font-semibold">
             <Download className="w-4 h-4" /> Export
           </button>
