@@ -205,9 +205,9 @@ const Resources = () => {
         >
           {activeTab === 'overview' && (
             <>
-              <WidgetWrapper id="resources-stats" innerClassName="p-0 bg-transparent border-0 -none">
+              <div className="w-full">
                 <ResourceStats stats={stats} loading={loading} />
-              </WidgetWrapper>
+              </div>
               <div>
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold text-slate-900 dark:text-white">Recommended for You</h2>

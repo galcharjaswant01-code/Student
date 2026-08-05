@@ -106,13 +106,13 @@ const Courses = () => {
       </div>
 
       {/* Analytics & Path Grid */}
-      <WidgetWrapper id="course-stats" innerClassName="p-0 bg-transparent border-0 -none">
+      <div className="w-full">
         <CourseStats stats={stats} loading={loading} />
-      </WidgetWrapper>
+      </div>
 
-      <WidgetWrapper id="course-ai-path" innerClassName="p-0 bg-transparent border-0 -none">
+      <div className="w-full">
         <CourseAIAndPath paths={paths} loading={loading} />
-      </WidgetWrapper>
+      </div>
 
       {/* Courses Catalog Area */}
       <WidgetWrapper id="course-catalog" innerClassName="p-0 bg-transparent border-0 -none">
