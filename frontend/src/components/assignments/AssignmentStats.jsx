@@ -82,8 +82,6 @@ const AssignmentStats = () => {
             key={i}
             className={`relative overflow-hidden bg-[#1B2430] border border-slate-800 p-6 rounded-sm cursor-pointer`}
           >
-            {/* Background Circle */}
-            <div className={`absolute -right-12 top-1/2 -translate-y-1/2 w-40 h-40 rounded-full ${stat.color} opacity-20 pointer-events-none`} />
             
             <div className="flex justify-between items-center relative z-10">
               <div>

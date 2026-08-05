@@ -15,7 +15,6 @@ const StatCard = ({ title, value, change, icon: Icon, color, progress = 0 }) => 
     <div
       className="relative overflow-hidden bg-[#1B2430] border border-slate-800 p-6 rounded-sm flex flex-col justify-between h-full w-full"
     >
-      <div className={`absolute -right-12 top-1/2 -translate-y-1/2 w-40 h-40 rounded-full ${solidColor} opacity-20 pointer-events-none`}></div>
       
       <div className="flex justify-between items-center mb-4 relative z-10">
         <div>
