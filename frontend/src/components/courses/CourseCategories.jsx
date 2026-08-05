@@ -23,7 +23,7 @@ const CourseCategories = ({ activeCategory, setActiveCategory }) => {
               whitespace-nowrap px-5 py-2 rounded-full text-sm font-medium transition-all duration-200
               ${isActive 
                 ? 'bg-indigo-500 text-white shadow-md shadow-indigo-500/20 border border-indigo-500' 
-                : 'bg-white/50 dark:bg-[#1B2430]/50 backdrop-blur-md text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-white/10 hover:bg-white/80 dark:hover:bg-[#1B2430]/80 hover:text-indigo-500 dark:hover:text-indigo-400'}
+                : 'bg-white/50 dark:bg-white/5 backdrop-blur-md text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10 hover:bg-white/80 dark:hover:bg-white/10 hover:text-indigo-500 dark:hover:text-indigo-400'}
             `}
           >
             {cat}

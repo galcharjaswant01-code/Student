@@ -120,7 +120,7 @@ const Courses = () => {
           {/* Toolbar */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <CourseCategories activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
-            <div className="flex items-center bg-white/50 dark:bg-[#1B2430]/50 backdrop-blur-md rounded-sm p-1 border border-slate-200 dark:border-white/10 shrink-0">
+            <div className="flex items-center bg-white/50 dark:bg-white/5 backdrop-blur-md rounded-sm p-1 border border-slate-200 dark:border-white/10 shrink-0">
               <button 
                 onClick={() => setViewMode('grid')}
                 className={`p-1.5 rounded-sm  ${viewMode === 'grid' ? 'bg-indigo-500 text-white ' : 'text-slate-500 hover:text-indigo-500'}`}
