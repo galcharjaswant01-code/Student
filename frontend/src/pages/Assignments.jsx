@@ -140,7 +140,7 @@ const Assignments = () => {
       </div>
 
       {/* Main Content Layout */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch">
         
         {/* Assignment Listing (Left/Center) */}
         <div className="xl:col-span-2 flex flex-col min-h-[600px] relative">
@@ -157,15 +157,11 @@ const Assignments = () => {
           </WidgetWrapper>
         </div>
 
-        {/* Side Panel (Right) - Calendar & AI Insights */}
-        <div className="xl:col-span-1 flex flex-col gap-6 h-auto xl:h-[800px] overflow-y-auto custom-scrollbar pb-4">
-          
-          <div className="h-[350px] shrink-0 relative">
-            <WidgetWrapper id="assignments-calendar" innerClassName="p-0 h-full overflow-y-auto custom-scrollbar">
-              <AssignmentCalendar assignments={assignments} />
-            </WidgetWrapper>
-          </div>
-
+        {/* Side Panel (Right) - Calendar */}
+        <div className="xl:col-span-1 flex flex-col relative min-h-[400px]">
+          <WidgetWrapper id="assignments-calendar" innerClassName="p-0 h-full flex flex-col overflow-y-auto custom-scrollbar">
+            <AssignmentCalendar assignments={assignments} />
+          </WidgetWrapper>
         </div>
       </div>
 
