@@ -10,31 +10,16 @@ const StatCard = ({ title, value, subtitle, icon: Icon, colorClass, gradientClas
   <div
     className="relative overflow-hidden bg-[#1B2430] border border-slate-800 p-6 rounded-sm cursor-pointer"
   >
-    <div className="flex justify-between items-center mb-4 relative z-10">
+    <div className="flex justify-between items-center relative z-10">
       <div>
         <h3 className="text-sm font-semibold text-slate-400 mb-1">{title}</h3>
         <div className="flex items-baseline gap-2">
-          <span className="text-4xl font-extrabold text-white tracking-tight">{value}</span>
+          <span className="text-4xl font-bold text-white tracking-tight">{value}</span>
         </div>
       </div>
       <div className={`w-12 h-12 rounded-md flex items-center justify-center ${bgColor}`}>
         <Icon className={`w-6 h-6 text-white`} />
       </div>
-    </div>
-    
-    <div className="relative z-10 mt-2">
-      <div className="flex items-center justify-between text-xs font-medium text-slate-400 mb-2 min-w-0">
-        <span className="truncate pr-2">{subtitle}</span>
-        {progress !== undefined && <span className="shrink-0">{progress}%</span>}
-      </div>
-      {progress !== undefined && (
-        <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-          <div
-            className={`h-full rounded-full ${bgColor}`}
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-      )}
     </div>
   </div>
   );
