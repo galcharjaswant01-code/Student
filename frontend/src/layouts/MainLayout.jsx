@@ -4,7 +4,6 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { Menu } from 'lucide-react'
 import Sidebar from '../components/Sidebar'
 import TopNavbar from '../components/TopNavbar'
-import AIChatAssistant from '../components/AIChatAssistant'
 import AnimatedBackground from '../components/AnimatedBackground'
 import useDashboardStore from '../store/useDashboardStore'
 import WorkspaceLayout from '../components/workspace/WorkspaceLayout'
@@ -69,9 +68,6 @@ const MainLayout = () => {
           </WorkspaceLayout>
         </main>
       </div>
-
-      {/* Floating AI Chat Assistant */}
-      <AIChatAssistant />
 
       {/* Floating Mobile Menu Button */}
       {isMobile && !isMobileSidebarOpen && (

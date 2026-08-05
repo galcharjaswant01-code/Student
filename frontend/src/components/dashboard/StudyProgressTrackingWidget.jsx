@@ -2,9 +2,9 @@ import React from 'react';
 import { Target, ArrowRight } from 'lucide-react';
 import { Doughnut } from 'react-chartjs-2';
 
-const StudyProgressTrackingWidget = () => {
+const StudyProgressTrackingWidget = ({ isNew }) => {
   const goalHours = 40;
-  const currentHours = 32;
+  const currentHours = isNew ? 0 : 32;
   const progressPercentage = Math.round((currentHours / goalHours) * 100);
 
   const doughnutData = {

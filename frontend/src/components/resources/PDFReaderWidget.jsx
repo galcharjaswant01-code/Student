@@ -20,7 +20,13 @@ const PDFReaderWidget = ({ resource, onClose, onFullscreen }) => {
   const handleDownload = async () => {
     try {
       await resourcesAPI.downloadResource(resource.id);
-      // Simulate download
+      
+      const link = document.createElement('a');
+      link.href = '/sample.pdf';
+      link.setAttribute('download', `${resource.title.replace(/\s+/g, '_')}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
     } catch (e) {
       console.error(e);
     }
@@ -89,32 +95,14 @@ const PDFReaderWidget = ({ resource, onClose, onFullscreen }) => {
         />
       </div>
 
-      {/* Fake PDF Content Area */}
-      <div 
-        className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-slate-100 dark:bg-slate-950 flex justify-center"
-        onScroll={handleScroll}
-      >
-        <div className="w-full max-w-3xl bg-white dark:bg-slate-900 min-h-[150vh] p-12">
-          <h1 className="text-3xl font-bold mb-8 text-center border-b pb-8">{resource.title}</h1>
-          <div className="space-y-6 text-slate-700 dark:text-slate-300">
-            <p className="leading-relaxed">
-              This is a simulated PDF viewer. In a real enterprise application, you would integrate a library like `react-pdf` or `pdf.js` here to render actual document pages.
-            </p>
-            <p className="leading-relaxed">
-              Scroll down to test the reading progress tracking feature, which reports back to the mock Django backend APIs!
-            </p>
-            {/* Generating some fake long content */}
-            {Array.from({ length: 15 }).map((_, i) => (
-              <div key={i} className="space-y-4 pt-8">
-                <h3 className="text-xl font-bold">Section {i + 1}</h3>
-                <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-full" />
-                <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-11/12" />
-                <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-full" />
-                <div className="h-4 bg-slate-200 dark:bg-slate-800 rounded w-9/12" />
-              </div>
-            ))}
-          </div>
-        </div>
+      {/* Real PDF Content Area */}
+      <div className="flex-1 bg-slate-200 dark:bg-slate-950 flex flex-col relative">
+        <iframe
+          src="/sample.pdf"
+          className="w-full h-full border-none flex-1"
+          title={resource.title}
+          onLoad={() => setProgress(100)} // Mark complete on load since we can't track scroll inside iframe due to CORS
+        />
       </div>
     </div>
   );

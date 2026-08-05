@@ -3,19 +3,25 @@ import firebase_admin
 from firebase_admin import credentials, auth
 from django.conf import settings
 
+import json
+
 # Initialize Firebase Admin SDK
 # The path to the service account JSON key should be in settings or environment variable
 # If it's not set, it will look for FIREBASE_CREDENTIALS in env or default path
 cred_path = getattr(settings, 'FIREBASE_CREDENTIALS', os.path.join(settings.BASE_DIR, 'firebase-service-account.json'))
+firebase_json_str = os.environ.get('FIREBASE_SERVICE_ACCOUNT_JSON')
 
 try:
-    if os.path.exists(cred_path):
-        cred = credentials.Certificate(cred_path)
-        if not firebase_admin._apps:
+    if not firebase_admin._apps:
+        if firebase_json_str:
+            cred_dict = json.loads(firebase_json_str)
+            cred = credentials.Certificate(cred_dict)
             firebase_admin.initialize_app(cred)
-    else:
-        # Fallback to default credentials (e.g. env var GOOGLE_APPLICATION_CREDENTIALS)
-        if not firebase_admin._apps:
+        elif os.path.exists(cred_path):
+            cred = credentials.Certificate(cred_path)
+            firebase_admin.initialize_app(cred)
+        else:
+            # Fallback to default credentials (e.g. env var GOOGLE_APPLICATION_CREDENTIALS)
             firebase_admin.initialize_app()
 except Exception as e:
     import logging

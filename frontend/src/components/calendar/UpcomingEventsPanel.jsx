@@ -14,23 +14,7 @@ const UpcomingEventsPanel = ({ events }) => {
   return (
     <div className="hidden xl:flex w-80 h-full flex-col bg-gray-50 dark:bg-[#0B0F19] border-l border-gray-200 dark:border-gray-800 shrink-0">
       
-      {/* AI Recommendation Card */}
-      <div className="p-6 pb-2">
-        <div className="bg-gradient- bg-indigo-600 rounded-sm p-5 -[0_10px_30px_rgba(79,70,229,0.2)] relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 group-"></div>
-          
-          <div className="flex items-center gap-2 mb-3 relative z-10">
-            <Sparkles className="w-5 h-5 text-indigo-200" />
-            <h3 className="font-bold text-white">AI Planner</h3>
-          </div>
-          <p className="text-indigo-100 text-sm leading-relaxed mb-4 relative z-10">
-            You have a Physics Midterm coming up on the 12th. I suggest adding a 2-hour study block tomorrow.
-          </p>
-          <button className="w-full py-2 bg-white/20 hover:bg-white/30 rounded-sm text-white text-sm font-semibold relative z-10">
-            Schedule Study Block
-          </button>
-        </div>
-      </div>
+
 
       {/* Upcoming List */}
       <div className="flex-1 overflow-y-auto p-6 pt-4 custom-scrollbar">

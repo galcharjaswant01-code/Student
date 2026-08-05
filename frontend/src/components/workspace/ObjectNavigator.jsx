@@ -9,9 +9,7 @@ const GLOBAL_NAV_ITEMS = [
   { id: 'assignments', title: 'Assignments', icon: FileText, path: '/assignments' },
   { id: 'courses', title: 'Courses', icon: BookIcon, path: '/courses' },
   { id: 'resources', title: 'Resources', icon: FolderIcon, path: '/resources' },
-  { id: 'messages', title: 'Messages', icon: MessageIcon, path: '/messages' },
   { id: 'calendar', title: 'Calendar', icon: CalendarIcon, path: '/calendar' },
-  { id: 'assistant', title: 'AI Assistant', icon: SparklesIcon, path: '/assistant' },
   { id: 'analytics', title: 'Analytics', icon: TrendingUpIcon, path: '/analytics' },
   { id: 'notifications', title: 'Notifications', icon: BellIcon, path: '/notifications' },
 ];

@@ -1,16 +1,14 @@
 import React, { useState, useRef } from 'react';
 
-import { X, UploadCloud, File, XCircle, CheckCircle, Loader2 } from 'lucide-react';
+import { X, UploadCloud, File, XCircle, CheckCircle, Loader2, Sparkles, AlertCircle } from 'lucide-react';
 import { assignmentAPI } from '../../services/mockDjangoApi';
+import { getApiBaseUrl } from '../../services/config';
 
 const AssignmentSubmission = ({ assignment, isOpen, onClose, onSubmitted }) => {
   const [files, setFiles] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [submissionText, setSubmissionText] = useState('');
-  const [isGeneratingFeedback, setIsGeneratingFeedback] = useState(false);
-  const [aiFeedback, setAiFeedback] = useState(null);
   const fileInputRef = useRef(null);
 
   if (!isOpen || !assignment) return null;
@@ -91,32 +89,6 @@ const AssignmentSubmission = ({ assignment, isOpen, onClose, onSubmitted }) => {
       setIsSubmitting(false);
       setUploadProgress(0);
       clearInterval(progressInterval);
-    }
-  };
-
-  const handleGenerateFeedback = async () => {
-    if (!submissionText) return;
-    setIsGeneratingFeedback(true);
-    try {
-      const token = localStorage.getItem('access_token');
-      const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-      const response = await fetch(`${apiBaseUrl}/api/v1/assignments/${assignment.id}/generate_feedback/`, {
-        method: 'POST',
-
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ content: submissionText })
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setAiFeedback(data);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsGeneratingFeedback(false);
     }
   };
 
@@ -245,48 +217,6 @@ const AssignmentSubmission = ({ assignment, isOpen, onClose, onSubmitted }) => {
                 </div>
               </div>
             )}
-            {/* AI Feedback Section */}
-            <div className="mt-6">
-              <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Instant AI Feedback</h4>
-              <textarea 
-                value={submissionText}
-                onChange={(e) => setSubmissionText(e.target.value)}
-                placeholder="Paste your submission draft here to get instant AI feedback before submitting..."
-                className="w-full h-24 p-3 text-sm bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-white/10 rounded-sm mb-2 custom-scrollbar"
-              />
-              <button 
-                onClick={handleGenerateFeedback}
-                disabled={!submissionText || isGeneratingFeedback}
-                className="w-full py-2 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold rounded-sm text-sm border border-indigo-500/20 hover:bg-indigo-500/20 flex items-center justify-center gap-2"
-              >
-                {isGeneratingFeedback ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                {isGeneratingFeedback ? 'Analyzing...' : 'Ask AI for Feedback'}
-              </button>
-
-              {aiFeedback && (
-                <div className="mt-3 p-4 bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 rounded-sm">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-bold text-indigo-800 dark:text-indigo-300">Estimated Score: {aiFeedback.score}/100</span>
-                  </div>
-                  <p className="text-sm text-slate-700 dark:text-slate-300 mb-2">{aiFeedback.summary}</p>
-                  
-                  <div className="grid grid-cols-2 gap-3 text-xs">
-                    <div>
-                      <span className="font-bold text-emerald-600 dark:text-emerald-400">Strengths:</span>
-                      <ul className="list-disc pl-4 mt-1 text-slate-600 dark:text-slate-400">
-                        {aiFeedback.strengths?.map((s, i) => <li key={i}>{s}</li>)}
-                      </ul>
-                    </div>
-                    <div>
-                      <span className="font-bold text-amber-600 dark:text-amber-400">Improvements:</span>
-                      <ul className="list-disc pl-4 mt-1 text-slate-600 dark:text-slate-400">
-                        {aiFeedback.improvements?.map((s, i) => <li key={i}>{s}</li>)}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
           </div>
 
           {/* Footer */}
@@ -315,8 +245,5 @@ const AssignmentSubmission = ({ assignment, isOpen, onClose, onSubmitted }) => {
     
   );
 };
-
-// Also import AlertCircle for the warning
-import { AlertCircle } from 'lucide-react';
 
 export default AssignmentSubmission;

@@ -1,14 +1,26 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : 'http://localhost:8000/api';
+import { getApiBaseUrl } from './config';
+
+const API_BASE_URL = `${getApiBaseUrl()}/api/v1`;
+
+const getHeaders = () => {
+  const token = localStorage.getItem('access_token');
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+};
 
 
 const api = {
   get: async (endpoint) => {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    // strip leading slash from endpoint if present since API_BASE_URL doesn't have a trailing slash
+    const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const response = await fetch(`${API_BASE_URL}${path}`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        // 'Authorization': `Bearer ${localStorage.getItem('token')}` // Add if using JWT
-      },
+      headers: getHeaders(),
     });
     
     if (!response.ok) {
@@ -19,12 +31,10 @@ const api = {
   },
 
   post: async (endpoint, payload) => {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const response = await fetch(`${API_BASE_URL}${path}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // 'Authorization': `Bearer ${localStorage.getItem('token')}` // Add if using JWT
-      },
+      headers: getHeaders(),
       body: JSON.stringify(payload)
     });
 

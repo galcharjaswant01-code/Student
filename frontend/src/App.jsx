@@ -12,10 +12,9 @@ import Assignments from './pages/Assignments'
 import Attendance from './pages/Attendance'
 import Courses from './pages/Courses'
 import Resources from './pages/Resources'
-import Messages from './pages/Messages'
-import AIStudio from './pages/AIStudio'
 import Calendar from './pages/Calendar'
 import Settings from './pages/Settings'
+import Notifications from './pages/Notifications'
 import useDashboardStore from './store/useDashboardStore'
 
 function App() {
@@ -49,10 +48,9 @@ function App() {
             <Route path="attendance" element={<Attendance />} />
             <Route path="courses" element={<Courses />} />
             <Route path="resources" element={<Resources />} />
-            <Route path="messages" element={<Messages />} />
-            <Route path="assistant" element={<AIStudio />} />
             <Route path="calendar" element={<Calendar />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="notifications" element={<Notifications />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Route>
         </Routes>

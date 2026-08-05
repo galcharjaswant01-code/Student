@@ -36,7 +36,7 @@ const CalendarSidebar = ({
   const filterOptions = [
     { id: 'class', label: 'Classes', color: 'bg-blue-500', text: 'text-blue-500' },
     { id: 'exam', label: 'Exams', color: 'bg-purple-500', text: 'text-purple-500' },
-    { id: 'study', label: 'AI Study Blocks', color: 'bg-emerald-500', text: 'text-emerald-500' },
+    { id: 'study', label: 'Study Blocks', color: 'bg-emerald-500', text: 'text-emerald-500' },
     { id: 'assignment', label: 'Assignments', color: 'bg-rose-500', text: 'text-rose-500' },
     { id: 'meeting', label: 'Meetings', color: 'bg-amber-500', text: 'text-amber-500' },
   ];

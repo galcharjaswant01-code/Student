@@ -57,3 +57,17 @@ class AdminProfile(models.Model):
 
     def __str__(self):
         return f"Admin: {self.user.username}"
+
+class EmailOTP(models.Model):
+    email = models.EmailField()
+    otp_code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_verified = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = 'Email OTP'
+        verbose_name_plural = 'Email OTPs'
+        db_table = 'users_email_otp'
+
+    def __str__(self):
+        return f"{self.email} - {self.otp_code}"

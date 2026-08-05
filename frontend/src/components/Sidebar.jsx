@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
   LayoutDashboard, BookOpen, ClipboardList, CheckSquare, FolderOpen, 
-  MessageSquare, Bot, Calendar, Settings, LogOut, ChevronLeft, ChevronRight, User, Sparkles
+  MessageSquare, Bot, Calendar, Settings, LogOut, ChevronLeft, ChevronRight, User
 } from 'lucide-react';
 import useDashboardStore from '../store/useDashboardStore';
 
@@ -14,8 +14,6 @@ const menuItems = [
   { icon: CheckSquare, label: 'Attendance', path: '/attendance' },
   { icon: BookOpen, label: 'Courses', path: '/courses' },
   { icon: FolderOpen, label: 'Resources', path: '/resources' },
-  { icon: MessageSquare, label: 'Messages', path: '/messages' },
-  { icon: Sparkles, label: 'AI Studio', path: '/assistant' },
   { icon: Calendar, label: 'Calendar', path: '/calendar' },
 ];
 
@@ -135,42 +133,48 @@ const Sidebar = () => {
       </div>
 
       {/* Footer Profile */}
-      <div className="p-4 border-t border-slate-200/50 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02]">
-        <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
-          <div className="flex items-center min-w-0">
-            <div className="w-10 h-10 rounded-full bg-gradient- bg-cyan-400 flex items-center justify-center text-white font-bold shrink-0">
-              <User className="w-5 h-5" />
+      <div className="p-4 sm:p-5 pb-2">
+        <div className={`flex items-center p-2 rounded-xl transition-all duration-300 hover:bg-slate-50/80 dark:hover:bg-white/5 ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
+          <div className="flex items-center min-w-0 gap-3">
+            <div className="w-9 h-9 rounded-full bg-slate-900 dark:bg-white flex items-center justify-center text-white dark:text-slate-900 shrink-0 shadow-sm transition-transform duration-300 hover:scale-105">
+              <User className="w-4 h-4" />
             </div>
             
-            
-              {!isCollapsed && (
-                <div
-                  className="ml-3 min-w-0"
-                >
-                  <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
-                    {currentUser?.name || 'User'}
-                  </p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate capitalize">
-                    {currentUser?.role || 'Student'}
-                  </p>
-                </div>
-              )}
-            
+            {!isCollapsed && (
+              <div className="min-w-0 flex flex-col">
+                <span className="text-sm font-semibold tracking-tight text-slate-900 dark:text-white truncate">
+                  {currentUser?.name || 'User'}
+                </span>
+                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 tracking-wider uppercase truncate mt-0.5">
+                  {currentUser?.role || 'Student'}
+                </span>
+              </div>
+            )}
           </div>
           
-          
-            {!isCollapsed && (
-              <button
-                onClick={handleLogout}
-                className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-sm shrink-0"
-                title="Log Out"
-              >
-                <LogOut className="w-5 h-5" />
-              </button>
-            )}
-          
+          {!isCollapsed && (
+            <button
+              onClick={handleLogout}
+              className="p-2 text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors duration-200 rounded-full shrink-0"
+              title="Log Out"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
+
+      {/* Developed By */}
+      {!isCollapsed && (
+        <div className="px-5 pb-5 text-center mt-1">
+          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
+            Developed by Jaswant Galchar
+          </p>
+          <p className="text-[10px] text-slate-400/70 dark:text-slate-500/70 font-medium mt-0.5">
+            Powered by Vercel
+          </p>
+        </div>
+      )}
     </div>
   );
 };

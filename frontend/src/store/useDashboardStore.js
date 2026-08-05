@@ -13,10 +13,9 @@ const DEFAULT_LAYOUTS = {
     { i: "quick_actions", x: 0, y: 6, w: 4, h: 4 },
     { i: "timeline", x: 4, y: 6, w: 4, h: 4 },
     { i: "calendar", x: 8, y: 6, w: 4, h: 4 },
-    { i: "assignments", x: 4, y: 10, w: 4, h: 4 },
-    { i: "courses", x: 8, y: 10, w: 4, h: 4 },
-    { i: "messages", x: 0, y: 14, w: 4, h: 4 },
-    { i: "resources", x: 8, y: 14, w: 4, h: 4 }
+    { i: "assignments", x: 0, y: 10, w: 6, h: 4 },
+    { i: "courses", x: 6, y: 10, w: 6, h: 4 },
+    { i: "resources", x: 6, y: 14, w: 6, h: 4 }
   ],
   md: [
     { i: "stat1", x: 0, y: 0, w: 5, h: 2 },
@@ -29,10 +28,9 @@ const DEFAULT_LAYOUTS = {
     { i: "quick_actions", x: 0, y: 12, w: 5, h: 4 },
     { i: "timeline", x: 5, y: 12, w: 5, h: 4 },
     { i: "calendar", x: 0, y: 16, w: 10, h: 4 },
-    { i: "assignments", x: 5, y: 20, w: 5, h: 4 },
-    { i: "courses", x: 0, y: 24, w: 5, h: 4 },
-    { i: "resources", x: 5, y: 24, w: 5, h: 4 },
-    { i: "messages", x: 0, y: 28, w: 5, h: 4 }
+    { i: "assignments", x: 0, y: 20, w: 5, h: 4 },
+    { i: "courses", x: 5, y: 20, w: 5, h: 4 },
+    { i: "resources", x: 5, y: 24, w: 5, h: 4 }
   ],
   sm: [
     { i: "stat1", x: 0, y: 0, w: 6, h: 2 },
@@ -45,10 +43,39 @@ const DEFAULT_LAYOUTS = {
     { i: "quick_actions", x: 0, y: 20, w: 6, h: 4 },
     { i: "timeline", x: 0, y: 24, w: 6, h: 4 },
     { i: "calendar", x: 0, y: 28, w: 6, h: 4 },
-    { i: "assignments", x: 0, y: 36, w: 6, h: 4 },
-    { i: "courses", x: 0, y: 40, w: 6, h: 4 },
-    { i: "resources", x: 0, y: 44, w: 6, h: 4 },
-    { i: "messages", x: 0, y: 48, w: 6, h: 4 }
+    { i: "assignments", x: 0, y: 32, w: 6, h: 4 },
+    { i: "courses", x: 0, y: 36, w: 6, h: 4 },
+    { i: "resources", x: 0, y: 44, w: 6, h: 4 }
+  ],
+  xs: [
+    { i: "stat1", x: 0, y: 0, w: 4, h: 2 },
+    { i: "stat2", x: 0, y: 2, w: 4, h: 2 },
+    { i: "stat3", x: 0, y: 4, w: 4, h: 2 },
+    { i: "stat4", x: 0, y: 6, w: 4, h: 2 },
+    { i: "performance", x: 0, y: 8, w: 4, h: 4 },
+    { i: "study_progress", x: 0, y: 12, w: 4, h: 4 },
+    { i: "attendance", x: 0, y: 16, w: 4, h: 4 },
+    { i: "quick_actions", x: 0, y: 20, w: 4, h: 4 },
+    { i: "timeline", x: 0, y: 24, w: 4, h: 4 },
+    { i: "calendar", x: 0, y: 28, w: 4, h: 4 },
+    { i: "assignments", x: 0, y: 32, w: 4, h: 4 },
+    { i: "courses", x: 0, y: 36, w: 4, h: 4 },
+    { i: "resources", x: 0, y: 44, w: 4, h: 4 }
+  ],
+  xxs: [
+    { i: "stat1", x: 0, y: 0, w: 2, h: 2 },
+    { i: "stat2", x: 0, y: 2, w: 2, h: 2 },
+    { i: "stat3", x: 0, y: 4, w: 2, h: 2 },
+    { i: "stat4", x: 0, y: 6, w: 2, h: 2 },
+    { i: "performance", x: 0, y: 8, w: 2, h: 4 },
+    { i: "study_progress", x: 0, y: 12, w: 2, h: 4 },
+    { i: "attendance", x: 0, y: 16, w: 2, h: 4 },
+    { i: "quick_actions", x: 0, y: 20, w: 2, h: 4 },
+    { i: "timeline", x: 0, y: 24, w: 2, h: 4 },
+    { i: "calendar", x: 0, y: 28, w: 2, h: 4 },
+    { i: "assignments", x: 0, y: 32, w: 2, h: 4 },
+    { i: "courses", x: 0, y: 36, w: 2, h: 4 },
+    { i: "resources", x: 0, y: 44, w: 2, h: 4 }
   ]
 };
 
@@ -57,7 +84,7 @@ const DEFAULT_VISIBLE_WIDGETS = [
   "performance", "study_progress", "attendance", 
   "quick_actions", "timeline",
   "calendar", "assignments", "courses",
-  "messages", "resources"
+  "resources"
 ];
 
 const useDashboardStore = create((set, get) => ({

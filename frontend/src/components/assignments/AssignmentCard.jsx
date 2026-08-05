@@ -135,7 +135,7 @@ const AssignmentCard = ({ assignment, viewMode = 'grid', onUploadClick, onDetail
           Details
         </button>
         <button 
-          onClick={() => onUploadClick(assignment)}
+          onClick={() => (assignment.status === 'Graded' || assignment.status === 'Submitted') ? onDetailsClick(assignment) : onUploadClick(assignment)}
           className={`flex-[1.2] px-1 py-2.5 rounded-sm text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 whitespace-nowrap  ${
             assignment.status === 'Graded' || assignment.status === 'Submitted' 
               ? 'bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 -slate-500/20' 

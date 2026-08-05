@@ -13,6 +13,7 @@ const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState('month');
   const [events, setEvents] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   
   // Sidebar state
   const { isMobile: isMobileView, isTablet } = useResponsive();
@@ -56,6 +57,13 @@ const Calendar = () => {
 
   const { isFullscreen } = useWorkspace();
 
+  const filteredEvents = events.filter(event => {
+    if (searchQuery && !event.title.toLowerCase().includes(searchQuery.toLowerCase()) && !(event.description || '').toLowerCase().includes(searchQuery.toLowerCase())) {
+      return false;
+    }
+    return true;
+  });
+
   return (
     <div className={`flex ${isFullscreen ? 'h-full' : 'h-[calc(100vh-64px)]'} w-full overflow-hidden rounded-tl-2xl relative`}>
       
@@ -89,17 +97,19 @@ const Calendar = () => {
           view={view}
           setView={setView}
           toggleSidebar={() => setShowSidebarOnMobile(!showSidebarOnMobile)}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
         />
         
         <div className="flex-1 flex overflow-hidden">
           <CalendarGrid 
             currentDate={currentDate}
-            events={events}
+            events={filteredEvents}
             filters={filters}
             view={view}
           />
           <UpcomingEventsPanel 
-            events={events}
+            events={filteredEvents}
           />
         </div>
       </div>

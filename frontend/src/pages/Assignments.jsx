@@ -9,7 +9,6 @@ import AssignmentStats from '../components/assignments/AssignmentStats';
 import AssignmentList from '../components/assignments/AssignmentList';
 import AssignmentDetailsPanel from '../components/assignments/AssignmentDetailsPanel';
 import AssignmentSubmission from '../components/assignments/AssignmentSubmission';
-import AssignmentAIInsights from '../components/assignments/AssignmentAIInsights';
 import AssignmentCalendar from '../components/assignments/AssignmentCalendar';
 
 import { assignmentAPI } from '../services/mockDjangoApi';
@@ -164,12 +163,6 @@ const Assignments = () => {
           <div className="h-[350px] shrink-0 relative">
             <WidgetWrapper id="assignments-calendar" innerClassName="p-0 h-full overflow-y-auto custom-scrollbar">
               <AssignmentCalendar assignments={assignments} />
-            </WidgetWrapper>
-          </div>
-
-          <div className="h-[430px] shrink-0 relative">
-            <WidgetWrapper id="assignments-insights" innerClassName="p-0 h-full overflow-y-auto custom-scrollbar">
-              <AssignmentAIInsights />
             </WidgetWrapper>
           </div>
 

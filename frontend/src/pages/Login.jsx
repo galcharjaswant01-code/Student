@@ -10,7 +10,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  const { login, loginWithGoogle, logout } = useAuth();
+  const { login, loginWithGoogle, loginWithGoogleRedirect, logout } = useAuth();
   const navigate = useNavigate();
 
   async function handleSubmit(e) {
@@ -43,7 +43,18 @@ const Login = () => {
       navigate('/dashboard');
     } catch (err) {
       console.error(err);
-      setError('Google Sign-In failed: ' + (err.message || 'Unknown error'));
+      if (err.code === 'auth/unauthorized-domain') {
+        setError('This domain is not authorized for Google Sign-In. Please add it to the Firebase console.');
+      } else if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user') {
+        // Fallback to redirect if popup fails
+        try {
+          await loginWithGoogleRedirect();
+        } catch (redirectErr) {
+          setError('Google Sign-In failed. Please try again.');
+        }
+      } else {
+        setError('Google Sign-In failed: ' + (err.message || 'Unknown error'));
+      }
     } finally {
       setLoading(false);
     }

@@ -6,7 +6,6 @@ import { useWorkspace } from '../context/WorkspaceContext';
 import ResourceStats from '../components/resources/ResourceStats';
 import ResourceList from '../components/resources/ResourceList';
 import CSLearningHub from '../components/resources/CSLearningHub';
-import AIResourceInsights from '../components/resources/AIResourceInsights';
 import PDFReaderWidget from '../components/resources/PDFReaderWidget';
 import VideoPlayerWidget from '../components/resources/VideoPlayerWidget';
 import { resourcesAPI } from '../services/mockDjangoResourcesApi';
@@ -67,7 +66,14 @@ const Resources = () => {
   const handleDownload = async (id) => {
     try {
       const res = await resourcesAPI.downloadResource(id);
-      console.log('Downloading from:', res.url);
+      
+      const link = document.createElement('a');
+      link.href = '/sample.pdf';
+      link.setAttribute('download', `resource-${id}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      
     } catch (e) {
       console.error(e);
     }
@@ -142,20 +148,7 @@ const Resources = () => {
                 />
               </div>
               
-              {activeTab !== 'videos' && (
-                <select 
-                  value={activeType}
-                  onChange={(e) => setActiveType(e.target.value)}
-                  className="px-4 py-2.5 bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-sm text-sm font-medium focus:outline-none focus:border-primary cursor-pointer"
-                >
-                  <option value="All Types">All Types</option>
-                  <option value="pdf">PDFs</option>
-                  <option value="video">Videos</option>
-                  <option value="code">Code Snippets</option>
-                  <option value="notes">Notes</option>
-                  <option value="ebook">E-Books</option>
-                </select>
-              )}
+
             </>
           )}
         </div>
@@ -212,7 +205,6 @@ const Resources = () => {
         >
           {activeTab === 'overview' && (
             <>
-              <AIResourceInsights />
               <WidgetWrapper id="resources-stats" innerClassName="p-0 bg-transparent border-0 -none">
                 <ResourceStats stats={stats} loading={loading} />
               </WidgetWrapper>

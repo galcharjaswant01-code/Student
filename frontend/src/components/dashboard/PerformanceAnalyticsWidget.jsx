@@ -9,14 +9,14 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
-const PerformanceAnalyticsWidget = () => {
+const PerformanceAnalyticsWidget = ({ isNew }) => {
   const navigate = useNavigate();
 
   const lineChartData = {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
     datasets: [{
       label: 'Performance Score',
-      data: [82, 85, 84, 88, 91, 93],
+      data: isNew ? [0, 0, 0, 0, 0, 0] : [82, 85, 84, 88, 91, 93],
       fill: true,
       backgroundColor: (context) => {
         const ctx = context.chart.ctx;

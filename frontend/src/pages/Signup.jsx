@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, UserPlus, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Mail, Lock, User, UserPlus, AlertCircle, CheckCircle2, KeyRound } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { sendEmailVerification } from 'firebase/auth';
 import { auth } from '../firebase';
+import axios from 'axios';
+import { getApiBaseUrl } from '../services/config';
 
 const Signup = () => {
   const [name, setName] = useState('');
@@ -14,8 +15,10 @@ const Signup = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showOtp, setShowOtp] = useState(false);
+  const [otp, setOtp] = useState('');
   
-  const { signup, loginWithGoogle } = useAuth();
+  const { signup, loginWithGoogle, loginWithGoogleRedirect } = useAuth();
   const navigate = useNavigate();
 
   async function handleSubmit(e) {
@@ -33,20 +36,40 @@ const Signup = () => {
       setLoading(true);
       await signup(email, password);
       
-      // Send verification email
-      await sendEmailVerification(auth.currentUser);
+      // Send OTP verification email via Django backend
+      const apiBaseUrl = getApiBaseUrl();
+      await axios.post(`${apiBaseUrl}/api/v1/auth/send-otp/`, { email });
       
-      // We don't automatically redirect them because they need to verify their email first
-      setSuccess('Account created! A verification email has been sent to ' + email + '. Please verify your email before logging in.');
-      
-      // Clear form
-      setName('');
-      setEmail('');
-      setPassword('');
-      setConfirmPassword('');
+      setSuccess('Account created! An OTP has been sent to ' + email + '.');
+      setShowOtp(true);
       
     } catch (err) {
       setError('Failed to create an account: ' + (err.message || 'Email might be in use'));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleVerifyOtp(e) {
+    e.preventDefault();
+    try {
+      setError('');
+      setLoading(true);
+      
+      const apiBaseUrl = getApiBaseUrl();
+      await axios.post(`${apiBaseUrl}/api/v1/auth/verify-otp/`, { 
+        email: email, 
+        otp_code: otp 
+      });
+      
+      // OTP verified successfully
+      setSuccess('Email verified successfully! Logging you in...');
+      
+      // Login to get Django tokens and redirect
+      navigate('/dashboard');
+      
+    } catch (err) {
+      setError(err.response?.data?.error || 'Invalid OTP or expired.');
     } finally {
       setLoading(false);
     }
@@ -59,8 +82,18 @@ const Signup = () => {
       await loginWithGoogle();
       navigate('/dashboard');
     } catch (err) {
-      console.error(err);
-      setError('Google Sign-In failed: ' + (err.message || 'Unknown error'));
+      if (err.code === 'auth/unauthorized-domain') {
+        setError('This domain is not authorized for Google Sign-In. Please add it to the Firebase console.');
+      } else if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user') {
+        // Fallback to redirect if popup fails
+        try {
+          await loginWithGoogleRedirect();
+        } catch (redirectErr) {
+          setError('Google Sign-In failed. Please try again.');
+        }
+      } else {
+        setError('Google Sign-In failed: ' + (err.message || 'Unknown error'));
+      }
     } finally {
       setLoading(false);
     }
@@ -99,8 +132,33 @@ const Signup = () => {
             </div>
           )}
 
-
-          <form onSubmit={handleSubmit} className="space-y-4">
+          {showOtp ? (
+            <form onSubmit={handleVerifyOtp} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Enter 6-digit OTP</label>
+                <div className="relative">
+                  <KeyRound className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+                  <input 
+                    type="text" 
+                    required
+                    maxLength="6"
+                    placeholder="123456" 
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    className="w-full bg-gray-950/50 border border-gray-800 rounded-sm py-3 pl-10 pr-4 text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 placeholder:text-gray-600 text-center tracking-widest text-lg font-bold"
+                  />
+                </div>
+              </div>
+              <button 
+                type="submit" 
+                disabled={loading || otp.length < 6}
+                className="w-full bg-gradient- bg-blue-600 hover:bg-blue-500 hover: text-white font-bold py-3 px-4 rounded-sm flex items-center justify-center gap-2 -[0_0_20px_rgba(79,70,229,0.3)] hover:-[0_0_25px_rgba(79,70,229,0.5)] mt-6 disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {loading ? 'Verifying...' : 'Verify Email'}
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <div className="relative">
                 <User className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
@@ -163,6 +221,7 @@ const Signup = () => {
               {!loading && <UserPlus className="w-5 h-5" />}
             </button>
           </form>
+          )}
 
           <div className="flex items-center gap-4 my-6">
             <div className="flex-1 h-px bg-gray-800"></div>

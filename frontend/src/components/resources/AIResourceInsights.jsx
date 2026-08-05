@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 
 import { Sparkles, ArrowRight, BrainCircuit, Target, Clock } from 'lucide-react';
 import { resourcesAPI } from '../../services/mockDjangoResourcesApi';
+import { useWorkspace } from '../../context/WorkspaceContext';
 
 const AIResourceInsights = () => {
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { setActiveObject } = useWorkspace();
 
   useEffect(() => {
     const fetchRecommendations = async () => {
@@ -20,6 +22,21 @@ const AIResourceInsights = () => {
     };
     fetchRecommendations();
   }, []);
+
+  const handleActionClick = async (resourceId) => {
+    try {
+      const resource = await resourcesAPI.getResourceById(resourceId);
+      if (resource) {
+        if (resource.type === 'pdf' || resource.type === 'notes' || resource.type === 'ebook') {
+          setActiveObject({ type: 'pdf-reader', data: resource });
+        } else if (resource.type === 'video') {
+          setActiveObject({ type: 'video-player', data: resource });
+        }
+      }
+    } catch (e) {
+      console.error("Failed to open resource:", e);
+    }
+  };
 
   if (loading) {
     return (
@@ -56,7 +73,10 @@ const AIResourceInsights = () => {
             
             <p className="text-sm text-indigo-100/90 mb-5 flex-1">{rec.reason}</p>
             
-            <button className="w-full py-2.5 bg-white text-indigo-900 font-bold text-sm rounded-sm hover:bg-indigo-50 flex items-center justify-center gap-2 group/btn">
+            <button 
+              onClick={() => handleActionClick(rec.resourceId)}
+              className="w-full py-2.5 bg-white text-indigo-900 font-bold text-sm rounded-sm hover:bg-indigo-50 flex items-center justify-center gap-2 group/btn"
+            >
               {rec.actionText} 
               <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1" />
             </button>

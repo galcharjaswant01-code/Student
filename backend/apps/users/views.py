@@ -12,6 +12,10 @@ from .serializers import (
     PasswordResetConfirmSerializer
 )
 from .permissions import IsStudentOrAdmin, IsTeacherOrAdmin
+from .models import EmailOTP
+from django.core.mail import send_mail
+from django.conf import settings
+import random
 
 User = get_user_model()
 
@@ -226,3 +230,89 @@ class UserListView(generics.ListAPIView):
         if search:
             qs = qs.filter(username__icontains=search) | qs.filter(email__icontains=search)
         return qs
+
+class SendVerificationOTPView(views.APIView):
+    """
+    POST /api/v1/auth/send-otp/
+    Generates a 6-digit OTP and sends it via email.
+    """
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        email = request.data.get('email')
+        if not email:
+            return Response({'error': 'Email is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Generate 6-digit OTP
+        otp_code = f"{random.randint(100000, 999999)}"
+        
+        # Invalidate old OTPs for this email
+        EmailOTP.objects.filter(email=email).delete()
+        
+        # Save new OTP
+        EmailOTP.objects.create(email=email, otp_code=otp_code)
+        
+        # Send email
+        try:
+            send_mail(
+                subject='Your Verification Code',
+                message=f'Your verification code is: {otp_code}\nThis code is valid for 10 minutes.',
+                from_email=settings.DEFAULT_FROM_EMAIL if hasattr(settings, 'DEFAULT_FROM_EMAIL') else 'noreply@example.com',
+                recipient_list=[email],
+                fail_silently=False,
+            )
+        except Exception as e:
+            return Response({'error': f'Failed to send email: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+        return Response({'message': 'OTP sent successfully.'})
+
+class VerifyOTPView(views.APIView):
+    """
+    POST /api/v1/auth/verify-otp/
+    Verifies the 6-digit OTP and updates Firebase.
+    """
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        email = request.data.get('email')
+        otp_code = request.data.get('otp_code')
+        
+        if not email or not otp_code:
+            return Response({'error': 'Email and OTP code are required.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        # Check OTP
+        otp_record = EmailOTP.objects.filter(email=email).order_by('-created_at').first()
+        
+        if not otp_record:
+            return Response({'error': 'No OTP found for this email.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        # Check expiry (10 minutes)
+        if timezone.now() > otp_record.created_at + timezone.timedelta(minutes=10):
+            return Response({'error': 'OTP has expired.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        if otp_record.otp_code != otp_code:
+            return Response({'error': 'Invalid OTP.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+        # OTP is valid
+        otp_record.is_verified = True
+        otp_record.save()
+        
+        # Find the user in Firebase and update email_verified
+        from firebase_admin import auth as firebase_auth
+        import firebase_admin
+        
+        try:
+            user_record = firebase_auth.get_user_by_email(email)
+            firebase_auth.update_user(user_record.uid, email_verified=True)
+            
+            # Also update local Django user if they exist
+            local_user = User.objects.filter(email=email).first()
+            if local_user:
+                local_user.is_email_verified = True
+                local_user.save(update_fields=['is_email_verified'])
+                
+        except Exception as e:
+            print(f"Failed to update Firebase user: {e}")
+            pass
+
+        return Response({'message': 'Email verified successfully.'})
