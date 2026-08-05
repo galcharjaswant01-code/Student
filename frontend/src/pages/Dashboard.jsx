@@ -67,7 +67,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { 
     layouts, visibleWidgets, isEditing, isLoading, 
-    setEditing, setLayouts, fetchFromBackend, saveToBackend, 
+    setEditing, setLayouts, fetchFromBackend, saveToBackend, resetLayout,
     toggleWidget, themePreferences, setSidebarCollapsed, setMobileSidebarOpen, isMobileSidebarOpen 
   } = useDashboardStore();
   const { isFullscreen, toggleFullscreen } = useWorkspace();
@@ -234,11 +234,22 @@ const Dashboard = () => {
           <div className="flex flex-col sm:flex-row items-center gap-3 relative z-50">
             <button 
               onClick={() => navigate('/courses')} 
-              className="group flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-2 bg-white text-[#3b82f6] text-sm font-bold rounded-sm hover: hover:bg-slate-50 cursor-pointer"
+              className="group flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-2 bg-white text-[#3b82f6] text-sm font-bold rounded-sm hover:bg-slate-50 cursor-pointer transition-colors"
             >
               <BookOpen className="w-4 h-4" />
               Continue Learning 
-              <ArrowRight className="w-3 h-3 group-" />
+              <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+            </button>
+            <button 
+              onClick={() => {
+                resetLayout();
+                window.location.reload();
+              }} 
+              className="flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-bold rounded-sm border border-white/20 cursor-pointer transition-colors"
+              title="Reset dashboard to default layout"
+            >
+              <LayoutDashboard className="w-4 h-4" />
+              Reset Layout
             </button>
           </div>
         </div>

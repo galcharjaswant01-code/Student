@@ -145,6 +145,14 @@ const useDashboardStore = create((set, get) => ({
     get().saveToBackend();
   },
 
+  resetLayout: () => {
+    set({
+      layouts: DEFAULT_LAYOUTS,
+      visibleWidgets: DEFAULT_VISIBLE_WIDGETS,
+    });
+    get().saveToBackend();
+  },
+
   fetchFromBackend: async () => {
     set({ isLoading: true });
     try {
