@@ -11,9 +11,10 @@ const mockNotifications = [
   { id: 2, title: 'Grade Updated', message: 'Your Physics mid-term was graded: A-', time: '1h ago', icon: CheckSquare, color: 'text-green-500', bg: 'bg-green-500/10' },
 ];
 
-import { aiApi } from '../services/aiApi';
-
-// Remove mockSearchResults and use state for results
+const mockSearchResults = [
+  { category: 'Quick Actions', items: ['Create New Assignment', 'View Attendance', 'Toggle Dark Mode'] },
+  { category: 'Pages', items: ['Dashboard', 'Courses', 'Messages', 'Settings'] }
+];
 
 
 const TopNavbar = () => {
@@ -37,7 +38,7 @@ const TopNavbar = () => {
   const profileRef = useRef(null);
   
   // Flatten items for keyboard navigation
-  const flatItems = searchResults.flatMap(s => s.items);
+  const flatItems = (searchResults || []).flatMap(s => s.items || []);
 
   // Debounced search effect
   useEffect(() => {
@@ -45,13 +46,19 @@ const TopNavbar = () => {
       setSearchResults([]);
       return;
     }
-    const timer = setTimeout(async () => {
+    const timer = setTimeout(() => {
       setIsSearching(true);
       try {
-        const results = await aiApi.smartSearch(searchQuery);
+        const query = searchQuery.toLowerCase();
+        const results = mockSearchResults.map(section => ({
+          category: section.category,
+          items: section.items.filter(item => item.toLowerCase().includes(query))
+        })).filter(section => section.items.length > 0);
+        
         setSearchResults(results);
       } catch (e) {
         console.error(e);
+        setSearchResults([]);
       } finally {
         setIsSearching(false);
       }
