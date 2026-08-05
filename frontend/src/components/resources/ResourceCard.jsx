@@ -85,13 +85,15 @@ const ResourceCard = ({ resource, onBookmark, onDownload, onClick }) => {
             </div>
           </div>
           
-          <button 
-            onClick={(e) => { e.stopPropagation(); onDownload(resource.id); }}
-            className="flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-500/10 px-3 py-1.5 rounded-sm"
-          >
-            <Download className="w-4 h-4" />
-            <span className="opacity-0 -ml-2 group-hover:opacity-100 group-hover:ml-0">Download</span>
-          </button>
+          {resource.type !== 'video' && (
+            <button 
+              onClick={(e) => { e.stopPropagation(); onDownload(resource.id); }}
+              className="flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-500/10 px-3 py-1.5 rounded-sm"
+            >
+              <Download className="w-4 h-4" />
+              <span className="opacity-0 -ml-2 group-hover:opacity-100 group-hover:ml-0">Download</span>
+            </button>
+          )}
         </div>
       </div>
     </div>
