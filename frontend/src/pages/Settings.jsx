@@ -16,7 +16,18 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [saved, setSaved] = useState(false);
   
-  const [themePreference, setThemePreference] = useState(localStorage.getItem('theme') || 'dark');
+  const [profile, setProfile] = useState(() => {
+    const savedProfile = localStorage.getItem('userProfile');
+    return savedProfile ? JSON.parse(savedProfile) : {
+      firstName: 'Steve',
+      lastName: 'Jobs',
+      email: 'steve@university.edu',
+      bio: 'Computer Science major. Passionate about AI and distributed systems.',
+      avatar: null
+    };
+  });
+
+  const fileInputRef = React.useRef(null);
 
   React.useEffect(() => {
     const root = document.documentElement;
@@ -36,8 +47,19 @@ const Settings = () => {
   }, [themePreference]);
 
   const handleSave = () => {
+    if (activeTab === 'profile') {
+      localStorage.setItem('userProfile', JSON.stringify(profile));
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setProfile({ ...profile, avatar: imageUrl });
+    }
   };
 
   const renderProfile = () => (
@@ -51,15 +73,32 @@ const Settings = () => {
 
       <div className="flex items-center gap-6 pb-6 border-b border-gray-200 dark:border-slate-700/50">
         <div className="relative group">
-          <div className="w-24 h-24 rounded-full bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 flex items-center justify-center">
-            <User className="w-10 h-10 text-gray-400 dark:text-slate-400" />
+          <div className="w-24 h-24 rounded-full bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 flex items-center justify-center overflow-hidden">
+            {profile.avatar ? (
+              <img src={profile.avatar} alt="Avatar" className="w-full h-full object-cover" />
+            ) : (
+              <User className="w-10 h-10 text-gray-400 dark:text-slate-400" />
+            )}
           </div>
-          <button className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+          <button 
+            onClick={() => fileInputRef.current?.click()}
+            className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+          >
             <Camera className="w-6 h-6 text-white" />
           </button>
         </div>
         <div>
-          <button className="px-4 py-2 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-white rounded-sm text-sm font-medium border border-gray-200 dark:border-slate-700">
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            onChange={handleAvatarChange} 
+            accept="image/jpeg, image/png, image/gif" 
+            className="hidden" 
+          />
+          <button 
+            onClick={() => fileInputRef.current?.click()}
+            className="px-4 py-2 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-white rounded-sm text-sm font-medium border border-gray-200 dark:border-slate-700"
+          >
             Upload Avatar
           </button>
           <p className="text-gray-500 dark:text-slate-500 text-xs mt-2">JPG, GIF or PNG. Max size of 2MB.</p>
@@ -69,19 +108,39 @@ const Settings = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700 dark:text-slate-300">First Name</label>
-          <input type="text" defaultValue="Steve" className="w-full bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-sm px-4 py-2.5 text-gray-900 dark:text-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" />
+          <input 
+            type="text" 
+            value={profile.firstName}
+            onChange={(e) => setProfile({...profile, firstName: e.target.value})}
+            className="w-full bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-sm px-4 py-2.5 text-gray-900 dark:text-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" 
+          />
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700 dark:text-slate-300">Last Name</label>
-          <input type="text" defaultValue="Jobs" className="w-full bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-sm px-4 py-2.5 text-gray-900 dark:text-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" />
+          <input 
+            type="text" 
+            value={profile.lastName}
+            onChange={(e) => setProfile({...profile, lastName: e.target.value})}
+            className="w-full bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-sm px-4 py-2.5 text-gray-900 dark:text-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" 
+          />
         </div>
         <div className="space-y-2 md:col-span-2">
           <label className="text-sm font-medium text-gray-700 dark:text-slate-300">Email Address</label>
-          <input type="email" defaultValue="steve@university.edu" className="w-full bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-sm px-4 py-2.5 text-gray-900 dark:text-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" />
+          <input 
+            type="email" 
+            value={profile.email}
+            onChange={(e) => setProfile({...profile, email: e.target.value})}
+            className="w-full bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-sm px-4 py-2.5 text-gray-900 dark:text-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" 
+          />
         </div>
         <div className="space-y-2 md:col-span-2">
           <label className="text-sm font-medium text-gray-700 dark:text-slate-300">Short Bio</label>
-          <textarea rows="3" defaultValue="Computer Science major. Passionate about AI and distributed systems." className="w-full bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-sm px-4 py-2.5 text-gray-900 dark:text-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 resize-none"></textarea>
+          <textarea 
+            rows="3" 
+            value={profile.bio}
+            onChange={(e) => setProfile({...profile, bio: e.target.value})}
+            className="w-full bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-sm px-4 py-2.5 text-gray-900 dark:text-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
+          ></textarea>
         </div>
       </div>
     </div>
@@ -214,7 +273,7 @@ const Settings = () => {
             
 
             {/* Sticky Save Bar */}
-            <div className="sticky bottom-0 mt-8 pt-4 pb-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-t border-gray-200 dark:border-slate-700 flex justify-end">
+            <div className="sticky bottom-0 mt-8 pt-4 pb-2 flex justify-end">
               <button 
                 onClick={handleSave}
                 className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-sm text-sm font-bold flex items-center gap-2 transition-all active:scale-95"
