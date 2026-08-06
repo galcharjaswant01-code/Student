@@ -28,7 +28,7 @@ const TopNavbar = () => {
   const navigate = useNavigate();
   const { currentUser, logout } = useAuth();
   
-  const { themePreferences, setTheme, isMobileSidebarOpen, setMobileSidebarOpen, setSidebarCollapsed } = useDashboardStore();
+  const { themePreferences, setTheme, isMobileSidebarOpen, setMobileSidebarOpen, setSidebarCollapsed, userProfile } = useDashboardStore();
   const isDark = themePreferences?.theme !== 'light';
   const isCollapsed = themePreferences?.isSidebarCollapsed ?? false;
 
@@ -302,9 +302,9 @@ const TopNavbar = () => {
               onClick={() => setIsProfileOpen(!isProfileOpen)}
               className="w-8 h-8 rounded-full bg-gradient- bg-primary p-[2px] cursor-pointer -primary/20"
             >
-              {currentUser?.photoURL ? (
+              {userProfile?.avatar || currentUser?.photoURL ? (
                 <img 
-                  src={currentUser.photoURL} 
+                  src={userProfile?.avatar || currentUser?.photoURL} 
                   alt="User avatar" 
                   className="w-full h-full rounded-full border-2 border-white dark:border-[#0F172A] object-cover"
                 />
@@ -320,8 +320,12 @@ const TopNavbar = () => {
                 className="absolute right-0 top-full mt-3 w-56 bg-white dark:bg-[#0F172A] rounded-sm border border-slate-200 dark:border-white/10 overflow-hidden z-50"
               >
                 <div className="p-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02]">
-                  <p className="font-semibold text-sm text-slate-900 dark:text-white">{currentUser?.displayName || 'User'}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{currentUser?.email || 'No email'}</p>
+                  <p className="font-medium text-slate-900 dark:text-white">
+                    {userProfile?.firstName && userProfile?.lastName ? `${userProfile.firstName} ${userProfile.lastName}` : currentUser?.displayName || 'Alex Johnson'}
+                  </p>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 truncate">
+                    {userProfile?.email || currentUser?.email || 'alex@university.edu'}
+                  </p>
                 </div>
                 
                 <div className="p-1">

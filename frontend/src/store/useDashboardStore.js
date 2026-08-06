@@ -94,6 +94,17 @@ const useDashboardStore = create((set, get) => ({
   isEditing: false,
   isLoading: false,
   isMobileSidebarOpen: false,
+  userProfile: JSON.parse(localStorage.getItem('userProfile')) || {
+    firstName: 'Alex',
+    lastName: 'Jobs',
+    email: 'alex@university.edu',
+    bio: '',
+    avatar: null
+  },
+
+  setUserProfile: (profile) => {
+    set({ userProfile: profile });
+  },
 
   setEditing: (editing) => set({ isEditing: editing }),
   setMobileSidebarOpen: (isOpen) => set((state) => ({ 

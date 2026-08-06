@@ -68,7 +68,8 @@ const Dashboard = () => {
   const { 
     layouts, visibleWidgets, isEditing, isLoading, 
     setEditing, setLayouts, fetchFromBackend, saveToBackend, resetLayout,
-    toggleWidget, themePreferences, setSidebarCollapsed, setMobileSidebarOpen, isMobileSidebarOpen 
+    toggleWidget, themePreferences, setSidebarCollapsed, setMobileSidebarOpen, isMobileSidebarOpen,
+    userProfile
   } = useDashboardStore();
   const { isFullscreen, toggleFullscreen } = useWorkspace();
   const [isWidgetStoreOpen, setIsWidgetStoreOpen] = useState(false);
@@ -223,7 +224,7 @@ const Dashboard = () => {
           </div>
           
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 leading-tight">
-            Good Morning, <span className="text-[#64FFDA]">Alex!</span>
+            Good Morning, <span className="text-[#64FFDA]">{userProfile?.firstName || 'Alex'}!</span>
           </h1>
           
           <p className="text-sm md:text-base text-white/80 mb-4 font-medium max-w-lg">

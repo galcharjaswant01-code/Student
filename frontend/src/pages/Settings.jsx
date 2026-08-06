@@ -5,6 +5,7 @@ import {
   Smartphone, Monitor, Moon, Sun, Key, 
   Lock, LogOut, ChevronRight, CheckCircle2 
 } from 'lucide-react';
+import useDashboardStore from '../store/useDashboardStore';
 
 const TABS = [
   { id: 'profile', label: 'Profile', icon: User },
@@ -16,22 +17,17 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [saved, setSaved] = useState(false);
   
-  const [profile, setProfile] = useState(() => {
-    const savedProfile = localStorage.getItem('userProfile');
-    return savedProfile ? JSON.parse(savedProfile) : {
-      firstName: 'Steve',
-      lastName: 'Jobs',
-      email: 'steve@university.edu',
-      bio: 'Computer Science major. Passionate about AI and distributed systems.',
-      avatar: null
-    };
-  });
+  const globalProfile = useDashboardStore(state => state.userProfile);
+  const setGlobalProfile = useDashboardStore(state => state.setUserProfile);
+
+  const [profile, setProfile] = useState(globalProfile);
 
   const fileInputRef = React.useRef(null);
 
   const handleSave = () => {
     if (activeTab === 'profile') {
       localStorage.setItem('userProfile', JSON.stringify(profile));
+      setGlobalProfile(profile);
     }
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
