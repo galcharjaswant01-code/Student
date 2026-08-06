@@ -212,7 +212,7 @@ const AssignmentSubmission = ({ assignment, isOpen, onClose, onSubmitted }) => {
                 </div>
                 <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient- bg-primary rounded-full"
+                    className="h-full bg-primary rounded-full transition-all duration-300"
                   />
                 </div>
               </div>
@@ -231,7 +231,7 @@ const AssignmentSubmission = ({ assignment, isOpen, onClose, onSubmitted }) => {
             <button 
               onClick={handleSubmit}
               disabled={files.length === 0 || isSubmitting}
-              className="flex-1 py-2.5 rounded-sm bg-gradient- bg-primary text-white font-bold flex items-center justify-center gap-2 hover: hover:-primary/30 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 py-2.5 rounded-sm bg-primary text-white font-bold flex items-center justify-center gap-2 hover:bg-primary/90 hover:shadow-sm hover:shadow-primary/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               {isSubmitting ? (
                 <>Submitting...</>

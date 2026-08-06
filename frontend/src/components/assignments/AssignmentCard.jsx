@@ -5,21 +5,21 @@ import { Clock, MoreVertical, UploadCloud, CheckCircle, FileText, AlertCircle } 
 const getStatusBadge = (status) => {
   switch(status) {
     case 'Graded': 
-    case 'Completed': return 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20 -emerald-500/10';
+    case 'Completed': return 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20 shadow-sm shadow-emerald-500/10';
     case 'Submitted': 
-    case 'Under Review': return 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 border-blue-200 dark:border-blue-500/20 -blue-500/10';
-    case 'In Progress': return 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400 border-amber-200 dark:border-amber-500/20 -amber-500/10';
-    case 'Overdue': return 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 border-red-200 dark:border-red-500/20 -red-500/10';
+    case 'Under Review': return 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 border-blue-200 dark:border-blue-500/20 shadow-sm shadow-blue-500/10';
+    case 'In Progress': return 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400 border-amber-200 dark:border-amber-500/20 shadow-sm shadow-amber-500/10';
+    case 'Overdue': return 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 border-red-200 dark:border-red-500/20 shadow-sm shadow-red-500/10';
     case 'Not Started':
-    default: return 'bg-slate-50 text-slate-600 dark:bg-slate-500/10 dark:text-slate-400 border-slate-200 dark:border-slate-500/20 -slate-500/10';
+    default: return 'bg-slate-50 text-slate-600 dark:bg-slate-500/10 dark:text-slate-400 border-slate-200 dark:border-slate-500/20 shadow-sm shadow-slate-500/10';
   }
 };
 
 const getPriorityColor = (priority) => {
-  if (priority === 'Critical') return 'bg-red-500 -red-500/30';
-  if (priority === 'High') return 'bg-orange-500 -orange-500/30';
-  if (priority === 'Medium') return 'bg-blue-500 -blue-500/30';
-  return 'bg-slate-400 -slate-400/30';
+  if (priority === 'Critical') return 'bg-red-500 shadow-sm shadow-red-500/30';
+  if (priority === 'High') return 'bg-orange-500 shadow-sm shadow-orange-500/30';
+  if (priority === 'Medium') return 'bg-blue-500 shadow-sm shadow-blue-500/30';
+  return 'bg-slate-400 shadow-sm shadow-slate-400/30';
 };
 
 const AssignmentCard = ({ assignment, viewMode = 'grid', onUploadClick, onDetailsClick }) => {
@@ -31,8 +31,15 @@ const AssignmentCard = ({ assignment, viewMode = 'grid', onUploadClick, onDetail
   const diffTime = dueDate - now;
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   let dueText = `Due in ${diffDays} days`;
-  if (diffDays < 0) dueText = `Overdue by ${Math.abs(diffDays)} days`;
-  if (diffDays === 0) dueText = 'Due Today';
+  if (diffDays === 0) {
+    dueText = 'Due Today';
+  } else if (diffDays < 0) {
+    if (['Completed', 'Graded', 'Submitted', 'Under Review'].includes(assignment.status)) {
+      dueText = 'Deadline Passed';
+    } else {
+      dueText = `Overdue by ${Math.abs(diffDays)} days`;
+    }
+  }
 
   if (!isGrid) {
     return (
@@ -74,23 +81,23 @@ const AssignmentCard = ({ assignment, viewMode = 'grid', onUploadClick, onDetail
 
   return (
     <div
-      className="flex flex-col p-6 bg-white/70 dark:bg-slate-800/70 rounded-sm border border-white/20 dark:border-white/10 -[0_8px_30px_rgb(0,0,0,0.04)] dark:-[0_8px_30px_rgb(0,0,0,0.1)] group relative overflow-hidden"
+      className="flex flex-col p-6 bg-white/70 dark:bg-slate-800/70 rounded-sm border border-white/20 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] group relative overflow-hidden"
     >
       {/* Priority Indicator Line */}
       <div className={`absolute top-0 left-0 w-full h-1 ${getPriorityColor(assignment.priority)}`} />
 
-      <div className="flex justify-between items-start mb-4">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded-md tracking-wide">
+      <div className="flex justify-between items-start mb-4 gap-2 w-full">
+        <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
+          <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded-md tracking-wide break-words max-w-full">
             {assignment.subject}
           </span>
           {assignment.marks !== null && (
-            <span className="text-xs font-bold text-emerald-600 bg-emerald-100 dark:bg-emerald-500/20 px-2 py-1 rounded-md">
+            <span className="text-xs font-bold text-emerald-600 bg-emerald-100 dark:bg-emerald-500/20 px-2 py-1 rounded-md shrink-0">
               {assignment.marks}/{assignment.maxMarks}
             </span>
           )}
         </div>
-        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border  ${getStatusBadge(assignment.status)}`}>
+        <span className={`shrink-0 whitespace-nowrap text-xs font-semibold px-2.5 py-1 rounded-full border  ${getStatusBadge(assignment.status)}`}>
           {assignment.status}
         </span>
       </div>
@@ -116,7 +123,11 @@ const AssignmentCard = ({ assignment, viewMode = 'grid', onUploadClick, onDetail
       </div>
 
       <div className="flex items-center justify-between mb-5">
-        <div className={`flex items-center text-xs font-bold ${diffDays <= 2 && diffDays >= 0 ? 'text-amber-500' : diffDays < 0 ? 'text-red-500' : 'text-slate-500'}`}>
+        <div className={`flex items-center text-xs font-bold ${
+          ['Completed', 'Graded', 'Submitted', 'Under Review'].includes(assignment.status) ? 'text-slate-500 dark:text-slate-400' :
+          diffDays <= 2 && diffDays >= 0 ? 'text-amber-500' : 
+          diffDays < 0 ? 'text-red-500' : 'text-slate-500 dark:text-slate-400'
+        }`}>
           <Clock className="w-4 h-4 mr-1.5 shrink-0" />
           <span className="truncate">{dueText}</span>
         </div>
@@ -127,25 +138,25 @@ const AssignmentCard = ({ assignment, viewMode = 'grid', onUploadClick, onDetail
         )}
       </div>
 
-      <div className="flex gap-2 mt-auto">
+      <div className="flex gap-3 mt-auto">
         <button 
           onClick={() => onDetailsClick(assignment)}
-          className="flex-1 px-1 py-2.5 rounded-sm border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 whitespace-nowrap"
+          className="flex-1 py-2.5 rounded-md border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
         >
           Details
         </button>
         <button 
           onClick={() => (assignment.status === 'Graded' || assignment.status === 'Submitted') ? onDetailsClick(assignment) : onUploadClick(assignment)}
-          className={`flex-[1.2] px-1 py-2.5 rounded-sm text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 whitespace-nowrap  ${
+          className={`flex-1 py-2.5 rounded-md text-white text-sm font-bold flex items-center justify-center gap-2 transition-colors ${
             assignment.status === 'Graded' || assignment.status === 'Submitted' 
-              ? 'bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 -slate-500/20' 
-              : 'bg-gradient- bg-primary  hover:-primary/40'
+              ? 'bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 shadow-sm shadow-slate-500/20' 
+              : 'bg-primary hover:bg-primary/90 shadow-sm shadow-primary/40'
           }`}
         >
           {assignment.status === 'Graded' || assignment.status === 'Submitted' ? (
             <>View Work</>
           ) : (
-            <><UploadCloud className="w-3.5 h-3.5 shrink-0" /> Submit</>
+            <><UploadCloud className="w-4 h-4 shrink-0" /> Submit</>
           )}
         </button>
       </div>

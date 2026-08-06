@@ -1,6 +1,12 @@
 // Simulated Django REST Framework API Service
 // This service mimics the exact structure and behavior expected from a Django backend.
 
+const generateMockDate = (daysOffset) => {
+  const d = new Date();
+  d.setDate(d.getDate() + daysOffset);
+  return d.toISOString();
+};
+
 const mockAssignmentsDB = [
   {
     id: 'A-101',
@@ -8,7 +14,7 @@ const mockAssignmentsDB = [
     subject: 'Physics',
     description: 'Detailed analysis of wave-function collapse in multi-particle systems. Include mathematical proofs and diagrams.',
     instructions: '1. Format as PDF.\n2. Minimum 10 pages.\n3. Include references in APA format.',
-    dueDate: '2025-06-05T23:59:00Z',
+    dueDate: generateMockDate(5),
     status: 'In Progress', // Not Started, In Progress, Submitted, Under Review, Graded, Overdue
     priority: 'High',
     marks: null,
@@ -31,7 +37,7 @@ const mockAssignmentsDB = [
     subject: 'Computer Science',
     description: 'Implement a balanced AVL tree and a Red-Black tree in Python. Compare their insertion and deletion performance.',
     instructions: 'Submit a ZIP file containing your Python scripts and a brief PDF report.',
-    dueDate: '2025-05-28T23:59:00Z',
+    dueDate: generateMockDate(-10),
     status: 'Graded',
     priority: 'Medium',
     marks: 92,
@@ -45,11 +51,11 @@ const mockAssignmentsDB = [
       { name: 'starter_code.zip', type: 'ZIP', size: '50 KB' }
     ],
     submission: {
-      submittedAt: '2025-05-26T14:30:00Z',
+      submittedAt: generateMockDate(-12),
       files: [{ name: 'avl_rb_trees.zip', type: 'ZIP', size: '120 KB' }]
     },
     feedback: {
-      gradedAt: '2025-05-29T10:15:00Z',
+      gradedAt: generateMockDate(-9),
       comments: 'Excellent implementation! Your performance comparison was very thorough.',
       improvementSuggestions: 'Consider adding edge case tests for extremely unbalanced initial inputs.',
       reviewedFiles: [{ name: 'annotated_report.pdf', type: 'PDF', size: '1.5 MB' }]
@@ -61,7 +67,7 @@ const mockAssignmentsDB = [
     subject: 'English',
     description: 'Analyze the theme of the American Dream as portrayed by F. Scott Fitzgerald.',
     instructions: 'Write a 1500-word essay. Submit as DOCX.',
-    dueDate: '2025-06-12T23:59:00Z',
+    dueDate: generateMockDate(12),
     status: 'Not Started',
     priority: 'Medium',
     marks: null,
@@ -81,7 +87,7 @@ const mockAssignmentsDB = [
     subject: 'Mathematics',
     description: 'Solve the provided problems on multiple integrals and vector fields.',
     instructions: 'Show all your work. Scan your handwritten notes into a single PDF.',
-    dueDate: '2025-05-25T23:59:00Z',
+    dueDate: generateMockDate(-5),
     status: 'Overdue',
     priority: 'Critical',
     marks: null,
@@ -103,7 +109,7 @@ const mockAssignmentsDB = [
     subject: 'Chemistry',
     description: 'Synthesis of Aspirin laboratory report including yield calculations and IR spectra analysis.',
     instructions: 'Submit report as DOCX and raw data as Excel.',
-    dueDate: '2025-06-02T17:00:00Z',
+    dueDate: generateMockDate(2),
     status: 'Submitted',
     priority: 'High',
     marks: null,
@@ -115,7 +121,7 @@ const mockAssignmentsDB = [
     },
     attachedResources: [],
     submission: {
-      submittedAt: '2025-05-30T09:45:00Z',
+      submittedAt: generateMockDate(-1),
       files: [
         { name: 'Lab_Report_Aspirin.docx', type: 'DOCX', size: '1.2 MB' },
         { name: 'Yield_Data.xlsx', type: 'XLSX', size: '45 KB' }

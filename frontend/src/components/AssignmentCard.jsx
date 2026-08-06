@@ -17,7 +17,7 @@ const AssignmentCard = ({ assignment, onUploadClick, onDetailsClick, onComplete,
 
   return (
     <div
-      className="card relative group hover: dark:hover:-[0_10px_30px_rgba(0,0,0,0.3)] hover:border-primary/30"
+      className="card relative group hover:shadow-lg dark:hover:shadow-[0_10px_30px_rgba(0,0,0,0.3)] hover:border-primary/30 transition-all"
     >
       <div className="flex justify-between items-start mb-4">
         <div>
@@ -76,7 +76,7 @@ const AssignmentCard = ({ assignment, onUploadClick, onDetailsClick, onComplete,
       <div className="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-1.5 mb-6">
         <div
           className={`h-1.5 rounded-full ${
-            assignment.progress === 100 ? 'bg-success' : 'bg-gradient- bg-primary '
+            assignment.progress === 100 ? 'bg-success' : 'bg-primary'
           }`}
         />
       </div>

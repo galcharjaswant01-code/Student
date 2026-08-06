@@ -6,13 +6,13 @@ import TeacherFeedback from './TeacherFeedback';
 const getStatusBadge = (status) => {
   switch(status) {
     case 'Graded': 
-    case 'Completed': return 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20';
+    case 'Completed': return 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20 shadow-sm shadow-emerald-500/10';
     case 'Submitted': 
-    case 'Under Review': return 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 border-blue-200 dark:border-blue-500/20';
-    case 'In Progress': return 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400 border-amber-200 dark:border-amber-500/20';
-    case 'Overdue': return 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 border-red-200 dark:border-red-500/20';
+    case 'Under Review': return 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 border-blue-200 dark:border-blue-500/20 shadow-sm shadow-blue-500/10';
+    case 'In Progress': return 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400 border-amber-200 dark:border-amber-500/20 shadow-sm shadow-amber-500/10';
+    case 'Overdue': return 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400 border-red-200 dark:border-red-500/20 shadow-sm shadow-red-500/10';
     case 'Not Started':
-    default: return 'bg-slate-50 text-slate-600 dark:bg-slate-500/10 dark:text-slate-400 border-slate-200 dark:border-slate-500/20';
+    default: return 'bg-slate-50 text-slate-600 dark:bg-slate-500/10 dark:text-slate-400 border-slate-200 dark:border-slate-500/20 shadow-sm shadow-slate-500/10';
   }
 };
 
@@ -171,10 +171,10 @@ const AssignmentDetailsPanel = ({ assignment, isOpen, onClose, onUploadClick }) 
             </button>
             <button 
               onClick={() => { onClose(); onUploadClick(assignment); }}
-              className={`flex-1 py-3 rounded-sm text-white font-bold flex items-center justify-center gap-2   ${
+              className={`flex-1 py-3 rounded-sm text-white font-bold flex items-center justify-center gap-2 transition-colors ${
                 assignment.status === 'Graded' || assignment.status === 'Submitted'
-                  ? 'bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 -slate-500/20'
-                  : 'bg-gradient- bg-primary  hover:-primary/40'
+                  ? 'bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 shadow-sm shadow-slate-500/20'
+                  : 'bg-primary hover:bg-primary/90 shadow-sm shadow-primary/40'
               }`}
             >
               {assignment.status === 'Graded' || assignment.status === 'Submitted' ? (
