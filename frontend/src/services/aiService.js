@@ -32,7 +32,7 @@ export const aiService = {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          model: "llama3-8b-8192", // Fast, standard model
+          model: "llama-3.1-8b-instant", // Fast, standard model
           messages: messages,
           temperature: 0.7,
           stream: true

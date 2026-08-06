@@ -12,7 +12,7 @@ if api_key:
 else:
     logger.warning("GEMINI_API_KEY is not set in the environment variables.")
 
-def chat_with_gemini(messages, model_name='gemini-3.5-flash'):
+def chat_with_gemini(messages, model_name='gemini-2.0-flash'):
     """
     Interact with the Gemini API.
     

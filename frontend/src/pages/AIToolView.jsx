@@ -93,8 +93,9 @@ const AIToolView = () => {
       });
     } catch (error) {
       console.error(error);
+      const errorMsg = error?.message || 'Unknown error';
       setMessages(prev => 
-        prev.map(msg => msg.id === assistantMsgId ? { ...msg, content: 'Sorry, I encountered an error connecting to the AI service. Please check your API key.' } : msg)
+        prev.map(msg => msg.id === assistantMsgId ? { ...msg, content: `Sorry, I encountered an error: ${errorMsg}` } : msg)
       );
     }
 

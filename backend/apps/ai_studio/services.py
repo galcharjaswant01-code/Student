@@ -16,7 +16,7 @@ def chat_with_gemini(messages, model_name=None):
     else:
         return _chat_with_gemini(messages, model_name)
 
-def chat_with_ai(messages: list, model: str = 'gemini-3.5-flash') -> str:
+def chat_with_ai(messages: list, model: str = 'gemini-2.0-flash') -> str:
     """
     Send a list of messages to Gemini AI and return the response text.
     """
@@ -34,7 +34,7 @@ def chat_with_ai(messages: list, model: str = 'gemini-3.5-flash') -> str:
         return f"MOCK AI RESPONSE: I'm currently rate-limited, but here is a mock response to: '{user_prompt}'. I can help you with your studies, code generation, and answering questions!"
     return ai_text
 
-def _generate_json_with_ai(prompt: str, model: str = 'gemini-3.5-flash') -> dict:
+def _generate_json_with_ai(prompt: str, model: str = 'gemini-2.0-flash') -> dict:
     """Helper to query Gemini and extract JSON."""
     messages = [
         {'role': 'user', 'parts': [f'You are a helpful AI that outputs only valid JSON. Do not include markdown code blocks like ```json, just output the raw JSON object.\n\n{prompt}']}
@@ -133,7 +133,7 @@ Data:
 {json.dumps(stats_data, indent=2)}"""
     
     messages = [{'role': 'user', 'parts': [prompt]}]
-    ai_text = chat_with_gemini(messages, model_name='gemini-3.5-flash')
+    ai_text = chat_with_gemini(messages, model_name='gemini-2.0-flash')
     if "Error connecting to AI" in ai_text or "429" in ai_text:
         return "You're doing great! This is a mock summary since the AI API is rate-limited. Keep up the good work on your assignments and focus on reviewing subjects you find challenging."
     return ai_text
