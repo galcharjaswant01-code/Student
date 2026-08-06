@@ -181,7 +181,7 @@ const CourseViewer = ({ course, onClose }) => {
                   placeholder="Take notes for this lesson..."
                   className="w-full flex-1 bg-white/50 dark:bg-slate-800/50 rounded-sm border border-slate-200 dark:border-white/10 p-4 text-sm font-medium focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 resize-none"
                 />
-                <button className="mt-4 w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-sm text-sm font-bold">
+                <button className="mt-4 w-full py-2.5 rounded-xl bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 text-white text-sm font-bold transition-all duration-300 active:scale-[0.98] shadow-md shadow-slate-900/20">
                   Save Notes
                 </button>
               </div>

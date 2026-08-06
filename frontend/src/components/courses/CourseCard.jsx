@@ -110,8 +110,8 @@ const CourseCard = ({ course, viewMode = 'grid', onClick }) => {
           )}
 
           {!isList && (
-            <button className="text-xs font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1 group-hover:gap-2">
-              {isCompleted ? 'Review Course' : 'Continue'} <ArrowRight className="w-3 h-3" />
+            <button className="px-4 py-2 rounded-xl bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 text-white text-xs font-bold flex items-center gap-1.5 transition-all duration-300 active:scale-[0.98] shadow-md shadow-slate-900/20">
+              {isCompleted ? 'Review Course' : 'Continue'} <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
             </button>
           )}
         </div>
