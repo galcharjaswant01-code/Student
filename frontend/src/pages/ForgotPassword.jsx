@@ -20,10 +20,22 @@ const ForgotPassword = () => {
       await resetPassword(email);
       setMessage('Check your inbox for further instructions.');
     } catch (err) {
-      if (err.code === 'auth/user-not-found') {
-        setError('No account found with this email address.');
-      } else {
-        setError('Failed to reset password: ' + err.message);
+      switch (err.code) {
+        case 'auth/user-not-found':
+          setError('No account found with this email address.');
+          break;
+        case 'auth/invalid-email':
+          setError('Please enter a valid email address.');
+          break;
+        case 'auth/network-request-failed':
+          setError('Network error. Please check your internet connection.');
+          break;
+        case 'auth/too-many-requests':
+          setError('Too many attempts. Please try again later.');
+          break;
+        default:
+          setError('Failed to reset password. Please try again.');
+          console.error(err);
       }
     } finally {
       setLoading(false);

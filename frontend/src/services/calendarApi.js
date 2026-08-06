@@ -44,6 +44,29 @@ export const calendarApi = {
         resolve(newEvent);
       }, 600);
     });
+  },
+
+  async updateEvent(eventData) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const updatedEvent = {
+          ...eventData,
+          color: eventData.type === 'class' ? 'bg-blue-500' :
+                 eventData.type === 'exam' ? 'bg-purple-500' :
+                 eventData.type === 'study' ? 'bg-emerald-500' :
+                 eventData.type === 'assignment' ? 'bg-rose-500' : 'bg-gray-500'
+        };
+        resolve(updatedEvent);
+      }, 600);
+    });
+  },
+
+  async deleteEvent(eventId) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({ success: true });
+      }, 600);
+    });
   }
 };
 

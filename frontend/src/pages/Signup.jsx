@@ -44,7 +44,26 @@ const Signup = () => {
       setShowOtp(true);
       
     } catch (err) {
-      setError('Failed to create an account: ' + (err.message || 'Email might be in use'));
+      switch (err.code) {
+        case 'auth/email-already-in-use':
+          setError('This email is already registered. Please sign in instead.');
+          break;
+        case 'auth/invalid-email':
+          setError('Please enter a valid email address.');
+          break;
+        case 'auth/weak-password':
+          setError('Your password is too weak. Please use at least 6 characters.');
+          break;
+        case 'auth/network-request-failed':
+          setError('Network error. Please check your internet connection.');
+          break;
+        case 'auth/too-many-requests':
+          setError('Too many attempts. Please try again later.');
+          break;
+        default:
+          setError('Failed to create an account. Please try again.');
+          console.error(err);
+      }
     } finally {
       setLoading(false);
     }
@@ -82,6 +101,7 @@ const Signup = () => {
       await loginWithGoogle();
       navigate('/dashboard');
     } catch (err) {
+      console.error(err);
       if (err.code === 'auth/unauthorized-domain') {
         setError('This domain is not authorized for Google Sign-In. Please add it to the Firebase console.');
       } else if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user') {
@@ -91,8 +111,10 @@ const Signup = () => {
         } catch (redirectErr) {
           setError('Google Sign-In failed. Please try again.');
         }
+      } else if (err.code === 'auth/network-request-failed') {
+        setError('Network error. Please check your internet connection.');
       } else {
-        setError('Google Sign-In failed: ' + (err.message || 'Unknown error'));
+        setError('Google Sign-In failed. Please try again.');
       }
     } finally {
       setLoading(false);

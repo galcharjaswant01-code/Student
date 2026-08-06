@@ -1,12 +1,28 @@
-import React, { useState } from 'react';
-import { X, Calendar as CalendarIcon, Clock, Tag } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Calendar as CalendarIcon, Clock, Tag, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 
-const EventModal = ({ isOpen, onClose, onSave, selectedDate }) => {
+const EventModal = ({ isOpen, onClose, onSave, onDelete, selectedDate, event }) => {
   const [title, setTitle] = useState('');
   const [type, setType] = useState('class');
-  const [startTime, setStartTime] = useState('09:00');
-  const [endTime, setEndTime] = useState('10:00');
+  const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const [time, setTime] = useState('09:00');
+
+  useEffect(() => {
+    if (isOpen) {
+      if (event) {
+        setTitle(event.title || '');
+        setType(event.type || 'class');
+        setDate(event.start ? format(new Date(event.start), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'));
+        setTime(event.start ? format(new Date(event.start), 'HH:mm') : '09:00');
+      } else {
+        setTitle('');
+        setType('class');
+        setDate(selectedDate ? format(selectedDate, 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'));
+        setTime('09:00');
+      }
+    }
+  }, [isOpen, event, selectedDate]);
 
   if (!isOpen) return null;
 
@@ -15,15 +31,15 @@ const EventModal = ({ isOpen, onClose, onSave, selectedDate }) => {
     if (!title) return;
 
     // Construct full ISO strings for start/end
-    const baseDate = format(selectedDate || new Date(), 'yyyy-MM-dd');
-    const start = new Date(`${baseDate}T${startTime}:00`).toISOString();
-    const end = new Date(`${baseDate}T${endTime}:00`).toISOString();
-
-    onSave({ title, type, start, end });
+    const baseDate = date || format(new Date(), 'yyyy-MM-dd');
+    const start = new Date(`${baseDate}T${time}:00`).toISOString();
     
-    // Reset
-    setTitle('');
-    setType('class');
+    // Default end time to 1 hour after start
+    const endDate = new Date(`${baseDate}T${time}:00`);
+    endDate.setHours(endDate.getHours() + 1);
+    const end = endDate.toISOString();
+
+    onSave({ id: event?.id, title, type, start, end });
     onClose();
   };
 
@@ -40,7 +56,7 @@ const EventModal = ({ isOpen, onClose, onSave, selectedDate }) => {
         
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Create Event</h2>
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white">{event ? 'Edit Event' : 'Create Event'}</h2>
           <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
             <X className="w-5 h-5" />
           </button>
@@ -65,28 +81,24 @@ const EventModal = ({ isOpen, onClose, onSave, selectedDate }) => {
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-300">
               <CalendarIcon className="w-5 h-5 text-gray-400" />
-              <div className="flex-1 font-medium bg-gray-50 dark:bg-gray-800/50 py-2 px-3 rounded-sm border border-gray-200 dark:border-gray-700">
-                {format(selectedDate || new Date(), 'EEEE, MMMM d, yyyy')}
-              </div>
+              <input 
+                type="date" 
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="flex-1 font-medium bg-gray-50 dark:bg-gray-800/50 py-2 px-3 rounded-sm border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white dark:[color-scheme:dark]"
+                required
+              />
             </div>
 
             <div className="flex items-center gap-3 text-sm text-gray-700 dark:text-gray-300">
               <Clock className="w-5 h-5 text-gray-400" />
-              <div className="flex-1 flex items-center gap-2">
-                <input 
-                  type="time" 
-                  value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
-                  className="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-sm px-3 py-2 flex-1 focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white dark:[color-scheme:dark]"
-                />
-                <span className="text-gray-400 font-medium">to</span>
-                <input 
-                  type="time" 
-                  value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
-                  className="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-sm px-3 py-2 flex-1 focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white dark:[color-scheme:dark]"
-                />
-              </div>
+              <input 
+                type="time" 
+                value={time}
+                onChange={(e) => setTime(e.target.value)}
+                className="flex-1 font-medium bg-gray-50 dark:bg-gray-800/50 py-2 px-3 rounded-sm border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none dark:text-white dark:[color-scheme:dark]"
+                required
+              />
             </div>
 
             {/* Type */}
@@ -107,21 +119,35 @@ const EventModal = ({ isOpen, onClose, onSave, selectedDate }) => {
           </div>
 
           {/* Actions */}
-          <div className="mt-4 flex items-center justify-end gap-3">
-            <button 
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 rounded-sm text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              Cancel
-            </button>
-            <button 
-              type="submit"
-              disabled={!title}
-              className="px-6 py-2 rounded-sm text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed -[0_4px_15px_rgba(79,70,229,0.3)]"
-            >
-              Save Event
-            </button>
+          <div className="mt-4 flex items-center justify-between gap-3">
+            {event && onDelete ? (
+              <button 
+                type="button"
+                onClick={() => onDelete(event.id)}
+                className="px-3 py-2 rounded-sm text-sm font-semibold text-red-600 hover:bg-red-50 flex items-center gap-1 dark:text-red-400 dark:hover:bg-red-900/20"
+              >
+                <Trash2 className="w-4 h-4" />
+                Delete
+              </button>
+            ) : (
+              <div></div>
+            )}
+            <div className="flex items-center gap-3">
+              <button 
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 rounded-sm text-sm font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+              >
+                Cancel
+              </button>
+              <button 
+                type="submit"
+                disabled={!title}
+                className="px-6 py-2 rounded-sm text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed -[0_4px_15px_rgba(79,70,229,0.3)]"
+              >
+                {event ? 'Update Event' : 'Save Event'}
+              </button>
+            </div>
           </div>
 
         </form>

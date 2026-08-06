@@ -2,7 +2,7 @@ import React from 'react';
 import { Calendar as CalendarIcon, Clock, Sparkles } from 'lucide-react';
 import { format, parseISO, isAfter, startOfDay } from 'date-fns';
 
-const UpcomingEventsPanel = ({ events }) => {
+const UpcomingEventsPanel = ({ events, onEventClick }) => {
   
   // Filter for upcoming events from today onwards, sorted chronologically
   const today = startOfDay(new Date());
@@ -30,7 +30,11 @@ const UpcomingEventsPanel = ({ events }) => {
             upcomingEvents.map(event => {
               const eventDate = parseISO(event.start);
               return (
-                <div key={event.id} className="bg-white dark:bg-[#111827] border border-gray-100 dark:border-gray-800 p-3 rounded-sm hover: - group">
+                <div 
+                  key={event.id} 
+                  onClick={() => onEventClick && onEventClick(event)}
+                  className="bg-white dark:bg-[#111827] border border-gray-100 dark:border-gray-800 p-3 rounded-sm hover:shadow-md transition-shadow cursor-pointer group"
+                >
                   <div className="flex justify-between items-start mb-1">
                     <h4 className="font-semibold text-sm text-gray-900 dark:text-white truncate pr-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
                       {event.title}

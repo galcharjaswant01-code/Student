@@ -25,10 +25,27 @@ const Login = () => {
       
       navigate('/dashboard');
     } catch (err) {
-      if (err.code === 'auth/invalid-credential') {
-        setError('Invalid email or password. Please try again.');
-      } else {
-        setError('Failed to sign in: ' + (err.message || 'Check credentials'));
+      switch (err.code) {
+        case 'auth/invalid-credential':
+        case 'auth/user-not-found':
+        case 'auth/wrong-password':
+          setError('Invalid email or password. Please try again.');
+          break;
+        case 'auth/invalid-email':
+          setError('Please enter a valid email address.');
+          break;
+        case 'auth/user-disabled':
+          setError('This account has been disabled. Please contact support.');
+          break;
+        case 'auth/network-request-failed':
+          setError('Network error. Please check your internet connection.');
+          break;
+        case 'auth/too-many-requests':
+          setError('Too many attempts. Please try again later.');
+          break;
+        default:
+          setError('Failed to sign in. Please try again.');
+          console.error(err);
       }
     } finally {
       setLoading(false);
@@ -52,8 +69,10 @@ const Login = () => {
         } catch (redirectErr) {
           setError('Google Sign-In failed. Please try again.');
         }
+      } else if (err.code === 'auth/network-request-failed') {
+        setError('Network error. Please check your internet connection.');
       } else {
-        setError('Google Sign-In failed: ' + (err.message || 'Unknown error'));
+        setError('Google Sign-In failed. Please try again.');
       }
     } finally {
       setLoading(false);

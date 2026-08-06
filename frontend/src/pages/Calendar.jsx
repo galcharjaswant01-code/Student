@@ -30,6 +30,8 @@ const Calendar = () => {
 
   // Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDateForModal, setSelectedDateForModal] = useState(new Date());
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   useEffect(() => {
     // Fetch initial events
@@ -48,11 +50,38 @@ const Calendar = () => {
 
   const handleSaveEvent = async (eventData) => {
     try {
-      const newEvent = await calendarApi.createEvent(eventData);
-      setEvents(prev => [...prev, newEvent]);
+      if (eventData.id) {
+        const updatedEvent = await calendarApi.updateEvent(eventData);
+        setEvents(prev => prev.map(ev => ev.id === updatedEvent.id ? updatedEvent : ev));
+      } else {
+        const newEvent = await calendarApi.createEvent(eventData);
+        setEvents(prev => [...prev, newEvent]);
+      }
     } catch (error) {
-      console.error("Failed to create event:", error);
+      console.error("Failed to save event:", error);
     }
+  };
+
+  const handleDeleteEvent = async (eventId) => {
+    try {
+      await calendarApi.deleteEvent(eventId);
+      setEvents(prev => prev.filter(ev => ev.id !== eventId));
+      setIsModalOpen(false);
+    } catch (error) {
+      console.error("Failed to delete event:", error);
+    }
+  };
+
+  const handleDateClick = (date) => {
+    setSelectedDateForModal(date);
+    setSelectedEvent(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEventClick = (event) => {
+    setSelectedDateForModal(new Date(event.start));
+    setSelectedEvent(event);
+    setIsModalOpen(true);
   };
 
   const { isFullscreen } = useWorkspace();
@@ -85,7 +114,11 @@ const Calendar = () => {
           setCurrentDate={setCurrentDate}
           filters={filters}
           setFilters={setFilters}
-          onAddEvent={() => setIsModalOpen(true)}
+          onAddEvent={() => {
+            setSelectedDateForModal(currentDate);
+            setSelectedEvent(null);
+            setIsModalOpen(true);
+          }}
         />
       </div>
 
@@ -107,9 +140,12 @@ const Calendar = () => {
             events={filteredEvents}
             filters={filters}
             view={view}
+            onDateClick={handleDateClick}
+            onEventClick={handleEventClick}
           />
           <UpcomingEventsPanel 
             events={filteredEvents}
+            onEventClick={handleEventClick}
           />
         </div>
       </div>
@@ -119,7 +155,9 @@ const Calendar = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleSaveEvent}
-        selectedDate={currentDate}
+        onDelete={handleDeleteEvent}
+        selectedDate={selectedDateForModal}
+        event={selectedEvent}
       />
     </div>
   );

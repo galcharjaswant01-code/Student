@@ -1,7 +1,7 @@
 import React from 'react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, parseISO, startOfWeek, endOfWeek } from 'date-fns';
 
-const CalendarGrid = ({ currentDate, events, filters, view }) => {
+const CalendarGrid = ({ currentDate, events, filters, view, onDateClick, onEventClick }) => {
   // Filter events based on active filters
   const visibleEvents = events.filter(e => filters[e.type] !== false);
 
@@ -49,8 +49,9 @@ const CalendarGrid = ({ currentDate, events, filters, view }) => {
           return (
             <div 
               key={idx} 
+              onClick={() => onDateClick && onDateClick(date)}
               className={`
-                border-r border-b border-gray-200 dark:border-gray-800 p-1 sm:p-2 flex flex-col 
+                border-r border-b border-gray-200 dark:border-gray-800 p-1 sm:p-2 flex flex-col cursor-pointer
                 ${!isSelectedMonth ? 'bg-gray-50/50 dark:bg-[#0B0F19]/50' : 'hover:bg-gray-50 dark:hover:bg-gray-800/50'}
               `}
             >
@@ -67,6 +68,10 @@ const CalendarGrid = ({ currentDate, events, filters, view }) => {
                 {dayEvents.map(event => (
                   <div 
                     key={event.id}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (onEventClick) onEventClick(event);
+                    }}
                     className={`
                       px-2 py-1 rounded text-xs font-semibold truncate text-white cursor-pointer hover:opacity-90 
                       ${event.color} 
