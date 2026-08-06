@@ -34,6 +34,8 @@ const Settings = () => {
     }
     localStorage.setItem('theme', themePreference);
   }, [themePreference]);
+
+  const handleSave = () => {
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
