@@ -165,16 +165,16 @@ const AssignmentDetailsPanel = ({ assignment, isOpen, onClose, onUploadClick }) 
           <div className="sticky bottom-0 bg-white/80 dark:bg-[#0B1120]/80 border-t border-slate-200 dark:border-white/10 p-6 flex gap-4">
             <button 
               onClick={onClose}
-              className="px-6 py-3 rounded-sm border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 font-bold hover:bg-slate-50 dark:hover:bg-slate-800"
+              className="px-6 py-3 rounded-xl border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 font-bold hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all duration-300 active:scale-[0.98]"
             >
               Close
             </button>
             <button 
               onClick={() => { onClose(); onUploadClick(assignment); }}
-              className={`flex-1 py-3 rounded-sm text-white font-bold flex items-center justify-center gap-2 transition-colors ${
+              className={`flex-1 py-3 rounded-xl text-white font-bold flex items-center justify-center gap-2 transition-all duration-300 active:scale-[0.98] ${
                 assignment.status === 'Graded' || assignment.status === 'Submitted'
-                  ? 'bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 shadow-sm shadow-slate-500/20'
-                  : 'bg-primary hover:bg-primary/90 shadow-sm shadow-primary/40'
+                  ? 'bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 shadow-md shadow-slate-900/20'
+                  : 'bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 shadow-md shadow-primary/30'
               }`}
             >
               {assignment.status === 'Graded' || assignment.status === 'Submitted' ? (

@@ -224,14 +224,14 @@ const AssignmentSubmission = ({ assignment, isOpen, onClose, onSubmitted }) => {
             <button 
               onClick={onClose}
               disabled={isSubmitting}
-              className="px-6 py-2.5 rounded-sm border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 font-bold hover:bg-white dark:hover:bg-slate-800 disabled:opacity-50"
+              className="px-6 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 font-bold hover:bg-slate-50 dark:hover:bg-slate-800/50 disabled:opacity-50 transition-all duration-300 active:scale-[0.98]"
             >
               Cancel
             </button>
             <button 
               onClick={handleSubmit}
               disabled={files.length === 0 || isSubmitting}
-              className="flex-1 py-2.5 rounded-sm bg-primary text-white font-bold flex items-center justify-center gap-2 hover:bg-primary/90 hover:shadow-sm hover:shadow-primary/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-primary to-blue-600 text-white font-bold flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-primary/40 hover:from-primary/90 hover:to-blue-600/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 active:scale-[0.98]"
             >
               {isSubmitting ? (
                 <>Submitting...</>
