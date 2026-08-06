@@ -217,7 +217,7 @@ const Settings = () => {
             <div className="sticky bottom-0 mt-8 pt-4 pb-2 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-t border-gray-200 dark:border-slate-700 flex justify-end">
               <button 
                 onClick={handleSave}
-                className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-sm text-sm font-bold shadow-lg shadow-indigo-500/25 flex items-center gap-2 transition-all active:scale-95"
+                className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-sm text-sm font-bold flex items-center gap-2 transition-all active:scale-95"
               >
                 {saved ? <><CheckCircle2 className="w-4 h-4"/> Saved</> : 'Save Changes'}
               </button>
