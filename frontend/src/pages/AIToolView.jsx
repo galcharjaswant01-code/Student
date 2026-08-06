@@ -144,7 +144,10 @@ const AIToolView = () => {
           }
           
           if (extractedText) {
-            fileContentsText += `\n\n--- START OF FILE: ${attachment.name} ---\n${extractedText}\n--- END OF FILE: ${attachment.name} ---\n`;
+            const maxChars = 10000;
+            const isTruncated = extractedText.length > maxChars;
+            const textToUse = isTruncated ? extractedText.slice(0, maxChars) + "\n\n[File contents truncated due to Groq API free tier size limits...]" : extractedText;
+            fileContentsText += `\n\n--- START OF FILE: ${attachment.name} ---\n${textToUse}\n--- END OF FILE: ${attachment.name} ---\n`;
           }
         } catch (fileErr) {
           console.error('Error reading attachment:', fileErr);
