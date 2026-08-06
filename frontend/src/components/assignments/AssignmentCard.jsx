@@ -122,8 +122,8 @@ const AssignmentCard = ({ assignment, viewMode = 'grid', onUploadClick, onDetail
         </div>
       </div>
 
-      <div className="flex items-center justify-between mb-5">
-        <div className={`flex items-center text-xs font-bold ${
+      <div className="flex items-center justify-between mb-5 gap-2 w-full">
+        <div className={`flex items-center text-xs font-bold flex-1 min-w-0 ${
           ['Completed', 'Graded', 'Submitted', 'Under Review'].includes(assignment.status) ? 'text-slate-500 dark:text-slate-400' :
           diffDays <= 2 && diffDays >= 0 ? 'text-amber-500' : 
           diffDays < 0 ? 'text-red-500' : 'text-slate-500 dark:text-slate-400'
@@ -132,22 +132,22 @@ const AssignmentCard = ({ assignment, viewMode = 'grid', onUploadClick, onDetail
           <span className="truncate">{dueText}</span>
         </div>
         {assignment.priority === 'Critical' && (
-          <div className="flex items-center text-xs font-bold text-red-500 animate-pulse shrink-0 ml-2">
-            <AlertCircle className="w-3.5 h-3.5 mr-1" /> Critical
+          <div className="flex items-center text-xs font-bold text-red-500 animate-pulse shrink-0">
+            <AlertCircle className="w-3.5 h-3.5 mr-1 shrink-0" /> Critical
           </div>
         )}
       </div>
 
-      <div className="flex gap-3 mt-auto">
+      <div className="flex flex-wrap gap-2 mt-auto">
         <button 
           onClick={() => onDetailsClick(assignment)}
-          className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all duration-300 active:scale-[0.98] whitespace-nowrap"
+          className="flex-1 min-w-[80px] px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all duration-300 active:scale-[0.98] whitespace-nowrap"
         >
           Details
         </button>
         <button 
           onClick={() => (assignment.status === 'Graded' || assignment.status === 'Submitted') ? onDetailsClick(assignment) : onUploadClick(assignment)}
-          className={`flex-1 px-4 py-2.5 rounded-xl text-white text-sm font-bold flex items-center justify-center gap-2 transition-all duration-300 active:scale-[0.98] whitespace-nowrap ${
+          className={`flex-1 min-w-[110px] px-3 py-2.5 rounded-xl text-white text-sm font-bold flex items-center justify-center gap-2 transition-all duration-300 active:scale-[0.98] whitespace-nowrap ${
             assignment.status === 'Graded' || assignment.status === 'Submitted' 
               ? 'bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 shadow-md shadow-slate-900/20' 
               : 'bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 shadow-md shadow-primary/30'
