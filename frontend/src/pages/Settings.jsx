@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { applyTheme, applyAccentColor } from '../theme';
 
 import { 
   User, Shield, Bell, Palette, Camera, 
@@ -19,20 +18,23 @@ const Settings = () => {
   const [saved, setSaved] = useState(false);
   
   const [themePreference, setThemePreference] = useState(localStorage.getItem('theme') || 'dark');
-  const [accentColor, setAccentColor] = useState(localStorage.getItem('accentColor') || 'bg-indigo-500');
 
   React.useEffect(() => {
-    applyTheme(themePreference);
+    const root = document.documentElement;
+    if (themePreference === 'dark') {
+      root.classList.add('dark');
+    } else if (themePreference === 'light') {
+      root.classList.remove('dark');
+    } else {
+      // system default
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        root.classList.add('dark');
+      } else {
+        root.classList.remove('dark');
+      }
+    }
     localStorage.setItem('theme', themePreference);
   }, [themePreference]);
-
-  const handleAccentChange = (color) => {
-    setAccentColor(color);
-    applyAccentColor(color);
-    localStorage.setItem('accentColor', color);
-  };
-
-  const handleSave = () => {
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -113,27 +115,6 @@ const Settings = () => {
               <theme.icon className="w-8 h-8" />
               <span className="font-medium">{theme.label}</span>
             </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="pt-6 border-t border-slate-700/50 space-y-4">
-        <label className="text-sm font-medium text-slate-300">Accent Color</label>
-        <div className="flex gap-4">
-          {[
-            { id: 'bg-indigo-500', color: '#6366f1' },
-            { id: 'bg-blue-500', color: '#3b82f6' },
-            { id: 'bg-emerald-500', color: '#10b981' },
-            { id: 'bg-rose-500', color: '#f43f5e' },
-            { id: 'bg-amber-500', color: '#f59e0b' },
-            { id: 'bg-purple-500', color: '#a855f7' }
-          ].map((themeColor, i) => (
-            <button 
-              key={i}
-              onClick={() => handleAccentChange(themeColor.id)}
-              style={{ backgroundColor: themeColor.color }}
-              className={`w-10 h-10 rounded-full transition-transform hover:scale-110 ${accentColor === themeColor.id ? 'ring-2 ring-indigo-500 dark:ring-white ring-offset-2 ring-offset-white dark:ring-offset-slate-900' : ''}`}
-            />
           ))}
         </div>
       </div>
