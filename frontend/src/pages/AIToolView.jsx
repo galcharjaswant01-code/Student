@@ -56,20 +56,101 @@ const AIToolView = () => {
     ]);
   }, [toolId, toolName]);
 
+  // Helper to read plain text files
+  const readTextFile = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target.result);
+      reader.onerror = (e) => reject(e);
+      reader.readAsText(file);
+    });
+  };
+
+  // Helper to read PDF files using PDF.js from CDN
+  const readPdfFile = async (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const typedarray = new Uint8Array(e.target.result);
+          
+          // Load PDF.js dynamically if not already loaded
+          if (!window.pdfjsLib) {
+            await new Promise((res, rej) => {
+              const script = document.createElement('script');
+              script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js';
+              script.onload = () => {
+                window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+                res();
+              };
+              script.onerror = rej;
+              document.head.appendChild(script);
+            });
+          }
+
+          const pdf = await window.pdfjsLib.getDocument({ data: typedarray }).promise;
+          let text = '';
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const content = await page.getTextContent();
+            const pageText = content.items.map(item => item.str).join(' ');
+            text += pageText + '\n';
+          }
+          resolve(text);
+        } catch (err) {
+          reject(err);
+        }
+      };
+      reader.onerror = (e) => reject(e);
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
   const handleSend = async (content = inputValue) => {
     if (!content.trim() && attachments.length === 0) return;
+
+    const currentAttachments = [...attachments];
 
     const newMessage = { 
       id: Date.now().toString(), 
       role: 'user', 
       content: content.trim(),
-      attachments: [...attachments]
+      attachments: currentAttachments.map(att => ({ name: att.name, type: att.type, url: att.url }))
     };
     
     setMessages(prev => [...prev, newMessage]);
     setInputValue('');
     setAttachments([]);
     setIsTyping(true);
+
+    // Extract file contents if there are any attachments
+    let fileContentsText = '';
+    for (const attachment of currentAttachments) {
+      if (attachment.file) {
+        try {
+          let extractedText = '';
+          if (attachment.type === 'application/pdf' || attachment.name.toLowerCase().endsWith('.pdf')) {
+            extractedText = await readPdfFile(attachment.file);
+          } else if (
+            attachment.type.startsWith('text/') || 
+            attachment.name.toLowerCase().endsWith('.txt') || 
+            attachment.name.toLowerCase().endsWith('.js') || 
+            attachment.name.toLowerCase().endsWith('.py') || 
+            attachment.name.toLowerCase().endsWith('.json') || 
+            attachment.name.toLowerCase().endsWith('.csv') || 
+            attachment.name.toLowerCase().endsWith('.md')
+          ) {
+            extractedText = await readTextFile(attachment.file);
+          }
+          
+          if (extractedText) {
+            fileContentsText += `\n\n--- START OF FILE: ${attachment.name} ---\n${extractedText}\n--- END OF FILE: ${attachment.name} ---\n`;
+          }
+        } catch (fileErr) {
+          console.error('Error reading attachment:', fileErr);
+        }
+      }
+    }
 
     // Placeholder for streaming response
     const assistantMsgId = (Date.now() + 1).toString();
@@ -82,7 +163,7 @@ const AIToolView = () => {
       
       const historyForApi = [
         ...messages.map(m => ({ role: m.role, content: m.content })),
-        { role: 'user', content: content.trim() }
+        { role: 'user', content: `${content.trim()}${fileContentsText}`.trim() }
       ];
 
       await aiService.sendMessageStream(historyForApi, systemPrompt, (chunk) => {
@@ -107,7 +188,8 @@ const AIToolView = () => {
     const newAttachments = files.map(f => ({
       name: f.name,
       type: f.type,
-      url: URL.createObjectURL(f)
+      url: URL.createObjectURL(f),
+      file: f // Keep reference to actual File object to read its content
     }));
     setAttachments(prev => [...prev, ...newAttachments]);
   };
