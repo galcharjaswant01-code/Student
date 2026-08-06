@@ -7,7 +7,7 @@ import {
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { mockAIApi } from '../services/mockAIApi';
+import { aiService } from '../services/aiService';
 
 const TOOL_NAMES = {
   'tutor': 'AI Tutor',
@@ -77,12 +77,26 @@ const AIToolView = () => {
 
     let accumulatedResponse = '';
 
-    await mockAIApi.sendMessageStream(content, toolId, (chunk) => {
-      accumulatedResponse += chunk;
+    try {
+      const systemPrompt = `You are a helpful, expert AI assistant acting as a ${toolName}. Provide concise, clear, and extremely accurate responses formatted in markdown. Use code blocks with appropriate languages when necessary.`;
+      
+      const historyForApi = [
+        ...messages.map(m => ({ role: m.role, content: m.content })),
+        { role: 'user', content: content.trim() }
+      ];
+
+      await aiService.sendMessageStream(historyForApi, systemPrompt, (chunk) => {
+        accumulatedResponse += chunk;
+        setMessages(prev => 
+          prev.map(msg => msg.id === assistantMsgId ? { ...msg, content: accumulatedResponse } : msg)
+        );
+      });
+    } catch (error) {
+      console.error(error);
       setMessages(prev => 
-        prev.map(msg => msg.id === assistantMsgId ? { ...msg, content: accumulatedResponse } : msg)
+        prev.map(msg => msg.id === assistantMsgId ? { ...msg, content: 'Sorry, I encountered an error connecting to the AI service. Please check your API key.' } : msg)
       );
-    });
+    }
 
     setIsTyping(false);
   };
