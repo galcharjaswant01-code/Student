@@ -8,7 +8,6 @@ import {
 
 const TABS = [
   { id: 'profile', label: 'Profile', icon: User },
-  { id: 'appearance', label: 'Appearance', icon: Palette },
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'security', label: 'Security', icon: Shield },
 ];
@@ -81,41 +80,6 @@ const Settings = () => {
         <div className="space-y-2 md:col-span-2">
           <label className="text-sm font-medium text-gray-700 dark:text-slate-300">Short Bio</label>
           <textarea rows="3" defaultValue="Computer Science major. Passionate about AI and distributed systems." className="w-full bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-sm px-4 py-2.5 text-gray-900 dark:text-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 resize-none"></textarea>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderAppearance = () => (
-    <div
-      className="space-y-8"
-    >
-      <div>
-        <h3 className="text-xl font-bold text-white mb-1">Appearance</h3>
-        <p className="text-slate-400 text-sm">Customize the UI theme and accent colors.</p>
-      </div>
-
-      <div className="space-y-4">
-        <label className="text-sm font-medium text-slate-300">Theme Preference</label>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[
-            { id: 'dark', label: 'Dark Mode', icon: Moon },
-            { id: 'light', label: 'Light Mode', icon: Sun },
-            { id: 'system', label: 'System Default', icon: Monitor },
-          ].map((theme) => (
-            <button 
-              key={theme.id}
-              onClick={() => setThemePreference(theme.id)}
-              className={`flex flex-col items-center gap-3 p-6 rounded-sm border transition-colors ${
-                themePreference === theme.id 
-                  ? 'bg-indigo-600/10 border-indigo-500 text-indigo-500 dark:text-indigo-400' 
-                  : 'bg-white dark:bg-slate-900/50 border-gray-200 dark:border-slate-700 text-gray-500 dark:text-slate-400 hover:border-gray-300 dark:hover:border-slate-600'
-              }`}
-            >
-              <theme.icon className="w-8 h-8" />
-              <span className="font-medium">{theme.label}</span>
-            </button>
-          ))}
         </div>
       </div>
     </div>
@@ -243,7 +207,6 @@ const Settings = () => {
           <div className="flex-1 max-w-2xl relative">
             
               {activeTab === 'profile' && <div key="profile">{renderProfile()}</div>}
-              {activeTab === 'appearance' && <div key="appearance">{renderAppearance()}</div>}
               {activeTab === 'notifications' && <div key="notifications">{renderNotifications()}</div>}
               {activeTab === 'security' && <div key="security">{renderSecurity()}</div>}
             
