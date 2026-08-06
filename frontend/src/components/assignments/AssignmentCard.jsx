@@ -141,13 +141,13 @@ const AssignmentCard = ({ assignment, viewMode = 'grid', onUploadClick, onDetail
       <div className="flex gap-3 mt-auto">
         <button 
           onClick={() => onDetailsClick(assignment)}
-          className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all duration-300 active:scale-[0.98]"
+          className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all duration-300 active:scale-[0.98] whitespace-nowrap"
         >
           Details
         </button>
         <button 
           onClick={() => (assignment.status === 'Graded' || assignment.status === 'Submitted') ? onDetailsClick(assignment) : onUploadClick(assignment)}
-          className={`flex-1 py-2.5 rounded-xl text-white text-sm font-bold flex items-center justify-center gap-2 transition-all duration-300 active:scale-[0.98] ${
+          className={`flex-1 px-4 py-2.5 rounded-xl text-white text-sm font-bold flex items-center justify-center gap-2 transition-all duration-300 active:scale-[0.98] whitespace-nowrap ${
             assignment.status === 'Graded' || assignment.status === 'Submitted' 
               ? 'bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 shadow-md shadow-slate-900/20' 
               : 'bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 shadow-md shadow-primary/30'
