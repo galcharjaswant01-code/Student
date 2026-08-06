@@ -14,6 +14,7 @@ const menuItems = [
   { icon: CheckSquare, label: 'Attendance', path: '/attendance' },
   { icon: BookOpen, label: 'Courses', path: '/courses' },
   { icon: FolderOpen, label: 'Resources', path: '/resources' },
+  { icon: Bot, label: 'AI Studio', path: '/ai-studio' },
   { icon: Calendar, label: 'Calendar', path: '/calendar' },
 ];
 

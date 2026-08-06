@@ -15,6 +15,8 @@ import Resources from './pages/Resources'
 import Calendar from './pages/Calendar'
 import Settings from './pages/Settings'
 import Notifications from './pages/Notifications'
+import AIStudio from './pages/AIStudio'
+import AIToolView from './pages/AIToolView'
 import useDashboardStore from './store/useDashboardStore'
 
 function App() {
@@ -51,6 +53,8 @@ function App() {
             <Route path="calendar" element={<Calendar />} />
             <Route path="settings" element={<Settings />} />
             <Route path="notifications" element={<Notifications />} />
+            <Route path="ai-studio" element={<AIStudio />} />
+            <Route path="ai-studio/tool/:toolId" element={<AIToolView />} />
             <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Route>
         </Routes>

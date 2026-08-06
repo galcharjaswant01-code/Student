@@ -26,6 +26,7 @@
     "react-grid-layout": "^2.2.3",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.15.1",
+    "react-syntax-highlighter": "^16.1.1",
     "three": "^0.184.0",
     "zustand": "^5.0.13"
   },
