@@ -1,14 +1,21 @@
 // aiService.js
-// Connects to our secure Vercel Serverless Function backend.
+// Connects to the Groq API directly
 
 export const aiService = {
   /**
-   * Sends a message to our secure backend and streams the response.
+   * Sends a message to the Groq API and streams the response.
    * @param {Array} messageHistory The full chat history array [{role: 'user'|'assistant', content: string}]
    * @param {string} systemPrompt The system prompt defining the tool's behavior
    * @param {Function} onToken Callback function to stream text back
    */
   async sendMessageStream(messageHistory, systemPrompt, onToken) {
+    // Uses the API key configured in Vercel Environment Variables
+    const apiKey = import.meta.env.VITE_GROQ_API_KEY;
+    
+    if (!apiKey) {
+      throw new Error("VITE_GROQ_API_KEY is not defined in the environment variables.");
+    }
+
     try {
       const messages = [
         { role: 'system', content: systemPrompt },
@@ -18,19 +25,23 @@ export const aiService = {
         }))
       ];
 
-      // We now call our own secure backend instead of the Groq API directly!
-      // This means the API key is completely removed from the frontend code.
-      const response = await fetch("/api/chat", {
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: {
+          "Authorization": `Bearer ${apiKey}`,
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ messages })
+        body: JSON.stringify({
+          model: "llama3-8b-8192", // Fast, standard model
+          messages: messages,
+          temperature: 0.7,
+          stream: true
+        })
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Backend Error: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`Groq API Error: ${response.status} - ${errorText}`);
       }
 
       const reader = response.body.getReader();
