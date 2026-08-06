@@ -29,23 +29,6 @@ const Settings = () => {
 
   const fileInputRef = React.useRef(null);
 
-  React.useEffect(() => {
-    const root = document.documentElement;
-    if (themePreference === 'dark') {
-      root.classList.add('dark');
-    } else if (themePreference === 'light') {
-      root.classList.remove('dark');
-    } else {
-      // system default
-      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        root.classList.add('dark');
-      } else {
-        root.classList.remove('dark');
-      }
-    }
-    localStorage.setItem('theme', themePreference);
-  }, [themePreference]);
-
   const handleSave = () => {
     if (activeTab === 'profile') {
       localStorage.setItem('userProfile', JSON.stringify(profile));
