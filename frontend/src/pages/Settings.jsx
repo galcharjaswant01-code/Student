@@ -16,6 +16,31 @@ const TABS = [
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [saved, setSaved] = useState(false);
+  
+  const [themePreference, setThemePreference] = useState(localStorage.getItem('theme') || 'dark');
+  const [accentColor, setAccentColor] = useState(localStorage.getItem('accentColor') || 'bg-indigo-500');
+
+  React.useEffect(() => {
+    const root = document.documentElement;
+    if (themePreference === 'dark') {
+      root.classList.add('dark');
+    } else if (themePreference === 'light') {
+      root.classList.remove('dark');
+    } else {
+      // system default
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        root.classList.add('dark');
+      } else {
+        root.classList.remove('dark');
+      }
+    }
+    localStorage.setItem('theme', themePreference);
+  }, [themePreference]);
+
+  const handleAccentChange = (color) => {
+    setAccentColor(color);
+    localStorage.setItem('accentColor', color);
+  };
 
   const handleSave = () => {
     setSaved(true);
@@ -88,10 +113,11 @@ const Settings = () => {
           ].map((theme) => (
             <button 
               key={theme.id}
-              className={`flex flex-col items-center gap-3 p-6 rounded-sm border  ${
-                theme.id === 'dark' 
-                  ? 'bg-indigo-600/10 border-indigo-500 text-indigo-400' 
-                  : 'bg-slate-900/50 border-slate-700 text-slate-400 hover:border-slate-600'
+              onClick={() => setThemePreference(theme.id)}
+              className={`flex flex-col items-center gap-3 p-6 rounded-sm border transition-colors ${
+                themePreference === theme.id 
+                  ? 'bg-indigo-600/10 border-indigo-500 text-indigo-500 dark:text-indigo-400' 
+                  : 'bg-white dark:bg-slate-900/50 border-gray-200 dark:border-slate-700 text-gray-500 dark:text-slate-400 hover:border-gray-300 dark:hover:border-slate-600'
               }`}
             >
               <theme.icon className="w-8 h-8" />
@@ -107,7 +133,8 @@ const Settings = () => {
           {['bg-indigo-500', 'bg-blue-500', 'bg-emerald-500', 'bg-rose-500', 'bg-amber-500', 'bg-purple-500'].map((color, i) => (
             <button 
               key={i}
-              className={`w-10 h-10 rounded-full ${color}    ${i === 0 ? 'ring-2 ring-white ring-offset-2 ring-offset-slate-900' : ''}`}
+              onClick={() => handleAccentChange(color)}
+              className={`w-10 h-10 rounded-full ${color} transition-transform hover:scale-110 ${accentColor === color ? 'ring-2 ring-indigo-500 dark:ring-white ring-offset-2 ring-offset-white dark:ring-offset-slate-900' : ''}`}
             />
           ))}
         </div>
