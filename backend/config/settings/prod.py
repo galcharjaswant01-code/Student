@@ -12,10 +12,18 @@ CORS_ALLOWED_ORIGINS = config(
     cast=Csv()
 )
 
+# Allow all hosts defined in allowed hosts for CSRF as well
+CSRF_TRUSTED_ORIGINS = config(
+    'CSRF_TRUSTED_ORIGINS',
+    default=CORS_ALLOWED_ORIGINS[0] if CORS_ALLOWED_ORIGINS else 'https://your-production-domain.com',
+    cast=Csv()
+)
+
 # Ensure HTTPS in production
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # HTTP Strict Transport Security (HSTS)
 SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', default=31536000, cast=int)
@@ -30,6 +38,7 @@ X_FRAME_OPTIONS = 'DENY'
 # Static files storage with WhiteNoise compression & caching
 STORAGES = {
     "default": {
+        # Using local storage by default, can be swapped for S3/Cloudinary using django-storages
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
@@ -37,3 +46,17 @@ STORAGES = {
     },
 }
 
+# Redis Configuration (Channels & Celery)
+REDIS_URL = config('REDIS_URL', default='redis://127.0.0.1:6379/0')
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [REDIS_URL],
+        },
+    },
+}
+
+CELERY_BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = REDIS_URL
