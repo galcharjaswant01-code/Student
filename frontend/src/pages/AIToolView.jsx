@@ -365,8 +365,9 @@ const AIToolView = () => {
               {isTyping ? <StopCircle className="w-5 h-5" /> : <Send className="w-5 h-5" />}
             </button>
           </div>
-          <div className="text-center mt-3">
+          <div className="text-center mt-3 flex flex-col gap-1">
             <span className="text-[11px] text-slate-400 font-medium">AI can make mistakes. Verify important information.</span>
+            <span className="text-[10px] text-slate-500 font-semibold">Active Model: llama-3.1-8b-instant (Max file limit: 3,000 characters). Powered by Groq.</span>
           </div>
         </div>
       </div>
