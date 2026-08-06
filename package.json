@@ -1,0 +1,8 @@
+{
+  "name": "student-management-system-root",
+  "version": "1.0.0",
+  "description": "Root package.json to trick Vercel into building Node.js instead of Django",
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build && cd .. && mkdir -p public && cp -r frontend/dist/* public/"
+  }
+}
