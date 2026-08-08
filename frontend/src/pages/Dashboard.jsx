@@ -200,34 +200,41 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="w-full h-full relative p-6 pb-20">
+    <div className="w-full h-full relative p-6 pb-20 overflow-hidden">
+      {/* Background Orbs */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 dark:bg-primary/10 rounded-full blur-[100px] pointer-events-none z-0" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/20 dark:bg-purple-500/10 rounded-full blur-[100px] pointer-events-none z-0" />
+
       {/* Welcome Hero Section */}
       <div
-        className="relative overflow-hidden rounded-[16px] bg-slate-900 p-6 md:p-8 mb-6 text-white flex flex-col lg:flex-row items-center justify-between"
+        className="relative overflow-hidden rounded-2xl bg-white/70 dark:bg-[#0F172A]/80 backdrop-blur-xl border border-slate-200/60 dark:border-white/5 p-6 md:p-8 mb-6 text-slate-900 dark:text-white flex flex-col lg:flex-row items-center justify-between shadow-xl"
       >
+        {/* Inner ambient orbs */}
+        <div className="absolute -top-10 -left-10 w-48 h-48 bg-indigo-400/20 dark:bg-indigo-500/10 rounded-full blur-[60px] pointer-events-none" />
+        <div className="absolute -bottom-10 right-10 w-48 h-48 bg-cyan-400/20 dark:bg-cyan-500/10 rounded-full blur-[60px] pointer-events-none" />
 
         {/* Left Section */}
         <div className="relative z-10 flex flex-col justify-center max-w-2xl w-full">
           <div className="flex items-center gap-3 mb-2">
             <div className="flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
-              <span className="text-white/90 text-xs font-semibold tracking-wide">AI Productivity Insight</span>
+              <Sparkles className="w-3.5 h-3.5 text-yellow-500" />
+              <span className="text-slate-500 dark:text-white/90 text-xs font-semibold tracking-wide">AI Productivity Insight</span>
             </div>
             {/* Fullscreen Toggle */}
             <button 
               onClick={toggleFullscreen}
-              className="p-1 bg-white/20 hover:bg-white/30 rounded-sm text-white flex items-center justify-center border border-white/10"
+              className="p-1 bg-slate-100 hover:bg-slate-200 dark:bg-white/20 dark:hover:bg-white/30 rounded-xl text-slate-500 dark:text-white flex items-center justify-center border border-slate-200 dark:border-white/10"
               title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Mode"}
             >
               {isFullscreen ? <Minimize2 className="w-3 h-3" /> : <Maximize2 className="w-3 h-3" />}
             </button>
           </div>
           
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 leading-tight">
-            Good Morning, <span className="text-[#64FFDA]">{userProfile?.firstName || 'Alex'}!</span>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 leading-tight text-slate-900 dark:text-white">
+            Good Morning, <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-[#64FFDA] font-extrabold">{userProfile?.firstName || 'Alex'}!</span>
           </h1>
           
-          <p className="text-sm md:text-base text-white/80 mb-4 font-medium max-w-lg">
+          <p className="text-sm md:text-base text-slate-500 dark:text-white/80 mb-4 font-medium max-w-lg">
             Welcome back! Here's a quick overview of your progress and upcoming tasks.
           </p>
           
@@ -235,7 +242,7 @@ const Dashboard = () => {
           <div className="flex flex-col sm:flex-row items-center gap-3 relative z-50">
             <button 
               onClick={() => navigate('/courses')} 
-              className="group flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-2 bg-white text-[#3b82f6] text-sm font-bold rounded-sm hover:bg-slate-50 cursor-pointer transition-colors"
+              className="group flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl cursor-pointer transition-colors shadow-md shadow-indigo-600/10"
             >
               <BookOpen className="w-4 h-4" />
               Continue Learning 
@@ -246,7 +253,7 @@ const Dashboard = () => {
                 resetLayout();
                 window.location.reload();
               }} 
-              className="flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-bold rounded-sm border border-white/20 cursor-pointer transition-colors"
+              className="flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-white/10 dark:hover:bg-white/20 dark:text-white text-sm font-bold rounded-xl border border-slate-200 dark:border-white/20 cursor-pointer transition-colors"
               title="Reset dashboard to default layout"
             >
               <LayoutDashboard className="w-4 h-4" />
@@ -261,7 +268,7 @@ const Dashboard = () => {
           {/* Avatar Container */}
           <div
             onClick={() => fileInputRef.current?.click()}
-            className="relative w-32 h-32 lg:w-40 lg:h-40 rounded-full border-[3px] border-slate-700 bg-slate-800 flex items-center justify-center overflow-visible cursor-pointer group"
+            className="relative w-32 h-32 lg:w-40 lg:h-40 rounded-full border-[3px] border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-visible cursor-pointer group"
           >
             <input 
               type="file" 

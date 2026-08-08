@@ -94,7 +94,10 @@ const Calendar = () => {
   });
 
   return (
-    <div className={`flex ${isFullscreen ? 'h-full' : 'h-[calc(100vh-64px)]'} w-full overflow-hidden rounded-tl-2xl relative`}>
+    <div className={`flex ${isFullscreen ? 'h-full' : 'h-[calc(100vh-64px)]'} w-full overflow-hidden rounded-2xl border border-slate-200/50 dark:border-white/5 bg-white/70 dark:bg-[#0B1120] backdrop-blur-xl relative shadow-lg`}>
+      {/* Background Orbs */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 dark:bg-primary/10 rounded-full blur-[100px] pointer-events-none z-0" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/20 dark:bg-purple-500/10 rounded-full blur-[100px] pointer-events-none z-0" />
       
       {/* Mobile Overlay for Sidebar */}
       {isMobileView && showSidebarOnMobile && (

@@ -58,21 +58,22 @@ const Courses = () => {
   };
 
   return (
-    <div className="p-6 w-full h-full overflow-y-auto custom-scrollbar space-y-8 pb-20 relative">
+    <div className="p-6 w-full h-full overflow-y-auto custom-scrollbar space-y-8 pb-20 relative overflow-hidden">
+      {/* Background Orbs */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 dark:bg-primary/10 rounded-full blur-[100px] pointer-events-none z-0" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/20 dark:bg-purple-500/10 rounded-full blur-[100px] pointer-events-none z-0" />
       
-      
-        {selectedCourse && (
-          <CourseViewer 
-            course={selectedCourse} 
-            onClose={() => setSelectedCourse(null)} 
-          />
-        )}
-      
+      {selectedCourse && (
+        <CourseViewer 
+          course={selectedCourse} 
+          onClose={() => setSelectedCourse(null)} 
+        />
+      )}
 
       {/* Top Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
         <div>
-          <h1 className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient- bg-primary">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400">
             My Learning
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">Manage your courses, track progress, and continue learning.</p>
@@ -82,7 +83,7 @@ const Courses = () => {
           {/* Fullscreen Toggle */}
           <button 
             onClick={toggleFullscreen}
-            className="p-2.5 bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-sm text-slate-500 hover:text-primary flex items-center justify-center"
+            className="p-2.5 bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-xl text-slate-500 hover:text-primary flex items-center justify-center backdrop-blur-sm transition-colors"
             title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Mode"}
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
@@ -95,10 +96,10 @@ const Courses = () => {
               placeholder="Search courses..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 pr-4 py-2.5 w-full bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-sm text-sm font-medium focus:outline-none focus:border-primary"
+              className="pl-9 pr-4 py-2.5 w-full bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-medium focus:outline-none focus:border-primary backdrop-blur-sm"
             />
           </div>
-          <button className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-sm border border-slate-200 dark:border-white/10 bg-white/70 dark:bg-slate-800/70 text-slate-600 dark:text-slate-300 text-sm font-bold hover:text-primary w-full sm:w-auto">
+          <button className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10 bg-white/70 dark:bg-slate-800/70 text-slate-600 dark:text-slate-300 text-sm font-bold hover:text-primary w-full sm:w-auto backdrop-blur-sm transition-colors">
             <Filter className="w-4 h-4" />
             Sort
           </button>

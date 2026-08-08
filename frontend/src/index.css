@@ -35,11 +35,11 @@
   body {
     @apply text-gray-900 dark:text-gray-100 font-sans antialiased transition-colors duration-300;
     /* Beautiful ambient mesh gradient for dark mode */
-    background-color: var(--color-light-bg);
+    background-color: #F8FAFC;
   }
   
   .dark body {
-    background-color: #050505;
+    background-color: #0B1120;
     background-image: 
       radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
       radial-gradient(at 50% 0%, hsla(225,39%,30%,0.1) 0, transparent 50%), 

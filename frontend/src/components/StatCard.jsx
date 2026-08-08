@@ -13,18 +13,18 @@ const StatCard = ({ title, value, change, icon: Icon, color, progress = 0 }) => 
 
   return (
     <div
-      className="relative overflow-hidden bg-[#1B2430] border border-slate-800 p-6 rounded-sm cursor-pointer"
+      className="relative overflow-hidden h-full w-full p-4 sm:p-6 cursor-pointer flex flex-col justify-between"
     >
       
-      <div className="flex justify-between items-center relative z-10">
-        <div>
-          <h3 className="text-sm font-semibold text-slate-400 mb-1">{title}</h3>
+      <div className="flex justify-between items-center relative z-10 w-full">
+        <div className="min-w-0">
+          <h3 className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 mb-1 truncate">{title}</h3>
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-bold text-white tracking-tight">{value}</span>
+            <span className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight break-all">{value}</span>
           </div>
         </div>
-        <div className={`w-12 h-12 rounded-md flex items-center justify-center ${solidColor}`}>
-          <Icon className="w-6 h-6 text-white" />
+        <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-md flex items-center justify-center shrink-0 ${solidColor}`}>
+          <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         </div>
       </div>
     </div>

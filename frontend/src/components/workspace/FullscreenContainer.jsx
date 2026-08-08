@@ -20,7 +20,7 @@ const FullscreenContainer = ({ children }) => {
   return (
     <div
       id="workspace-fullscreen-container"
-      className={`bg-[#050505] dark:bg-[#050505] overflow-hidden flex flex-col ${isFullscreen ? 'fixed inset-0 z-[100]' : 'border border-slate-800 rounded-sm w-full h-full'}`}
+      className={`bg-slate-50 dark:bg-[#0B1120] overflow-hidden flex flex-col ${isFullscreen ? 'fixed inset-0 z-[100]' : 'border border-slate-200/50 dark:border-white/5 rounded-2xl w-full h-full'}`}
     >
       {children}
     </div>

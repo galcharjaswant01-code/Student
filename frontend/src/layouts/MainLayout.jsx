@@ -32,7 +32,7 @@ const MainLayout = () => {
   const sidebarActualWidth = isMobile ? 0 : (isCollapsed ? 80 : width);
 
   return (
-    <div className="min-h-screen bg-light-bg dark:bg-[#050505] text-gray-900 dark:text-gray-100 relative">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0B1120] text-gray-900 dark:text-gray-100 relative">
       <AnimatedBackground />
 
       {/* Mobile Drawer Backdrop */}

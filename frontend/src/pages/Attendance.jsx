@@ -16,10 +16,13 @@ const Attendance = () => {
 
 
   return (
-    <div className="p-6 w-full space-y-6 pb-20">
+    <div className="p-6 w-full space-y-6 pb-20 relative overflow-hidden">
+      {/* Background Orbs */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 dark:bg-primary/10 rounded-full blur-[100px] pointer-events-none z-0" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/20 dark:bg-purple-500/10 rounded-full blur-[100px] pointer-events-none z-0" />
       
       {/* Top Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
         <div className="flex items-center gap-4">
           <button 
             onClick={() => {
@@ -30,12 +33,12 @@ const Attendance = () => {
                 store.setSidebarCollapsed(!store.themePreferences?.isSidebarCollapsed);
               }
             }}
-            className="p-2.5 bg-white/50 dark:bg-slate-800/50 hover:bg-white/80 dark:hover:bg-slate-700/80 rounded-sm flex-shrink-0 border border-white/20 dark:border-white/10"
+            className="p-2.5 bg-white/50 dark:bg-slate-800/50 hover:bg-white/80 dark:hover:bg-slate-700/80 rounded-xl flex-shrink-0 border border-white/20 dark:border-white/10 transition-colors"
           >
             <Menu className="w-5 h-5 text-slate-700 dark:text-slate-300" />
           </button>
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 tracking-tight">
               Attendance Hub
             </h1>
             <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">Monitor your presence, track streaks, and analyze your performance.</p>
@@ -45,7 +48,7 @@ const Attendance = () => {
           {/* Fullscreen Toggle */}
           <button 
             onClick={toggleFullscreen}
-            className="p-2.5 bg-white/70 dark:bg-slate-800/70 border border-white/20 dark:border-white/10 rounded-sm text-slate-500 hover:text-primary flex items-center justify-center"
+            className="p-2.5 bg-white/70 dark:bg-slate-800/70 border border-white/20 dark:border-white/10 rounded-xl text-slate-500 hover:text-primary flex items-center justify-center backdrop-blur-sm transition-colors"
             title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Mode"}
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}

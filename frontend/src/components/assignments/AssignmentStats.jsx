@@ -76,22 +76,22 @@ const AssignmentStats = () => {
 
   return (
     <div className="w-full space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {statCards.map((stat, i) => (
           <div
             key={i}
-            className={`relative overflow-hidden bg-[#1B2430] border border-slate-800 p-6 rounded-sm cursor-pointer`}
+            className="relative overflow-hidden bg-white/70 dark:bg-[#0F172A]/70 border border-slate-200/50 dark:border-white/5 p-5 sm:p-6 rounded-sm cursor-pointer shadow-sm hover:border-primary/20 dark:hover:border-primary/20 transition-all duration-300"
           >
             
             <div className="flex justify-between items-center relative z-10">
-              <div>
-                <h3 className="text-sm font-semibold text-slate-400 mb-1">{stat.title}</h3>
+              <div className="min-w-0">
+                <h3 className="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400 mb-1 truncate">{stat.title}</h3>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-bold text-white tracking-tight">{stat.value}</span>
+                  <span className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight break-all">{stat.value}</span>
                 </div>
               </div>
-              <div className={`w-12 h-12 rounded-md flex items-center justify-center ${stat.color}`}>
-                <stat.icon className="w-6 h-6 text-white" />
+              <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-md flex items-center justify-center shrink-0 ${stat.color}`}>
+                <stat.icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
             </div>
           </div>

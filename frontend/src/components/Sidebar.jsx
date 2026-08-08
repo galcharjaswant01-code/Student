@@ -54,9 +54,11 @@ const Sidebar = () => {
       className={`
         fixed top-0 left-0 z-50
         flex flex-col h-screen overflow-hidden
-        bg-white/70 dark:bg-[#0F172A]/80 border-r border-slate-200/50 dark:border-white/5 
+        border-r border-slate-200/50 dark:border-white/5 
         transition-all duration-300 ease-in-out
-        ${isMobile ? (isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full') : 'translate-x-0'}
+        ${isMobile 
+          ? 'bg-white dark:bg-[#0F172A] shadow-2xl ' + (isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full') 
+          : 'bg-white/70 dark:bg-[#0F172A]/80 backdrop-blur-md ' + 'translate-x-0'}
       `}
       style={{ width: isMobile ? 288 : (isCollapsed ? 80 : width) }}
     >

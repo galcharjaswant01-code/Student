@@ -66,12 +66,15 @@ const Assignments = () => {
   };
 
   return (
-    <div className="p-6 w-full h-full overflow-y-auto custom-scrollbar space-y-6 pb-20">
+    <div className="p-6 w-full h-full overflow-y-auto custom-scrollbar space-y-6 pb-20 relative">
+      {/* Background Orbs */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 dark:bg-primary/10 rounded-full blur-[100px] pointer-events-none z-0" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/20 dark:bg-purple-500/10 rounded-full blur-[100px] pointer-events-none z-0" />
       
       {/* Top Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
         <div>
-          <h1 className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient- bg-primary">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400">
             Assignments
           </h1>
           <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">Manage coursework, track deadlines, and submit your tasks.</p>
@@ -81,7 +84,7 @@ const Assignments = () => {
           {/* Fullscreen Toggle */}
           <button 
             onClick={toggleFullscreen}
-            className="p-2.5 bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-sm text-slate-500 hover:text-primary flex items-center justify-center"
+            className="p-2.5 bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-xl text-slate-500 hover:text-primary flex items-center justify-center backdrop-blur-sm transition-colors"
             title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Mode"}
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
@@ -95,7 +98,7 @@ const Assignments = () => {
               placeholder="Search assignments..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 pr-4 py-2.5 w-full md:w-64 bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-sm text-sm font-medium focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+              className="pl-9 pr-4 py-2.5 w-full md:w-64 bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-medium focus:outline-none focus:border-primary backdrop-blur-sm"
             />
           </div>
 
@@ -105,7 +108,7 @@ const Assignments = () => {
             <select 
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className="pl-9 pr-8 py-2.5 bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-sm text-sm font-medium focus:outline-none focus:border-primary appearance-none cursor-pointer"
+              className="pl-9 pr-8 py-2.5 bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-medium focus:outline-none focus:border-primary appearance-none cursor-pointer backdrop-blur-sm"
             >
               <option value="All">All Statuses</option>
               <option value="Not Started">Not Started</option>
@@ -117,16 +120,16 @@ const Assignments = () => {
           </div>
 
           {/* View Mode Toggle */}
-          <div className="flex items-center bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-sm p-1">
+          <div className="flex items-center bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-xl p-1 backdrop-blur-sm">
             <button 
               onClick={() => setViewMode('grid')}
-              className={`p-1.5 rounded-sm  ${viewMode === 'grid' ? 'bg-primary text-white ' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+              className={`p-1.5 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-primary text-white ' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
             >
               <LayoutGrid className="w-4 h-4" />
             </button>
             <button 
               onClick={() => setViewMode('list')}
-              className={`p-1.5 rounded-sm  ${viewMode === 'list' ? 'bg-primary text-white ' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+              className={`p-1.5 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-primary text-white ' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
             >
               <ListIcon className="w-4 h-4" />
             </button>

@@ -130,7 +130,7 @@ const TopNavbar = () => {
         <div className="flex items-center gap-2.5 flex-1 relative">
           
           <div className="lg:hidden flex items-center gap-2 pr-2 border-r border-slate-200/50 dark:border-white/10">
-            <div className="w-8 h-8 rounded-sm bg-gradient- bg-primary flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-gradient- bg-primary flex items-center justify-center">
               <span className="text-white font-bold text-sm">S</span>
             </div>
           </div>
@@ -139,11 +139,11 @@ const TopNavbar = () => {
             {/* Desktop Search Bar */}
             <div 
               onClick={() => setIsSearchOpen(true)}
-              className="hidden sm:flex items-center w-64 bg-slate-100/80 dark:bg-black/20 hover:bg-slate-200/80 dark:hover:bg-black/40 border border-transparent dark:border-white/5 rounded-sm px-3 py-2 cursor-text group"
+              className="hidden sm:flex items-center w-64 bg-slate-100/80 dark:bg-black/20 hover:bg-slate-200/80 dark:hover:bg-black/40 border border-transparent dark:border-white/5 rounded-xl px-3 py-2 cursor-text group transition-all"
             >
               <Search className="w-4 h-4 text-slate-400 group-hover:text-primary" />
               <span className="ml-2 text-sm text-slate-500 dark:text-slate-400 flex-1 select-none">Search...</span>
-              <div className="flex items-center gap-1 text-[10px] font-medium text-slate-400 dark:text-slate-500 bg-white dark:bg-white/5 px-1.5 py-0.5 rounded border border-slate-200 dark:border-transparent">
+              <div className="flex items-center gap-1 text-[10px] font-medium text-slate-400 dark:text-slate-500 bg-white dark:bg-white/5 px-1.5 py-0.5 rounded-lg border border-slate-200 dark:border-transparent">
                 <Command className="w-3 h-3" />
                 <span>K</span>
               </div>
@@ -152,7 +152,7 @@ const TopNavbar = () => {
             {/* Mobile Search Icon */}
             <button 
               onClick={() => setIsSearchOpen(true)}
-              className="sm:hidden p-2 text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-white rounded-sm hover:bg-slate-100 dark:hover:bg-white/5"
+              className="sm:hidden p-2 text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
             >
               <Search className="w-5 h-5" />
             </button>
@@ -161,7 +161,7 @@ const TopNavbar = () => {
             
               {isSearchOpen && (
                 <div
-                  className="fixed sm:absolute top-16 sm:top-0 left-4 sm:left-0 right-4 sm:right-auto w-auto sm:w-[500px] max-w-[500px] bg-white/95 dark:bg-[#0F172A]/95 -3xl border border-slate-200 dark:border-white/10 rounded-sm overflow-hidden z-50"
+                  className="fixed sm:absolute top-16 sm:top-0 left-4 sm:left-0 right-4 sm:right-auto w-auto sm:w-[500px] max-w-[500px] bg-white/95 dark:bg-[#0F172A]/95 shadow-3xl border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden z-50"
                 >
                   <div className="p-3 border-b border-slate-100 dark:border-white/5 flex items-center gap-2">
                     <Search className="w-5 h-5 text-primary" />
@@ -174,8 +174,8 @@ const TopNavbar = () => {
                       className="flex-1 bg-transparent border-none outline-none text-slate-900 dark:text-white placeholder-slate-400 text-sm"
                     />
                     <div className="flex gap-1">
-                      <span className="text-[10px] bg-slate-100 dark:bg-white/10 text-slate-500 px-1.5 py-0.5 rounded">↑↓ to navigate</span>
-                      <span className="text-[10px] bg-slate-100 dark:bg-white/10 text-slate-500 px-1.5 py-0.5 rounded">↵ to select</span>
+                      <span className="text-[10px] bg-slate-100 dark:bg-white/10 text-slate-500 px-1.5 py-0.5 rounded-xl">↑↓ to navigate</span>
+                      <span className="text-[10px] bg-slate-100 dark:bg-white/10 text-slate-500 px-1.5 py-0.5 rounded-xl">↵ to select</span>
                     </div>
                   </div>
                   
@@ -208,7 +208,7 @@ const TopNavbar = () => {
                                       if (item === 'Toggle Dark Mode') toggleTheme();
                                       setIsSearchOpen(false);
                                     }}
-                                    className={`w-full text-left px-3 py-2.5 text-sm rounded-sm transition-colors flex items-center justify-between
+                                    className={`w-full text-left px-3 py-2.5 text-sm rounded-xl transition-colors flex items-center justify-between
                                       ${isSelected 
                                         ? 'bg-primary text-white shadow-md shadow-primary/20' 
                                         : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
