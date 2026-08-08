@@ -5,7 +5,6 @@ services:
     env: python
     rootDir: backend
     buildCommand: "./build.sh"
-    # Use daphne or uvicorn for ASGI. We'll use uvicorn with standard workers for Channels support.
     startCommand: "uvicorn config.asgi:application --host 0.0.0.0 --port $PORT"
     envVars:
       - key: DJANGO_SETTINGS_MODULE
@@ -86,13 +85,14 @@ services:
       - key: DEBUG
         value: "False"
 
+  # Redis — must be under services, NOT databases
+  - type: redis
+    name: student-management-redis
+    plan: free
+    ipAllowList: []
+
 databases:
   - name: student-management-db
     plan: free
     databaseName: student_management
     user: student_admin
-
-  # Render recently added managed Redis support
-  - name: student-management-redis
-    type: redis
-    plan: free
