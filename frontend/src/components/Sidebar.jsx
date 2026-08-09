@@ -15,8 +15,7 @@ import {
   LogOut, 
   GraduationCap,
   ChevronLeft,
-  ChevronRight,
-  GripVertical
+  ChevronRight
 } from 'lucide-react';
 import useDashboardStore from '../store/useDashboardStore';
 import Avatar from './ui/Avatar';
@@ -99,12 +98,12 @@ const Sidebar = () => {
   const actualWidth = isMobile ? 270 : (isCollapsed ? 76 : currentWidth);
 
   return (
-    <div 
+    <aside 
       className={`
         fixed top-0 left-0 z-50
         flex flex-col h-screen
         bg-slate-900 border-r border-slate-800 text-white
-        transition-all duration-150 ease-out select-none relative
+        transition-all duration-150 ease-out select-none
         ${isMobile ? (isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full') : 'translate-x-0'}
       `}
       style={{ width: actualWidth }}
@@ -198,7 +197,7 @@ const Sidebar = () => {
           <div className={`w-1 h-12 rounded-full transition-all ${isResizing ? 'bg-blue-500 scale-y-125' : 'bg-slate-700 group-hover:bg-blue-400'}`} />
         </div>
       )}
-    </div>
+    </aside>
   );
 };
 

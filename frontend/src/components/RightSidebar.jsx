@@ -8,8 +8,7 @@ import {
   FileText, 
   Play, 
   Pause, 
-  RotateCcw,
-  Sparkles
+  RotateCcw
 } from 'lucide-react';
 import useDashboardStore from '../store/useDashboardStore';
 import Badge from './ui/Badge';
@@ -92,12 +91,7 @@ const RightSidebar = () => {
 
   return (
     <aside
-      className={`
-        fixed top-0 right-0 z-40
-        flex flex-col h-screen
-        bg-slate-900 border-l border-slate-800 text-white
-        transition-all duration-150 ease-out select-none relative
-      `}
+      className="fixed top-0 right-0 z-40 flex flex-col h-screen bg-slate-900 border-l border-slate-800 text-white transition-all duration-150 ease-out select-none"
       style={{ width: currentActualWidth }}
     >
       {/* Left Edge Resizable Drag Handle */}
