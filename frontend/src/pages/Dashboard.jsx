@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
   TrendingUp, BookOpen, Clock, Calendar as CalendarIcon, CheckCircle, 
-  ArrowRight, MessageSquare, ClipboardList, FolderOpen, User, Plus, Compass
+  ArrowRight, MessageSquare, ClipboardList, FolderOpen, User, Plus, Compass, Bot, Sparkles
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Card from '../components/ui/Card';
@@ -50,27 +50,57 @@ const Dashboard = () => {
     <div className="p-4 sm:p-6 w-full space-y-6 max-w-7xl mx-auto">
       
       {/* Welcome Banner */}
-      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div className="space-y-1 max-w-2xl">
-          <div className="flex items-center gap-2 mb-2">
+      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xs">
+        <div className="space-y-1.5 max-w-2xl">
+          <div className="flex items-center gap-2 mb-1">
             <Badge variant="blue">{isGuest ? 'Guest Visitor Mode' : 'Academic Portal'}</Badge>
+            <span className="text-xs text-blue-400 font-semibold flex items-center gap-1">
+              <Sparkles className="w-3.5 h-3.5" /> AI Academic Assistant Active
+            </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
             Welcome back, <span className="text-blue-400">{userName}!</span>
           </h1>
           <p className="text-xs sm:text-sm text-slate-300 font-normal leading-relaxed">
-            Here is your daily academic overview, upcoming classes, deadlines, and study progress.
+            Here is your daily academic overview, upcoming classes, deadlines, and AI study tools.
           </p>
         </div>
 
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <Button variant="primary" icon={BookOpen} onClick={() => navigate('/courses')}>
-            My Courses
-          </Button>
-          <Button variant="secondary" icon={Compass} onClick={() => navigate('/ai-studio')}>
-            AI Studio
-          </Button>
+        {/* Banner Action Buttons - Explicit high-contrast white & blue styling */}
+        <div className="flex items-center gap-3 w-full md:w-auto shrink-0">
+          <button
+            onClick={() => navigate('/courses')}
+            className="px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg border border-slate-700 bg-slate-800 text-white hover:bg-slate-700 transition-colors flex items-center gap-2 cursor-pointer"
+          >
+            <BookOpen className="w-4 h-4 text-blue-400" />
+            <span>My Courses</span>
+          </button>
+
+          <button
+            onClick={() => navigate('/ai-studio')}
+            className="px-4 py-2 text-xs sm:text-sm font-bold rounded-lg border border-blue-500 bg-blue-600/20 text-blue-400 hover:bg-blue-600 hover:text-white transition-colors flex items-center gap-2 cursor-pointer"
+          >
+            <Bot className="w-4 h-4" />
+            <span>Open AI Studio</span>
+          </button>
         </div>
+      </div>
+
+      {/* AI Assistant Spotlight Card */}
+      <div className="p-4 rounded-xl border border-blue-600/30 bg-blue-50/40 dark:bg-blue-950/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-lg border border-blue-600 text-blue-600 dark:text-blue-400 bg-transparent shrink-0">
+            <Bot className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="text-sm font-bold text-slate-900 dark:text-white">AI Study Assistant & Tutoring Suite</h4>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">Generate practice quizzes, summarize lecture PDFs, and debug code assignments.</p>
+          </div>
+        </div>
+        
+        <Button variant="primary" size="sm" icon={ArrowRight} onClick={() => navigate('/ai-studio')} className="shrink-0">
+          Launch AI Studio
+        </Button>
       </div>
 
       {/* 4 Stats Cards */}
@@ -133,7 +163,7 @@ const Dashboard = () => {
 
         </div>
 
-        {/* Right Column (4 cols): Recent Resources & Messages */}
+        {/* Right Column (4 cols): Quick Actions, Resources, Messages */}
         <div className="lg:col-span-4 space-y-6">
           
           {/* Quick Actions */}
@@ -145,8 +175,8 @@ const Dashboard = () => {
               <Button variant="secondary" size="sm" icon={FolderOpen} onClick={() => navigate('/resources')}>
                 Resources
               </Button>
-              <Button variant="secondary" size="sm" icon={CalendarIcon} onClick={() => navigate('/calendar')}>
-                Calendar
+              <Button variant="secondary" size="sm" icon={Bot} onClick={() => navigate('/ai-studio')}>
+                AI Studio
               </Button>
               <Button variant="secondary" size="sm" icon={MessageSquare} onClick={() => navigate('/messages')}>
                 Messages
