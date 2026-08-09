@@ -5,6 +5,7 @@ import Logo from '../components/Logo';
 import StatCard from '../components/StatCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import AlertMessage from '../components/AlertMessage';
+import { getFriendlyErrorMessage } from '../utils/authErrors';
 import { 
   Users, 
   CheckCircle2, 
@@ -53,7 +54,7 @@ const Home = () => {
       navigate('/dashboard');
     } catch (err) {
       console.error('Google sign-in error:', err);
-      setError(err.message || 'Google authentication failed. Please try again.');
+      setError(getFriendlyErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -75,7 +76,7 @@ const Home = () => {
       setSuccessMsg(`Magic login link sent to ${email}! Check your inbox to complete sign in.`);
     } catch (err) {
       console.error('Magic link error:', err);
-      setError(err.message || 'Failed to send magic link. Please check your email.');
+      setError(getFriendlyErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -97,7 +98,7 @@ const Home = () => {
       navigate('/dashboard');
     } catch (err) {
       console.error('Password login error:', err);
-      setError('Invalid email or password. You can also try sending a magic link.');
+      setError(getFriendlyErrorMessage(err));
     } finally {
       setLoading(false);
     }

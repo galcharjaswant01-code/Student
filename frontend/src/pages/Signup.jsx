@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { auth } from '../firebase';
 import axios from 'axios';
 import { getApiBaseUrl } from '../services/config';
+import { getFriendlyErrorMessage } from '../utils/authErrors';
 
 const Signup = () => {
   const [name, setName] = useState('');
@@ -44,26 +45,8 @@ const Signup = () => {
       setShowOtp(true);
       
     } catch (err) {
-      switch (err.code) {
-        case 'auth/email-already-in-use':
-          setError('This email is already registered. Please sign in instead.');
-          break;
-        case 'auth/invalid-email':
-          setError('Please enter a valid email address.');
-          break;
-        case 'auth/weak-password':
-          setError('Your password is too weak. Please use at least 6 characters.');
-          break;
-        case 'auth/network-request-failed':
-          setError('Network error. Please check your internet connection.');
-          break;
-        case 'auth/too-many-requests':
-          setError('Too many attempts. Please try again later.');
-          break;
-        default:
-          setError('Failed to create an account. Please try again.');
-          console.error(err);
-      }
+      setError(getFriendlyErrorMessage(err));
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -105,16 +88,13 @@ const Signup = () => {
       if (err.code === 'auth/unauthorized-domain') {
         setError('This domain is not authorized for Google Sign-In. Please add it to the Firebase console.');
       } else if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user') {
-        // Fallback to redirect if popup fails
         try {
           await loginWithGoogleRedirect();
         } catch (redirectErr) {
-          setError('Google Sign-In failed. Please try again.');
+          setError(getFriendlyErrorMessage(redirectErr));
         }
-      } else if (err.code === 'auth/network-request-failed') {
-        setError('Network error. Please check your internet connection.');
       } else {
-        setError('Google Sign-In failed. Please try again.');
+        setError(getFriendlyErrorMessage(err));
       }
     } finally {
       setLoading(false);

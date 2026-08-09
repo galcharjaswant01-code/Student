@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
 import LoadingSpinner from '../components/LoadingSpinner';
 import AlertMessage from '../components/AlertMessage';
+import { getFriendlyErrorMessage } from '../utils/authErrors';
 
 const VerifyMagicLink = () => {
   const [status, setStatus] = useState('verifying');
@@ -18,7 +19,7 @@ const VerifyMagicLink = () => {
       const href = window.location.href;
       if (!isSignInWithEmailLink(href)) {
         setStatus('error');
-        setError('Invalid or expired authentication link.');
+        setError('This magic sign-in link is invalid or has expired.');
         return;
       }
 
@@ -39,7 +40,7 @@ const VerifyMagicLink = () => {
       } catch (err) {
         console.error('Magic link verification failed:', err);
         setStatus('error');
-        setError(err.message || 'Failed to authenticate with magic link.');
+        setError(getFriendlyErrorMessage(err));
       }
     };
 
@@ -61,7 +62,7 @@ const VerifyMagicLink = () => {
     } catch (err) {
       console.error('Manual magic link verification failed:', err);
       setStatus('error');
-      setError(err.message || 'Verification failed. Please ensure the email matches the request.');
+      setError(getFriendlyErrorMessage(err));
     }
   };
 
