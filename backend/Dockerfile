@@ -16,5 +16,7 @@ RUN pip install -r requirements.txt
 
 COPY . /app/
 
+RUN python manage.py collectstatic --no-input || true
+
 CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "config.asgi:application"]
 
