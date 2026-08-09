@@ -1,63 +1,47 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-@theme {
-  --color-primary: #2563EB;
-  --color-secondary: #8B5CF6;
-  --color-accent: #06B6D4;
-  --color-success: #22C55E;
-  
-  --color-dark-bg: #0B0F19;
-  --color-dark-surface: #0F172A;
-  --color-dark-border: #1E293B;
-  
-  --color-light-bg: #FFFFFF;
-  --color-light-surface: #FFFFFF;
-  --color-light-border: #E2E8F0;
+/* Strict 4-Color Theme Definition:
+   1. White: #FFFFFF
+   2. Dark Navy: #0F172A (slate-900 / slate-950)
+   3. Blue: #2563EB (blue-600 / blue-500)
+   4. Light Blue: #EFF6FF (blue-50 / blue-950 in dark)
+*/
 
-  --font-sans: 'Inter', 'Poppins', sans-serif;
-  
-  /* Fluid Typography Variables */
-  --text-fluid-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
-  --text-fluid-sm: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
-  --text-fluid-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
-  --text-fluid-lg: clamp(1.125rem, 1rem + 0.625vw, 1.25rem);
-  --text-fluid-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
-  --text-fluid-2xl: clamp(1.5rem, 1.3rem + 1vw, 2rem);
-  --text-fluid-3xl: clamp(1.875rem, 1.5rem + 1.875vw, 3rem);
-  --text-fluid-4xl: clamp(2.25rem, 1.8rem + 2.25vw, 4rem);
+@theme {
+  --color-white: #FFFFFF;
+  --color-navy: #0F172A;
+  --color-navy-light: #1E293B;
+  --color-blue-accent: #2563EB;
+  --color-blue-light: #EFF6FF;
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 @layer base {
   body {
-    @apply text-gray-900 dark:text-gray-100 font-sans antialiased transition-colors duration-300;
-    /* Beautiful ambient mesh gradient for dark mode */
-    background-color: var(--color-light-bg);
-  }
-  
-  .dark body {
-    background-color: #050505;
-    background-image: 
-      radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
-      radial-gradient(at 50% 0%, hsla(225,39%,30%,0.1) 0, transparent 50%), 
-      radial-gradient(at 100% 0%, hsla(339,49%,30%,0.05) 0, transparent 50%);
-    background-attachment: fixed;
+    @apply text-slate-900 dark:text-slate-100 font-sans antialiased bg-white dark:bg-slate-950 transition-colors duration-200;
   }
 }
 
 @layer components {
-  .card {
-    @apply bg-light-surface dark:bg-dark-surface rounded-2xl shadow-sm border border-light-border dark:border-dark-border p-6 transition-colors duration-300;
+  /* Strict 4-Color Card */
+  .card-4color {
+    @apply bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-xs transition-all duration-200;
   }
   
-  .glass-card {
-    @apply bg-white/70 dark:bg-gray-900/70 backdrop-blur-md rounded-2xl shadow-sm border border-white/20 dark:border-gray-700/50 p-6;
+  /* Transparent Button System */
+  .btn-primary-transparent {
+    @apply bg-transparent border border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 rounded-lg px-4 py-2 text-sm font-semibold transition-colors duration-150 flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer;
   }
 
-  /* Custom Premium Scrollbar */
+  .btn-secondary-transparent {
+    @apply bg-transparent border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg px-4 py-2 text-sm font-semibold transition-colors duration-150 flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer;
+  }
+
+  /* Custom Clean Scrollbar */
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -68,80 +52,25 @@
   }
   
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 dark:bg-gray-700 rounded-full;
+    @apply bg-slate-300 dark:bg-slate-800 rounded-full;
   }
   
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-400 dark:bg-gray-600;
-  }
-  
-  /* React Grid Layout Enhancements */
-  .react-grid-item {
-    transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  .react-grid-item.resizing, .react-grid-item.react-draggable-dragging {
-    transition: none;
-    z-index: 100;
-  }
-  
-  .react-resizable-handle {
-    background-image: none !important;
-    @apply w-4 h-4 right-1 bottom-1 absolute cursor-se-resize;
-  }
-  
-  .react-resizable-handle::after {
-    content: "";
-    @apply absolute right-1 bottom-1 w-2 h-2 border-r-2 border-b-2 border-primary/50 dark:border-accent/50 rounded-br-sm opacity-0 transition-opacity duration-300;
-  }
-  
-  .responsive-table-container {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    @apply bg-slate-400 dark:bg-slate-700;
   }
 }
 
-/* Fix mobile horizontal page overflow */
+/* Page overflow reset */
 html, body {
   overflow-x: hidden;
   max-width: 100vw;
 }
 
-@keyframes floatAnimation {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-6px); }
-}
-
-@keyframes bounceSlow {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
-}
-
-@keyframes pulseSlow {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.95; transform: scale(1.02); }
-}
-
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(2px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-.animate-float {
-  animation: floatAnimation 4s ease-in-out infinite;
-}
-
-.animate-bounce-slow {
-  animation: bounceSlow 5s ease-in-out infinite;
-}
-
-.animate-pulse-slow {
-  animation: pulseSlow 4s ease-in-out infinite;
-}
-
 .animate-fade-in {
-  animation: fadeIn 0.3s ease-out forwards;
+  animation: fadeIn 0.2s ease-out forwards;
 }
-
-

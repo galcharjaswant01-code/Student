@@ -1,270 +1,131 @@
 import React, { useState } from 'react';
-
-import { 
-  User, Shield, Bell, Palette, Camera, 
-  Smartphone, Monitor, Moon, Sun, Key, 
-  Lock, LogOut, ChevronRight, CheckCircle2 
-} from 'lucide-react';
+import Card from '../components/ui/Card';
+import Button from '../components/ui/Button';
+import Input from '../components/ui/Input';
+import Badge from '../components/ui/Badge';
+import { User, Bell, Moon, Sun, Lock, Shield, Check } from 'lucide-react';
 import useDashboardStore from '../store/useDashboardStore';
 
-const TABS = [
-  { id: 'profile', label: 'Profile', icon: User },
-  { id: 'notifications', label: 'Notifications', icon: Bell },
-  { id: 'security', label: 'Security', icon: Shield },
-];
-
 const Settings = () => {
-  const [activeTab, setActiveTab] = useState('profile');
-  const [saved, setSaved] = useState(false);
-  
-  const globalProfile = useDashboardStore(state => state.userProfile);
-  const setGlobalProfile = useDashboardStore(state => state.setUserProfile);
+  const { themePreferences, setTheme } = useDashboardStore();
+  const isDark = themePreferences?.theme !== 'light';
 
-  const [profile, setProfile] = useState(globalProfile);
-
-  const fileInputRef = React.useRef(null);
+  const [activeTab, setActiveTab] = useState('Account');
+  const [savedMsg, setSavedMsg] = useState('');
 
   const handleSave = () => {
-    if (activeTab === 'profile') {
-      localStorage.setItem('userProfile', JSON.stringify(profile));
-      setGlobalProfile(profile);
-    }
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    setSavedMsg('Settings saved successfully.');
+    setTimeout(() => setSavedMsg(''), 3000);
   };
-
-  const handleAvatarChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setProfile({ ...profile, avatar: imageUrl });
-    }
-  };
-
-  const renderProfile = () => (
-    <div
-      className="space-y-8"
-    >
-      <div>
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Public Profile</h3>
-        <p className="text-gray-500 dark:text-slate-400 text-sm">Manage how your profile appears to other students and faculty.</p>
-      </div>
-
-      <div className="flex items-center gap-6 pb-6 border-b border-gray-200 dark:border-slate-700/50">
-        <div className="relative group">
-          <div className="w-24 h-24 rounded-full bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 flex items-center justify-center overflow-hidden">
-            {profile.avatar ? (
-              <img src={profile.avatar} alt="Avatar" className="w-full h-full object-cover" />
-            ) : (
-              <User className="w-10 h-10 text-gray-400 dark:text-slate-400" />
-            )}
-          </div>
-          <button 
-            onClick={() => fileInputRef.current?.click()}
-            className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-          >
-            <Camera className="w-6 h-6 text-white" />
-          </button>
-        </div>
-        <div>
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            onChange={handleAvatarChange} 
-            accept="image/jpeg, image/png, image/gif" 
-            className="hidden" 
-          />
-          <button 
-            onClick={() => fileInputRef.current?.click()}
-            className="px-4 py-2 bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-700 dark:text-white rounded-sm text-sm font-medium border border-gray-200 dark:border-slate-700"
-          >
-            Upload Avatar
-          </button>
-          <p className="text-gray-500 dark:text-slate-500 text-xs mt-2">JPG, GIF or PNG. Max size of 2MB.</p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700 dark:text-slate-300">First Name</label>
-          <input 
-            type="text" 
-            value={profile.firstName}
-            onChange={(e) => setProfile({...profile, firstName: e.target.value})}
-            className="w-full bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-sm px-4 py-2.5 text-gray-900 dark:text-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" 
-          />
-        </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700 dark:text-slate-300">Last Name</label>
-          <input 
-            type="text" 
-            value={profile.lastName}
-            onChange={(e) => setProfile({...profile, lastName: e.target.value})}
-            className="w-full bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-sm px-4 py-2.5 text-gray-900 dark:text-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" 
-          />
-        </div>
-        <div className="space-y-2 md:col-span-2">
-          <label className="text-sm font-medium text-gray-700 dark:text-slate-300">Email Address</label>
-          <input 
-            type="email" 
-            value={profile.email}
-            onChange={(e) => setProfile({...profile, email: e.target.value})}
-            className="w-full bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-sm px-4 py-2.5 text-gray-900 dark:text-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" 
-          />
-        </div>
-        <div className="space-y-2 md:col-span-2">
-          <label className="text-sm font-medium text-gray-700 dark:text-slate-300">Short Bio</label>
-          <textarea 
-            rows="3" 
-            value={profile.bio}
-            onChange={(e) => setProfile({...profile, bio: e.target.value})}
-            className="w-full bg-gray-50 dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-sm px-4 py-2.5 text-gray-900 dark:text-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 resize-none"
-          ></textarea>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderNotifications = () => (
-    <div
-      className="space-y-8"
-    >
-      <div>
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Notifications</h3>
-        <p className="text-gray-500 dark:text-slate-400 text-sm">Choose what we notify you about.</p>
-      </div>
-
-      <div className="space-y-6">
-        {[
-          { title: 'New Grades Posted', desc: 'Get notified when an instructor posts a new grade.', default: true },
-          { title: 'Upcoming Deadlines', desc: 'Reminders 24 hours before an assignment is due.', default: true },
-        ].map((item, i) => (
-          <div key={i} className="flex items-start justify-between bg-gray-50 dark:bg-slate-900/30 p-4 rounded-sm border border-gray-200 dark:border-slate-700/50">
-            <div className="pr-4">
-              <h4 className="text-gray-900 dark:text-white font-medium mb-1">{item.title}</h4>
-              <p className="text-gray-500 dark:text-slate-400 text-sm">{item.desc}</p>
-            </div>
-            <button className={`w-12 h-6 rounded-full  relative shrink-0 ${item.default ? 'bg-indigo-500' : 'bg-gray-300 dark:bg-slate-700'}`}>
-              <div className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-all ${item.default ? 'left-7' : 'left-1'}`} />
-            </button>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
-  const renderSecurity = () => (
-    <div
-      className="space-y-8"
-    >
-      <div>
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Security & Privacy</h3>
-        <p className="text-gray-500 dark:text-slate-400 text-sm">Keep your account secure.</p>
-      </div>
-
-      <div className="space-y-4">
-        <h4 className="text-gray-900 dark:text-white font-medium flex items-center gap-2"><Key className="w-4 h-4 text-indigo-500 dark:text-indigo-400"/> Change Password</h4>
-        <div className="bg-gray-50 dark:bg-slate-900/30 p-6 rounded-sm border border-gray-200 dark:border-slate-700/50 grid grid-cols-1 gap-4">
-          <input type="password" placeholder="Current Password" className="w-full bg-white dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-sm px-4 py-2.5 text-gray-900 dark:text-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" />
-          <input type="password" placeholder="New Password" className="w-full bg-white dark:bg-slate-900/50 border border-gray-200 dark:border-slate-700 rounded-sm px-4 py-2.5 text-gray-900 dark:text-white focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500" />
-          <button className="justify-self-start px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-sm text-sm font-medium shadow-sm">
-            Update Password
-          </button>
-        </div>
-      </div>
-
-      <div className="pt-6 border-t border-gray-200 dark:border-slate-700/50 space-y-4">
-        <h4 className="text-gray-900 dark:text-white font-medium flex items-center gap-2"><Lock className="w-4 h-4 text-emerald-500 dark:text-emerald-400"/> Two-Factor Authentication</h4>
-        <div className="flex items-center justify-between bg-emerald-50 dark:bg-emerald-500/10 p-4 rounded-sm border border-emerald-100 dark:border-emerald-500/20">
-          <div>
-            <h4 className="text-emerald-700 dark:text-emerald-400 font-medium mb-1">2FA is Enabled</h4>
-            <p className="text-emerald-600 dark:text-emerald-400/70 text-sm">Your account is secured with an authenticator app.</p>
-          </div>
-          <button className="px-4 py-2 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-300 rounded-sm text-sm font-medium hover:bg-gray-50 dark:hover:bg-slate-700 border border-gray-200 dark:border-transparent shadow-sm dark:shadow-none">
-            Configure
-          </button>
-        </div>
-      </div>
-
-      <div className="pt-6 border-t border-gray-200 dark:border-slate-700/50 space-y-4">
-        <h4 className="text-gray-900 dark:text-white font-medium flex items-center gap-2"><Smartphone className="w-4 h-4 text-rose-500 dark:text-rose-400"/> Active Sessions</h4>
-        <div className="bg-gray-50 dark:bg-slate-900/30 p-4 rounded-sm border border-gray-200 dark:border-slate-700/50 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Monitor className="w-8 h-8 text-gray-400 dark:text-slate-400" />
-            <div>
-              <p className="text-gray-900 dark:text-white font-medium">Mac OS • Safari</p>
-              <p className="text-gray-500 dark:text-slate-500 text-sm">San Francisco, CA • Current Session</p>
-            </div>
-          </div>
-          <span className="text-xs font-medium bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 px-2 py-1 rounded-sm">Active Now</span>
-        </div>
-        <button className="text-rose-600 dark:text-rose-400 text-sm font-medium hover:text-rose-700 dark:hover:text-rose-300 flex items-center gap-2 mt-4">
-          <LogOut className="w-4 h-4" /> Log out of all other devices
-        </button>
-      </div>
-
-    </div>
-  );
 
   return (
-    <div className="flex-1 flex flex-col p-3.5 sm:p-6 md:p-8 overflow-y-auto selection:bg-indigo-500/30 bg-gray-50 dark:bg-[#0B0F19] overflow-x-hidden">
-        
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1">Settings</h1>
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400">Manage your account settings and preferences.</p>
+    <div className="p-4 sm:p-6 w-full space-y-6 max-w-5xl mx-auto">
+      {/* Title */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Portal Settings</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Configure account preferences, notifications, security, and theme appearance.</p>
         </div>
-
-        {/* Main Settings Card */}
-        <div className="flex-1 flex flex-col md:flex-row gap-6 bg-white dark:bg-slate-800/30 border border-gray-200 dark:border-slate-700/50 rounded-xl p-4 sm:p-6 shadow-sm">
-          
-          {/* Navigation Sidebar */}
-          <div className="w-full md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-gray-200 dark:border-slate-700/50 pb-6 md:pb-0 md:pr-6 space-y-2">
-            {TABS.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center justify-between p-3 rounded-sm transition-colors ${
-                    isActive 
-                      ? 'bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 font-medium' 
-                      : 'text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800/50 hover:text-gray-900 dark:hover:text-white'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <Icon className="w-5 h-5" />
-                    <span className="font-medium text-sm">{tab.label}</span>
-                  </div>
-                  {isActive && <ChevronRight className="w-4 h-4" />}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Content Area */}
-          <div className="flex-1 max-w-2xl relative">
-            
-              {activeTab === 'profile' && <div key="profile">{renderProfile()}</div>}
-              {activeTab === 'notifications' && <div key="notifications">{renderNotifications()}</div>}
-              {activeTab === 'security' && <div key="security">{renderSecurity()}</div>}
-            
-
-            {/* Sticky Save Bar */}
-            <div className="sticky bottom-0 mt-8 pt-4 pb-2 flex justify-end">
-              <button 
-                onClick={handleSave}
-                className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-sm text-sm font-bold flex items-center gap-2 transition-all active:scale-95"
-              >
-                {saved ? <><CheckCircle2 className="w-4 h-4"/> Saved</> : 'Save Changes'}
-              </button>
-            </div>
-          </div>
-
-        </div>
-
+        <Button variant="primary" icon={Check} onClick={handleSave}>
+          Save Settings
+        </Button>
       </div>
+
+      {savedMsg && (
+        <div className="p-3 rounded-lg border border-blue-600/40 bg-blue-50/50 dark:bg-blue-950/20 text-xs font-semibold text-blue-600 dark:text-blue-400">
+          {savedMsg}
+        </div>
+      )}
+
+      {/* Tabs */}
+      <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+        {['Account', 'Notifications', 'Appearance', 'Security', 'Privacy'].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${activeTab === tab ? 'border border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400 bg-transparent' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      {/* Settings Tab Panes */}
+      {activeTab === 'Account' && (
+        <Card title="Account Settings" subtitle="Personal student identity and communication email">
+          <form className="space-y-4 max-w-lg">
+            <Input label="Student Name" defaultValue="Alex Johnson" icon={User} />
+            <Input label="Student Email" defaultValue="alex.johnson@university.edu" icon={User} />
+            <Input label="Student ID" defaultValue="STU-2026-8942" disabled />
+          </form>
+        </Card>
+      )}
+
+      {activeTab === 'Notifications' && (
+        <Card title="Notification Preferences" subtitle="Manage alerts for assignments, grades, and classes">
+          <div className="space-y-4 max-w-lg text-xs">
+            <label className="flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-slate-800">
+              <div>
+                <p className="font-bold text-slate-900 dark:text-white">Email Assignment Reminders</p>
+                <p className="text-slate-500 dark:text-slate-400">Receive an email 24h before submission deadline</p>
+              </div>
+              <input type="checkbox" defaultChecked className="accent-blue-600 w-4 h-4" />
+            </label>
+
+            <label className="flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-slate-800">
+              <div>
+                <p className="font-bold text-slate-900 dark:text-white">Class Schedule Notifications</p>
+                <p className="text-slate-500 dark:text-slate-400">Push notifications for upcoming lectures</p>
+              </div>
+              <input type="checkbox" defaultChecked className="accent-blue-600 w-4 h-4" />
+            </label>
+          </div>
+        </Card>
+      )}
+
+      {activeTab === 'Appearance' && (
+        <Card title="Theme & Visual Appearance" subtitle="Choose light or dark mode font theme">
+          <div className="flex items-center gap-4 pt-2">
+            <button
+              onClick={() => setTheme('light')}
+              className={`p-4 rounded-xl border flex flex-col items-center gap-2 w-36 transition-colors ${!isDark ? 'border-blue-600 text-blue-600 font-bold bg-blue-50/50' : 'border-slate-200 dark:border-slate-800 text-slate-500'}`}
+            >
+              <Sun className="w-6 h-6" />
+              <span className="text-xs">Light Mode</span>
+            </button>
+
+            <button
+              onClick={() => setTheme('dark')}
+              className={`p-4 rounded-xl border flex flex-col items-center gap-2 w-36 transition-colors ${isDark ? 'border-blue-500 text-blue-400 font-bold bg-blue-950/40' : 'border-slate-200 dark:border-slate-800 text-slate-500'}`}
+            >
+              <Moon className="w-6 h-6" />
+              <span className="text-xs">Dark Mode</span>
+            </button>
+          </div>
+        </Card>
+      )}
+
+      {activeTab === 'Security' && (
+        <Card title="Security & Authentication" subtitle="Manage passwordless authentication and security keys">
+          <div className="space-y-4 max-w-lg">
+            <Input label="New Password" type="password" placeholder="••••••••" icon={Lock} />
+            <Input label="Confirm New Password" type="password" placeholder="••••••••" icon={Lock} />
+          </div>
+        </Card>
+      )}
+
+      {activeTab === 'Privacy' && (
+        <Card title="Privacy Settings" subtitle="Control visibility of student academic record">
+          <div className="space-y-3 max-w-lg text-xs">
+            <label className="flex items-center justify-between p-3 rounded-lg border border-slate-200 dark:border-slate-800">
+              <span className="font-bold text-slate-900 dark:text-white">Allow directory search by classmates</span>
+              <input type="checkbox" defaultChecked className="accent-blue-600 w-4 h-4" />
+            </label>
+          </div>
+        </Card>
+      )}
+
+    </div>
   );
 };
 

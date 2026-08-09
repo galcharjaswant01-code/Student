@@ -1,338 +1,192 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Responsive } from 'react-grid-layout';
+import React from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { 
-  TrendingUp, BookOpen, Clock, Calendar, CheckCircle,  
-  ArrowRight, MessageSquare, Code, GripHorizontal, Settings2, X, Plus, Zap,
-  Maximize2, Minimize2, LayoutDashboard, ClipboardList, FolderOpen, User, Sparkles
+  TrendingUp, BookOpen, Clock, Calendar as CalendarIcon, CheckCircle, 
+  ArrowRight, MessageSquare, ClipboardList, FolderOpen, User, Plus, Compass
 } from 'lucide-react';
-import { useWorkspace } from '../context/WorkspaceContext';
-import { Link, useNavigate } from 'react-router-dom';
-import { getApiBaseUrl } from '../services/config';
-
-import { Menu, BookOpen as BookIcon, FolderOpen as FolderIcon, MessageSquare as MessageIcon, Calendar as CalendarIcon, TrendingUp as TrendingUpIcon, Bell as BellIcon, FileText } from 'lucide-react';
-import useDashboardStore from '../store/useDashboardStore';
-import WidgetWrapper from '../components/WidgetWrapper';
-import StatCard from '../components/StatCard';
-import AttendanceOverviewWidget from '../components/dashboard/AttendanceOverviewWidget';
-import AssignmentsOverviewWidget from '../components/dashboard/AssignmentsOverviewWidget';
-import CoursesOverviewWidget from '../components/dashboard/CoursesOverviewWidget';
-import ResourcesOverviewWidget from '../components/dashboard/ResourcesOverviewWidget';
-import CalendarWidget from '../components/dashboard/CalendarWidget';
-import NotificationsCenterWidget from '../components/dashboard/NotificationsCenterWidget';
-import ActivityTimelineWidget from '../components/dashboard/ActivityTimelineWidget';
-import QuickActionsPanelWidget from '../components/dashboard/QuickActionsPanelWidget';
-import PerformanceAnalyticsWidget from '../components/dashboard/PerformanceAnalyticsWidget';
-import StudyProgressTrackingWidget from '../components/dashboard/StudyProgressTrackingWidget';
-
-const WidthProvider = (ComposedComponent) => {
-  return function WidthProviderWrapper(props) {
-    const [width, setWidth] = useState(1200);
-    const elementRef = useRef(null);
-
-    useEffect(() => {
-      if (!elementRef.current) return;
-      
-      const observer = new ResizeObserver((entries) => {
-        for (let entry of entries) {
-          if (entry.contentRect.width > 0) {
-            // Apply a small debounce or direct update to ensure smooth grid resizing
-            setWidth(entry.contentRect.width);
-          }
-        }
-      });
-      
-      observer.observe(elementRef.current);
-      return () => observer.disconnect();
-    }, []);
-
-    return (
-      <div ref={elementRef} style={{ width: '100%' }}>
-        <ComposedComponent {...props} width={width} />
-      </div>
-    );
-  };
-};
-
-const ResponsiveGridLayout = WidthProvider(Responsive);
-
-
-
-
-
-
-
-
+import { useAuth } from '../context/AuthContext';
+import Card from '../components/ui/Card';
+import Button from '../components/ui/Button';
+import Badge from '../components/ui/Badge';
+import Avatar from '../components/ui/Avatar';
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { 
-    layouts, visibleWidgets, isEditing, isLoading, 
-    setEditing, setLayouts, fetchFromBackend, saveToBackend, resetLayout,
-    toggleWidget, themePreferences, setSidebarCollapsed, setMobileSidebarOpen, isMobileSidebarOpen,
-    userProfile
-  } = useDashboardStore();
-  const { isFullscreen, toggleFullscreen } = useWorkspace();
-  const [isWidgetStoreOpen, setIsWidgetStoreOpen] = useState(false);
-  const [insightIndex, setInsightIndex] = useState(0);
-  const [aiSummary, setAiSummary] = useState(null);
-  const [dashboardStats, setDashboardStats] = useState(null);
-  const [avatarSrc, setAvatarSrc] = useState(null);
-  const fileInputRef = useRef(null);
+  const { currentUser, isGuest } = useAuth();
 
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setAvatarSrc(imageUrl);
-    }
-  };
-  
-  const insights = [
-    "You're in the top 10% of your class this week. Keep up the great work!",
-    "Your attendance is perfect. You're on track for an A in Physics.",
-    "Calculus III assignment is due tomorrow. You have 3 hours of study time left.",
-    "Sarah messaged you about the study group at 5 PM."
+  const userName = currentUser?.displayName || (isGuest ? 'Guest Visitor' : 'Alex Johnson');
+
+  const stats = [
+    { title: 'Attendance Rate', value: '95%', subtitle: 'Verified biometric & QR tracking', icon: CheckCircle },
+    { title: 'Enrolled Courses', value: '5 Courses', subtitle: 'Computer Science & AI Major', icon: BookOpen },
+    { title: 'Pending Assignments', value: '3 Due Soon', subtitle: 'Calculus III, Data Structures', icon: ClipboardList },
+    { title: 'Study Hours', value: '28.5 Hours', subtitle: 'This week active learning', icon: Clock },
   ];
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setInsightIndex(prev => (prev + 1) % insights.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+  const upcomingClasses = [
+    { time: '09:00 AM', title: 'Calculus III Lecture', room: 'Hall 302 • Dr. Sarah Jenkins' },
+    { time: '11:30 AM', title: 'Data Structures Lab', room: 'Computer Lab 4 • Prof. Michael' },
+    { time: '02:00 PM', title: 'Artificial Intelligence Seminar', room: 'Auditorium B • Dr. Robert' },
+  ];
 
-  useEffect(() => {
-    fetchFromBackend();
-    fetchAiSummary();
-    fetchSummary();
-  }, []);
+  const assignmentDeadlines = [
+    { title: 'Calculus III - Assignment 4', course: 'Math 301', due: 'Tomorrow, 11:59 PM' },
+    { title: 'Binary Trees Code Lab', course: 'CS 202', due: 'Friday, 5:00 PM' },
+    { title: 'Neural Networks Essay', course: 'AI 401', due: 'Next Monday' },
+  ];
 
-  const defaultStats = {
-    gpa: '3.85',
-    coursesCount: 5,
-    completedAssignments: 14,
-    pendingAssignments: 2,
-    attendancePercentage: '96%',
-    studyHoursThisWeek: '28.5h'
-  };
+  const recentResources = [
+    { title: 'Calculus III Chapter 4 Notes.pdf', size: '2.4 MB', type: 'Lecture Notes' },
+    { title: 'Data Structures Lab Guide 3.pdf', size: '1.8 MB', type: 'Lab Guide' },
+    { title: 'AI Ethics Case Study.pdf', size: '3.1 MB', type: 'Reading Material' },
+  ];
 
-  const defaultAiSummary = "You are performing exceptionally well across all 5 enrolled courses! Your 96% attendance and top marks in Physics and Calculus keep you on track for Dean's List.";
-
-  const fetchSummary = async () => {
-    try {
-      const token = localStorage.getItem('access_token');
-      const apiBaseUrl = getApiBaseUrl();
-      const response = await fetch(`${apiBaseUrl}/api/v1/dashboard/summary/`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setDashboardStats(data.stats || defaultStats);
-      } else {
-        setDashboardStats(defaultStats);
-      }
-    } catch (error) {
-      console.error('Failed to fetch dashboard summary:', error);
-      setDashboardStats(defaultStats);
-    }
-  };
-
-  const fetchAiSummary = async () => {
-    try {
-      const token = localStorage.getItem('access_token');
-      const apiBaseUrl = getApiBaseUrl();
-      const response = await fetch(`${apiBaseUrl}/api/v1/analytics/performance-summary/`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setAiSummary(data.summary || defaultAiSummary);
-      } else {
-        setAiSummary(defaultAiSummary);
-      }
-    } catch (error) {
-      console.error('Failed to fetch AI summary:', error);
-      setAiSummary(defaultAiSummary);
-    }
-  };
-
-  const handleLayoutChange = (layout, allLayouts) => {
-    if (isEditing) {
-      setLayouts(allLayouts);
-    }
-  };
-
-  const saveLayout = () => {
-    setEditing(false);
-    saveToBackend();
-  };
-
-  const enrolled = dashboardStats?.enrolled_courses || 0;
-  const attendance = dashboardStats?.attendance_percentage || 0;
-  // If stats haven't loaded yet, default to true. Otherwise true if no courses and 0 attendance.
-  const isNew = dashboardStats === null || (enrolled === 0 && attendance === 0);
-
-  const WIDGET_CONTENT = {
-    'stat1': <StatCard title="Average Grade" value={isNew ? "N/A" : "A-"} change={isNew ? "0%" : "+2%"} icon={TrendingUp} color="bg-primary " progress={isNew ? 0 : 92} />,
-    'stat2': <StatCard title="Courses Enrolled" value={enrolled.toString()} change="0%" icon={BookOpen} color="bg-secondary " progress={isNew ? 0 : 100} />,
-    'stat3': <StatCard title="Study Hours" value={isNew ? "0h" : "32h"} change={isNew ? "0h" : "+5h"} icon={Clock} color="bg-accent " progress={isNew ? 0 : 75} />,
-    'stat4': <StatCard title="Attendance Stats" value={(isNew ? 0 : attendance || 95) + "%"} change={isNew ? "0%" : "+1%"} icon={CheckCircle} color="bg-success " progress={isNew ? 0 : attendance || 95} />,
-    'performance': <PerformanceAnalyticsWidget isNew={isNew} />,
-    'study_progress': <StudyProgressTrackingWidget isNew={isNew} />,
-    'attendance': <AttendanceOverviewWidget />,
-    'quick_actions': <QuickActionsPanelWidget />,
-    'timeline': <ActivityTimelineWidget />,
-    'calendar': <CalendarWidget />,
-    'assignments': <AssignmentsOverviewWidget />,
-    'courses': <CoursesOverviewWidget />,
-    'resources': <ResourcesOverviewWidget />
-  };
-
-
-
-  const WIDGETS = Object.keys(WIDGET_CONTENT).reduce((acc, key) => {
-    acc[key] = <WidgetWrapper id={key} isEditing={isEditing}>{WIDGET_CONTENT[key]}</WidgetWrapper>;
-    return acc;
-  }, {});
-
-  const ALL_WIDGETS_INFO = [
-    { id: 'stat1', title: 'Average Grade', icon: TrendingUp },
-    { id: 'stat2', title: 'Courses Enrolled', icon: BookOpen },
-    { id: 'stat3', title: 'Study Hours', icon: Clock },
-    { id: 'stat4', title: 'Attendance Stats', icon: CheckCircle },
-    { id: 'performance', title: 'Performance Chart', icon: TrendingUp },
-    { id: 'study_progress', title: 'Study Progress', icon: CheckCircle },
-    { id: 'attendance', title: 'Attendance Overview', icon: CheckCircle },
-    { id: 'quick_actions', title: 'Quick Actions', icon: Plus },
-    { id: 'timeline', title: 'Activity Timeline', icon: Clock },
-    { id: 'calendar', title: 'Calendar', icon: Calendar },
-    { id: 'assignments', title: 'Assignments', icon: Calendar },
-    { id: 'courses', title: 'Courses', icon: BookOpen },
-    { id: 'resources', title: 'Resources', icon: FolderOpen }
+  const recentMessages = [
+    { sender: 'Dr. Sarah Jenkins', text: 'Solution sheet for Chapter 4 has been uploaded.', time: '10m ago' },
+    { sender: 'Physics Study Group', text: 'Meeting in campus library at 3 PM today.', time: '1h ago' },
   ];
 
   return (
-    <div className="w-full h-full relative p-3.5 sm:p-6 pb-20 overflow-x-hidden">
-      {/* Welcome Hero Section */}
-      <div
-        className="relative overflow-hidden rounded-2xl bg-slate-900 p-5 md:p-8 mb-6 text-white flex flex-col lg:flex-row items-center justify-between gap-6"
-      >
-
-        {/* Left Section */}
-        <div className="relative z-10 flex flex-col justify-center max-w-2xl w-full">
-          <div className="flex items-center gap-3 mb-2 flex-wrap">
-            <div className="flex items-center gap-1.5 bg-white/10 px-2.5 py-1 rounded-full border border-white/10">
-              <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
-              <span className="text-white/90 text-xs font-semibold tracking-wide">AI Productivity Insight</span>
-            </div>
-            {/* Fullscreen Toggle */}
-            <button 
-              onClick={toggleFullscreen}
-              className="p-1.5 bg-white/20 hover:bg-white/30 rounded-md text-white flex items-center justify-center border border-white/10 transition-colors"
-              title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Mode"}
-            >
-              {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
-            </button>
+    <div className="p-4 sm:p-6 w-full space-y-6 max-w-7xl mx-auto">
+      
+      {/* Welcome Banner */}
+      <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="space-y-1 max-w-2xl">
+          <div className="flex items-center gap-2 mb-2">
+            <Badge variant="blue">{isGuest ? 'Guest Visitor Mode' : 'Academic Portal'}</Badge>
           </div>
-          
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight mb-2 leading-tight">
-            Good Morning, <span className="text-[#64FFDA]">{userProfile?.firstName || 'Alex'}!</span>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+            Welcome back, <span className="text-blue-400">{userName}!</span>
           </h1>
-          
-          <p className="text-xs sm:text-sm md:text-base text-white/80 mb-4 font-medium max-w-lg">
-            Welcome back! Here's a quick overview of your progress and upcoming tasks.
+          <p className="text-xs sm:text-sm text-slate-300 font-normal leading-relaxed">
+            Here is your daily academic overview, upcoming classes, deadlines, and study progress.
           </p>
-          
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center gap-2.5 relative z-50 w-full sm:w-auto">
-            <button 
-              onClick={() => navigate('/courses')} 
-              className="group flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-2.5 bg-white text-[#3b82f6] text-sm font-bold rounded-lg hover:bg-slate-50 cursor-pointer transition-colors shadow-sm"
-            >
-              <BookOpen className="w-4 h-4" />
-              Continue Learning 
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-            </button>
-            <button 
-              onClick={() => {
-                resetLayout();
-                window.location.reload();
-              }} 
-              className="flex items-center justify-center gap-2 w-full sm:w-auto px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white text-sm font-bold rounded-lg border border-white/20 cursor-pointer transition-colors"
-              title="Reset dashboard to default layout"
-            >
-              <LayoutDashboard className="w-4 h-4" />
-              Reset Layout
-            </button>
-          </div>
         </div>
 
-        {/* Right Section - Avatar */}
-        <div className="relative flex-shrink-0 mt-2 lg:mt-0">
-          
-          {/* Avatar Container */}
-          <div
-            onClick={() => fileInputRef.current?.click()}
-            className="relative w-28 h-28 sm:w-32 sm:h-32 lg:w-36 lg:h-36 rounded-full border-[3px] border-slate-700 bg-slate-800 flex items-center justify-center overflow-visible cursor-pointer group shadow-lg"
-          >
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              onChange={handleImageUpload} 
-              accept="image/*" 
-              className="hidden" 
-            />
-            <div className="relative w-full h-full rounded-full overflow-hidden bg-slate-800 flex items-center justify-center">
-              {avatarSrc ? (
-                <img 
-                  src={avatarSrc} 
-                  alt="Student" 
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <User className="w-12 h-12 text-slate-400" />
-              )}
-              <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <Plus className="w-5 h-5 text-white mb-0.5" />
-                <span className="text-white font-medium text-[10px] sm:text-xs">Upload</span>
-              </div>
-            </div>
-          </div>
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <Button variant="primary" icon={BookOpen} onClick={() => navigate('/courses')}>
+            My Courses
+          </Button>
+          <Button variant="secondary" icon={Compass} onClick={() => navigate('/ai-studio')}>
+            AI Studio
+          </Button>
         </div>
       </div>
 
-      <div className="relative w-full">
-        <ResponsiveGridLayout
-          className="layout"
-          layouts={Object.keys(layouts).reduce((acc, breakpoint) => {
-            acc[breakpoint] = layouts[breakpoint].map(item => ({
-              ...item,
-              static: !isEditing,
-              isDraggable: isEditing,
-              isResizable: isEditing
-            }));
-            return acc;
-          }, {})}
-          breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-          cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
-          rowHeight={80}
-          onLayoutChange={handleLayoutChange}
-          isDraggable={isEditing}
-          isResizable={isEditing}
-          draggableHandle=".cursor-grab"
-          margin={typeof window !== 'undefined' && window.innerWidth < 640 ? [12, 12] : [20, 20]}
-          useCSSTransforms={true}
-        >
-          {visibleWidgets.map(widgetId => (
-            <div key={widgetId}>
-              {WIDGETS[widgetId] || <div>Widget Not Found</div>}
+      {/* 4 Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((stat, idx) => (
+          <Card key={idx} className="p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{stat.title}</span>
+              <stat.icon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             </div>
-          ))}
-        </ResponsiveGridLayout>
+            <div className="text-xl font-bold text-slate-900 dark:text-white mt-2">{stat.value}</div>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">{stat.subtitle}</p>
+          </Card>
+        ))}
       </div>
 
+      {/* Main Grid Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        {/* Left Column (8 cols): Attendance & Assignments */}
+        <div className="lg:col-span-8 space-y-6">
+          
+          {/* Attendance & Class Overview */}
+          <Card title="Today's Schedule & Attendance" subtitle="Classes scheduled for today">
+            <div className="space-y-3">
+              {upcomingClasses.map((cls, idx) => (
+                <div key={idx} className="flex items-center justify-between p-3 rounded-lg border border-slate-100 dark:border-slate-800 hover:bg-blue-50/50 dark:hover:bg-blue-950/20 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="px-2.5 py-1 rounded-md bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-bold text-xs border border-blue-200 dark:border-blue-800">
+                      {cls.time}
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900 dark:text-white">{cls.title}</h4>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400">{cls.room}</p>
+                    </div>
+                  </div>
+                  <Badge variant="outline">Scheduled</Badge>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          {/* Pending Assignment Deadlines */}
+          <Card title="Assignment Deadlines" subtitle="Upcoming academic submissions">
+            <div className="space-y-3">
+              {assignmentDeadlines.map((item, idx) => (
+                <div key={idx} className="flex items-center justify-between p-3 rounded-lg border border-slate-100 dark:border-slate-800">
+                  <div className="flex items-center gap-3">
+                    <ClipboardList className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900 dark:text-white">{item.title}</h4>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400">{item.course}</p>
+                    </div>
+                  </div>
+                  <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{item.due}</span>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+        </div>
+
+        {/* Right Column (4 cols): Recent Resources & Messages */}
+        <div className="lg:col-span-4 space-y-6">
+          
+          {/* Quick Actions */}
+          <Card title="Quick Actions">
+            <div className="grid grid-cols-2 gap-2">
+              <Button variant="secondary" size="sm" icon={BookOpen} onClick={() => navigate('/courses')}>
+                Courses
+              </Button>
+              <Button variant="secondary" size="sm" icon={FolderOpen} onClick={() => navigate('/resources')}>
+                Resources
+              </Button>
+              <Button variant="secondary" size="sm" icon={CalendarIcon} onClick={() => navigate('/calendar')}>
+                Calendar
+              </Button>
+              <Button variant="secondary" size="sm" icon={MessageSquare} onClick={() => navigate('/messages')}>
+                Messages
+              </Button>
+            </div>
+          </Card>
+
+          {/* Recent Resources */}
+          <Card title="Recent Resources" subtitle="Latest uploaded study notes">
+            <div className="space-y-3">
+              {recentResources.map((res, idx) => (
+                <div key={idx} className="flex items-center justify-between p-2.5 rounded-lg border border-slate-100 dark:border-slate-800 text-xs">
+                  <div className="flex items-center gap-2.5 truncate">
+                    <FolderOpen className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+                    <span className="font-semibold text-slate-900 dark:text-white truncate">{res.title}</span>
+                  </div>
+                  <span className="text-[10px] text-slate-400 shrink-0">{res.size}</span>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          {/* Messages */}
+          <Card title="Recent Messages">
+            <div className="space-y-3">
+              {recentMessages.map((msg, idx) => (
+                <div key={idx} className="p-2.5 rounded-lg border border-slate-100 dark:border-slate-800 space-y-1 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-slate-900 dark:text-white">{msg.sender}</span>
+                    <span className="text-[10px] text-slate-400">{msg.time}</span>
+                  </div>
+                  <p className="text-slate-500 dark:text-slate-400 text-[11px] truncate">{msg.text}</p>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+        </div>
+
+      </div>
     </div>
   );
 };

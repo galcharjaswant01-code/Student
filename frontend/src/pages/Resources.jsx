@@ -1,253 +1,91 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Maximize2, Minimize2, BookOpen, Layers, PlayCircle, BrainCircuit } from 'lucide-react';
-import { useWorkspace } from '../context/WorkspaceContext';
+import React, { useState } from 'react';
+import Card from '../components/ui/Card';
+import Button from '../components/ui/Button';
+import Badge from '../components/ui/Badge';
+import Input from '../components/ui/Input';
+import Table from '../components/ui/Table';
+import { FolderOpen, FileText, Video, Download, Search, Filter } from 'lucide-react';
 
-
-import ResourceStats from '../components/resources/ResourceStats';
-import ResourceList from '../components/resources/ResourceList';
-import CSLearningHub from '../components/resources/CSLearningHub';
-import PDFReaderWidget from '../components/resources/PDFReaderWidget';
-import VideoPlayerWidget from '../components/resources/VideoPlayerWidget';
-import { resourcesAPI } from '../services/mockDjangoResourcesApi';
-import WidgetWrapper from '../components/WidgetWrapper';
-
-const TABS = [
-  { id: 'overview', label: 'Overview', icon: BrainCircuit },
-  { id: 'library', label: 'Global Library', icon: BookOpen },
-  { id: 'cs-hub', label: 'CS Learning Hub', icon: Layers },
-  { id: 'videos', label: 'Video Tutorials', icon: PlayCircle },
+const mockResources = [
+  { id: 1, title: 'Calculus III Chapter 4 Notes', type: 'PDF Note', category: 'Math 301', size: '2.4 MB', date: 'Aug 05, 2026' },
+  { id: 2, title: 'Data Structures Trees & Graphs Lecture Video', type: 'Video', category: 'CS 202', size: '145 MB', date: 'Aug 03, 2026' },
+  { id: 3, title: 'AI Neural Networks Cheat Sheet', type: 'Study Material', category: 'AI 401', size: '1.2 MB', date: 'Jul 28, 2026' },
+  { id: 4, title: 'Database SQL Querying & Indexing Guide', type: 'PDF Note', category: 'CS 305', size: '3.1 MB', date: 'Jul 25, 2026' },
+  { id: 5, title: 'Physics Optics Experiment Video Walkthrough', type: 'Video', category: 'PHY 202L', size: '89 MB', date: 'Jul 20, 2026' },
 ];
 
 const Resources = () => {
-  const [resources, setResources] = useState([]);
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
-  
-  const [activeTab, setActiveTab] = useState('overview');
-  const [activeCategory, setActiveCategory] = useState('All');
-  const [activeType, setActiveType] = useState('All Types');
-  const [searchTerm, setSearchTerm] = useState('');
-  
-  const { isFullscreen, toggleFullscreen, activeObject, setActiveObject } = useWorkspace();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterType, setFilterType] = useState('All');
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const [resourcesData, statsData] = await Promise.all([
-          resourcesAPI.getResources(1, 20, { 
-            category: activeCategory, 
-            type: activeTab === 'videos' ? 'video' : activeType,
-            search: searchTerm 
-          }),
-          resourcesAPI.getAnalytics()
-        ]);
-        setResources(resourcesData.results);
-        setStats(statsData);
-      } catch (error) {
-        console.error("Failed to fetch resources data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [activeCategory, activeType, searchTerm, activeTab]);
-
-  const handleBookmark = async (id) => {
-    try {
-      const res = await resourcesAPI.toggleBookmark(id);
-      setResources(prev => prev.map(r => r.id === id ? { ...r, isBookmarked: res.isBookmarked } : r));
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const handleDownload = async (id) => {
-    try {
-      const res = await resourcesAPI.downloadResource(id);
-      
-      const link = document.createElement('a');
-      link.href = '/sample.pdf';
-      link.setAttribute('download', `resource-${id}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-      
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const handleResourceClick = (resource) => {
-    if (resource.type === 'pdf' || resource.type === 'notes' || resource.type === 'ebook') {
-      setActiveObject({ type: 'pdf-reader', data: resource });
-    } else if (resource.type === 'video') {
-      setActiveObject({ type: 'video-player', data: resource });
-    }
-  };
-
-  // If a viewer is active and user clicks outside or clicks X, we close it
-  // This is handled by rendering the activeObject on top
-  if (activeObject?.type === 'pdf-reader') {
-    return (
-      <div className="w-full h-full p-2 sm:p-4">
-        <PDFReaderWidget 
-          resource={activeObject.data} 
-          onClose={() => setActiveObject(null)} 
-          onFullscreen={toggleFullscreen}
-        />
-      </div>
-    );
-  }
-
-  if (activeObject?.type === 'video-player') {
-    return (
-      <div className="w-full h-full p-2 sm:p-4">
-        <VideoPlayerWidget 
-          resource={activeObject.data} 
-          onClose={() => setActiveObject(null)} 
-          onFullscreen={toggleFullscreen}
-        />
-      </div>
-    );
-  }
+  const filteredResources = mockResources.filter(item => {
+    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || item.category.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesType = filterType === 'All' || item.type.includes(filterType);
+    return matchesSearch && matchesType;
+  });
 
   return (
-    <div className="p-3.5 sm:p-6 w-full h-full overflow-y-auto custom-scrollbar space-y-6 sm:space-y-8 pb-20 relative overflow-x-hidden">
-      
-      {/* Top Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="p-4 sm:p-6 w-full space-y-6 max-w-7xl mx-auto">
+      {/* Title */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold bg-clip-text text-transparent bg-gradient- bg-primary">
-            Learning Resources
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">Discover PDFs, videos, and practical coding materials.</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Academic Resource Vault</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Download lecture notes, PDFs, recorded videos, and study guides.</p>
         </div>
         
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto">
-          {/* Fullscreen Toggle */}
-          <div className="flex items-center gap-2">
-            <button 
-              onClick={toggleFullscreen}
-              className="p-2.5 bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-lg text-slate-500 hover:text-primary flex items-center justify-center transition-colors"
-              title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Mode"}
-            >
-              {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-            </button>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div className="w-full sm:w-64">
+            <Input 
+              icon={Search} 
+              placeholder="Search resources or course..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
-
-          {(activeTab === 'library' || activeTab === 'videos' || activeTab === 'overview') && (
-            <div className="relative w-full sm:w-64">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
-              <input 
-                type="text" 
-                placeholder="Search resources..." 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 pr-4 py-2 w-full bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium focus:outline-none focus:border-primary"
-              />
-            </div>
-          )}
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide border-b border-slate-200 dark:border-slate-800">
-        {TABS.map(tab => (
+      {/* Filter Chips */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+        {['All', 'PDF Note', 'Video', 'Study Material'].map((t) => (
           <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-5 py-3 text-sm font-bold  relative ${
-              activeTab === tab.id 
-                ? 'text-primary' 
-                : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
-            }`}
+            key={t}
+            onClick={() => setFilterType(t)}
+            className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${filterType === t ? 'bg-blue-600 text-white' : 'border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
           >
-            <tab.icon className="w-4 h-4" />
-            {tab.label}
-            {activeTab === tab.id && (
-              <div
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
-              />
-            )}
+            {t}
           </button>
         ))}
       </div>
 
-      {/* Categories (only for Library or Videos) */}
-      {(activeTab === 'library' || activeTab === 'videos') && (
-        <div className="flex overflow-x-auto gap-3 pb-2 scrollbar-hide">
-          {['All', 'Web Development', 'Computer Science Core', 'Programming', 'AI & Machine Learning'].map(cat => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`
-                whitespace-nowrap px-4 py-2 rounded-sm text-sm font-bold  
-                ${activeCategory === cat 
-                  ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 ' 
-                  : 'bg-white/70 text-slate-600 border border-slate-200 hover:bg-slate-50 dark:bg-slate-800/70 dark:border-white/5 dark:text-slate-400 dark:hover:bg-slate-700/70'}
-              `}
-            >
-              {cat}
-            </button>
+      {/* Resources Table */}
+      <Card title="Available Study Materials" subtitle="Click to download file to device">
+        <Table headers={['Resource Title', 'Type', 'Course Code', 'File Size', 'Upload Date', 'Action']}>
+          {filteredResources.map((item) => (
+            <tr key={item.id} className="hover:bg-blue-50/40 dark:hover:bg-blue-950/20 transition-colors">
+              <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white flex items-center gap-2.5">
+                {item.type === 'Video' ? (
+                  <Video className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+                ) : (
+                  <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+                )}
+                <span>{item.title}</span>
+              </td>
+              <td className="px-4 py-3">
+                <Badge variant="blue">{item.type}</Badge>
+              </td>
+              <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{item.category}</td>
+              <td className="px-4 py-3 text-slate-500 dark:text-slate-400 text-xs">{item.size}</td>
+              <td className="px-4 py-3 text-slate-500 dark:text-slate-400 text-xs">{item.date}</td>
+              <td className="px-4 py-3">
+                <Button variant="primary" size="sm" icon={Download}>
+                  Download
+                </Button>
+              </td>
+            </tr>
           ))}
-        </div>
-      )}
-
-      {/* Tab Content */}
-      
-        <div
-          key={activeTab}
-          className="space-y-8"
-        >
-          {activeTab === 'overview' && (
-            <>
-              <div className="w-full">
-                <ResourceStats stats={stats} loading={loading} />
-              </div>
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">Recommended for You</h2>
-                </div>
-                <ResourceList 
-                  resources={resources.slice(0, 4)} 
-                  loading={loading} 
-                  onBookmark={handleBookmark}
-                  onDownload={handleDownload}
-                  onResourceClick={handleResourceClick}
-                />
-              </div>
-            </>
-          )}
-
-          {activeTab === 'library' && (
-            <ResourceList 
-              resources={resources} 
-              loading={loading} 
-              onBookmark={handleBookmark}
-              onDownload={handleDownload}
-              onResourceClick={handleResourceClick}
-            />
-          )}
-
-          {activeTab === 'videos' && (
-            <ResourceList 
-              resources={resources.filter(r => r.type === 'video')} 
-              loading={loading} 
-              onBookmark={handleBookmark}
-              onDownload={handleDownload}
-              onResourceClick={handleResourceClick}
-            />
-          )}
-
-          {activeTab === 'cs-hub' && (
-            <CSLearningHub />
-          )}
-
-        </div>
-      
-
+        </Table>
+      </Card>
     </div>
   );
 };

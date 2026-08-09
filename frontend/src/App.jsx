@@ -13,7 +13,9 @@ import Assignments from './pages/Assignments'
 import Attendance from './pages/Attendance'
 import Courses from './pages/Courses'
 import Resources from './pages/Resources'
+import Messages from './pages/Messages'
 import Calendar from './pages/Calendar'
+import Profile from './pages/Profile'
 import Settings from './pages/Settings'
 import Notifications from './pages/Notifications'
 import AIStudio from './pages/AIStudio'
@@ -40,15 +42,17 @@ function App() {
             {/* Student App Portal Routes */}
             <Route element={<MainLayout />}>
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-              <Route path="/assignments" element={<ProtectedRoute><Assignments /></ProtectedRoute>} />
               <Route path="/attendance" element={<ProtectedRoute><Attendance /></ProtectedRoute>} />
+              <Route path="/assignments" element={<ProtectedRoute><Assignments /></ProtectedRoute>} />
               <Route path="/courses" element={<ProtectedRoute allowGuest={true}><Courses /></ProtectedRoute>} />
               <Route path="/resources" element={<ProtectedRoute allowGuest={true}><Resources /></ProtectedRoute>} />
-              <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
-              <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-              <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
               <Route path="/ai-studio" element={<ProtectedRoute><AIStudio /></ProtectedRoute>} />
               <Route path="/ai-studio/tool/:toolId" element={<ProtectedRoute><AIToolView /></ProtectedRoute>} />
+              <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+              <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+              <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
           </Routes>

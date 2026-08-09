@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
-
 import { Menu } from 'lucide-react'
 import Sidebar from '../components/Sidebar'
 import TopNavbar from '../components/TopNavbar'
-import AnimatedBackground from '../components/AnimatedBackground'
+import Footer from '../components/ui/Footer'
 import useDashboardStore from '../store/useDashboardStore'
 import WorkspaceLayout from '../components/workspace/WorkspaceLayout'
 
@@ -12,7 +11,7 @@ const MainLayout = () => {
   const location = useLocation()
   const { themePreferences, isMobileSidebarOpen, setMobileSidebarOpen } = useDashboardStore()
   const isCollapsed = themePreferences?.isSidebarCollapsed ?? false;
-  const width = themePreferences?.sidebarWidth || 288;
+  const width = themePreferences?.sidebarWidth || 270;
   
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024)
 
@@ -20,7 +19,6 @@ const MainLayout = () => {
     const handleResize = () => {
       const mobile = window.innerWidth < 1024
       setIsMobile(mobile)
-      // Automatically close mobile sidebar if switching to desktop
       if (!mobile) {
         setMobileSidebarOpen(false)
       }
@@ -29,21 +27,18 @@ const MainLayout = () => {
     return () => window.removeEventListener('resize', handleResize)
   }, [setMobileSidebarOpen])
 
-  const sidebarActualWidth = isMobile ? 0 : (isCollapsed ? 80 : width);
+  const sidebarActualWidth = isMobile ? 0 : (isCollapsed ? 80 : 270);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#050505] text-gray-900 dark:text-gray-100 relative">
-      <AnimatedBackground />
+    <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 relative font-sans">
 
       {/* Mobile Drawer Backdrop */}
-      
-        {isMobile && isMobileSidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black/60 z-40"
-            onClick={() => setMobileSidebarOpen(false)}
-          />
-        )}
-      
+      {isMobile && isMobileSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-40"
+          onClick={() => setMobileSidebarOpen(false)}
+        />
+      )}
 
       {/* Sidebar */}
       <Sidebar />
@@ -65,13 +60,15 @@ const MainLayout = () => {
             </div>
           </WorkspaceLayout>
         </main>
+
+        <Footer />
       </div>
 
-      {/* Floating Mobile Menu Button (Fallback) */}
+      {/* Floating Mobile Menu Button */}
       {isMobile && !isMobileSidebarOpen && (
         <button
           onClick={() => setMobileSidebarOpen(true)}
-          className="fixed bottom-5 left-5 z-40 p-3 bg-primary text-white rounded-full shadow-lg shadow-primary/30 flex items-center justify-center lg:hidden hover:scale-105 active:scale-95 transition-all"
+          className="fixed bottom-5 left-5 z-40 p-3 bg-blue-600 text-white rounded-full shadow-md flex items-center justify-center lg:hidden hover:scale-105 active:scale-95 transition-all"
           title="Open Menu"
         >
           <Menu className="w-5 h-5" />
@@ -83,4 +80,3 @@ const MainLayout = () => {
 }
 
 export default MainLayout
-

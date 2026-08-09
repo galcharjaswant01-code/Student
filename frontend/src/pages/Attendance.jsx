@@ -1,90 +1,113 @@
-import React, { useEffect } from 'react';
-import { Calendar as CalendarIcon, Filter, Menu, BarChart3, CheckCircle, Calendar, Maximize2, Minimize2 } from 'lucide-react';
-import useDashboardStore from '../store/useDashboardStore';
+import React, { useState } from 'react';
+import Card from '../components/ui/Card';
+import Button from '../components/ui/Button';
+import Badge from '../components/ui/Badge';
+import Table from '../components/ui/Table';
+import { CheckCircle, Calendar as CalendarIcon, Clock, Filter, BookOpen } from 'lucide-react';
 
-import WidgetWrapper from '../components/WidgetWrapper';
-import { useWorkspace } from '../context/WorkspaceContext';
+const subjectAttendance = [
+  { id: 1, subject: 'Calculus III (Math 301)', attended: 28, total: 30, percentage: 93.3, status: 'Regular' },
+  { id: 2, subject: 'Data Structures & Algorithms (CS 202)', attended: 32, total: 32, percentage: 100.0, status: 'Perfect' },
+  { id: 3, subject: 'Artificial Intelligence (AI 401)', attended: 24, total: 26, percentage: 92.3, status: 'Regular' },
+  { id: 4, subject: 'Database Management Systems (CS 305)', attended: 27, total: 30, percentage: 90.0, status: 'Regular' },
+  { id: 5, subject: 'Physics II Laboratory (PHY 202L)', attended: 15, total: 15, percentage: 100.0, status: 'Perfect' },
+];
 
-import AttendanceStats from '../components/attendance/AttendanceStats';
-import AttendanceCharts from '../components/attendance/AttendanceCharts';
-import AttendanceTable from '../components/attendance/AttendanceTable';
-import AttendanceCalendar from '../components/attendance/AttendanceCalendar';
+const monthlyAttendanceData = [
+  { month: 'January', percentage: 96 },
+  { month: 'February', percentage: 94 },
+  { month: 'March', percentage: 98 },
+  { month: 'April', percentage: 95 },
+  { month: 'May', percentage: 97 },
+];
 
 const Attendance = () => {
-  const { isFullscreen, toggleFullscreen } = useWorkspace();
-
-
+  const [selectedMonth, setSelectedMonth] = useState('All Months');
 
   return (
-    <div className="p-3.5 sm:p-6 w-full space-y-6 pb-20">
-      
-      {/* Top Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-3 sm:gap-4">
-          <button 
-            onClick={() => {
-              const store = useDashboardStore.getState();
-              if (window.innerWidth < 1024) {
-                store.setMobileSidebarOpen(true);
-              } else {
-                store.setSidebarCollapsed(!store.themePreferences?.isSidebarCollapsed);
-              }
-            }}
-            className="p-2.5 bg-white/50 dark:bg-slate-800/50 hover:bg-white/80 dark:hover:bg-slate-700/80 rounded-lg flex-shrink-0 border border-white/20 dark:border-white/10"
-          >
-            <Menu className="w-5 h-5 text-slate-700 dark:text-slate-300" />
-          </button>
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              Attendance Hub
-            </h1>
-            <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">Monitor your presence, track streaks, and analyze your performance.</p>
+    <div className="p-4 sm:p-6 w-full space-y-6 max-w-7xl mx-auto">
+      {/* Page Title */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Attendance Record</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Track biometric check-ins, subject percentages, and monthly attendance logs.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="secondary" icon={Filter} size="sm">
+            Filter Month
+          </Button>
+          <Button variant="primary" icon={CheckCircle} size="sm">
+            Mark Check-In
+          </Button>
+        </div>
+      </div>
+
+      {/* Top 3 Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Card className="p-5">
+          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-semibold">
+            <span>Overall Attendance</span>
+            <CheckCircle className="w-4 h-4 text-blue-600 dark:text-blue-400" />
           </div>
-        </div>
+          <div className="text-3xl font-bold text-slate-900 dark:text-white mt-2">95.2%</div>
+          <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full mt-3 overflow-hidden">
+            <div className="bg-blue-600 dark:bg-blue-500 h-full rounded-full" style={{ width: '95.2%' }} />
+          </div>
+        </Card>
 
-        <div className="flex items-center gap-3">
-          {/* Fullscreen Toggle */}
-          <button 
-            onClick={toggleFullscreen}
-            className="p-2.5 bg-white/70 dark:bg-slate-800/70 border border-white/20 dark:border-white/10 rounded-sm text-slate-500 hover:text-primary flex items-center justify-center"
-            title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Mode"}
-          >
-            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-          </button>
-        </div>
+        <Card className="p-5">
+          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-semibold">
+            <span>Classes Attended</span>
+            <BookOpen className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+          </div>
+          <div className="text-3xl font-bold text-slate-900 dark:text-white mt-2">126 / 133</div>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-2 font-medium">7 Authorized absences logged</p>
+        </Card>
+
+        <Card className="p-5">
+          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-semibold">
+            <span>Attendance Status</span>
+            <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+          </div>
+          <div className="text-xl font-bold text-slate-900 dark:text-white mt-2">Dean's Honor Threshold</div>
+          <p className="text-[11px] text-blue-600 dark:text-blue-400 mt-2 font-semibold">Above 85% requirement</p>
+        </Card>
       </div>
 
-      {/* Analytics Cards */}
-      <div className="w-full">
-        <AttendanceStats />
-      </div>
-
-      {/* Charts Section */}
-      <div className="w-full">
-        <AttendanceCharts />
-      </div>
-
-      {/* Complex Detailed Views Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch">
-        
-        {/* Table taking 2/3 width on large screens */}
-        <div className="xl:col-span-2 flex flex-col min-h-[600px] relative">
-          <WidgetWrapper id="attendance-table" innerClassName="p-0 h-full flex flex-col overflow-y-auto custom-scrollbar">
-            <AttendanceTable />
-          </WidgetWrapper>
-        </div>
-
-        {/* Calendar taking 1/3 width */}
-        <div className="xl:col-span-1 flex flex-col relative min-h-[400px]">
-          <WidgetWrapper id="attendance-calendar" innerClassName="p-0 h-full flex flex-col overflow-y-auto custom-scrollbar">
-            <div className="h-full flex flex-col">
-               <AttendanceCalendar />
+      {/* Monthly Attendance Chart Bar (Pure 4-Color Styled UI) */}
+      <Card title="Monthly Attendance Trend" subtitle="Percentage breakdown by academic month">
+        <div className="grid grid-cols-5 gap-3 pt-4 items-end h-44 border-b border-slate-100 dark:border-slate-800 pb-4">
+          {monthlyAttendanceData.map((item, idx) => (
+            <div key={idx} className="flex flex-col items-center gap-2 h-full justify-end">
+              <span className="text-xs font-bold text-blue-600 dark:text-blue-400">{item.percentage}%</span>
+              <div 
+                className="w-full max-w-[48px] bg-blue-600 dark:bg-blue-500 rounded-t-md transition-all duration-300 hover:bg-blue-700" 
+                style={{ height: `${item.percentage * 1.2}px` }} 
+              />
+              <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate">{item.month}</span>
             </div>
-          </WidgetWrapper>
+          ))}
         </div>
+      </Card>
 
-      </div>
-      </div>
+      {/* Subject-Wise Table */}
+      <Card title="Subject-Wise Breakdown" subtitle="Detailed attendance log for current semester courses">
+        <Table headers={['Subject Name', 'Classes Attended', 'Total Conducted', 'Percentage', 'Status']}>
+          {subjectAttendance.map((row) => (
+            <tr key={row.id} className="hover:bg-blue-50/40 dark:hover:bg-blue-950/20 transition-colors">
+              <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white">{row.subject}</td>
+              <td className="px-4 py-3 text-slate-700 dark:text-slate-300">{row.attended}</td>
+              <td className="px-4 py-3 text-slate-700 dark:text-slate-300">{row.total}</td>
+              <td className="px-4 py-3 font-bold text-blue-600 dark:text-blue-400">{row.percentage}%</td>
+              <td className="px-4 py-3">
+                <Badge variant={row.percentage >= 95 ? 'blue' : 'outline'}>{row.status}</Badge>
+              </td>
+            </tr>
+          ))}
+        </Table>
+      </Card>
+
+    </div>
   );
 };
 

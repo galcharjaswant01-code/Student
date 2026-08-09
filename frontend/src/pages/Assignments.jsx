@@ -1,188 +1,94 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Filter, LayoutGrid, List as ListIcon, Plus, Maximize2, Minimize2 } from 'lucide-react';
+import React, { useState } from 'react';
+import Card from '../components/ui/Card';
+import Button from '../components/ui/Button';
+import Badge from '../components/ui/Badge';
+import Table from '../components/ui/Table';
+import { ClipboardList, CheckCircle, Clock, Upload, Plus, FileText } from 'lucide-react';
 
-import useDashboardStore from '../store/useDashboardStore';
-import { useWorkspace } from '../context/WorkspaceContext';
-
-import WidgetWrapper from '../components/WidgetWrapper';
-import AssignmentStats from '../components/assignments/AssignmentStats';
-import AssignmentList from '../components/assignments/AssignmentList';
-import AssignmentDetailsPanel from '../components/assignments/AssignmentDetailsPanel';
-import AssignmentSubmission from '../components/assignments/AssignmentSubmission';
-import AssignmentCalendar from '../components/assignments/AssignmentCalendar';
-
-import { assignmentAPI } from '../services/mockDjangoApi';
+const mockAssignments = [
+  { id: 1, title: 'Calculus III Chapter 4 Problem Set', course: 'Math 301', due: 'Aug 10, 2026', status: 'Pending', grade: 'Pending' },
+  { id: 2, title: 'Binary Search Trees Implementation', course: 'CS 202', due: 'Aug 12, 2026', status: 'Pending', grade: 'Pending' },
+  { id: 3, title: 'Neural Networks Architecture Report', course: 'AI 401', due: 'Aug 15, 2026', status: 'Submitted', grade: 'A' },
+  { id: 4, title: 'Database SQL Indexing Lab', course: 'CS 305', due: 'Aug 04, 2026', status: 'Completed', grade: 'A-' },
+  { id: 5, title: 'Physics Optics Experiment Report', course: 'PHY 202L', due: 'Aug 01, 2026', status: 'Completed', grade: 'A' },
+];
 
 const Assignments = () => {
-  const [assignments, setAssignments] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('All');
-  const [viewMode, setViewMode] = useState('grid');
-  const { isFullscreen, toggleFullscreen } = useWorkspace();
-  
-  // Modals / Panels state
-  const [selectedAssignment, setSelectedAssignment] = useState(null);
-  const [detailsPanelOpen, setDetailsPanelOpen] = useState(false);
-  const [submissionModalOpen, setSubmissionModalOpen] = useState(false);
 
-  useEffect(() => {
-    fetchAssignments();
-  }, [filter, searchTerm]);
-
-  const fetchAssignments = async () => {
-    setLoading(true);
-    try {
-      const response = await assignmentAPI.getAssignments(1, 20, {
-        status: filter,
-        search: searchTerm
-      });
-      setAssignments(response.results);
-    } catch (error) {
-      console.error('Failed to fetch assignments', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleOpenDetails = (assignment) => {
-    setSelectedAssignment(assignment);
-    setDetailsPanelOpen(true);
-  };
-
-  const handleOpenUpload = (assignment) => {
-    setSelectedAssignment(assignment);
-    setSubmissionModalOpen(true);
-  };
-
-  const handleSubmissionComplete = (updatedAssignment) => {
-    setSubmissionModalOpen(false);
-    setAssignments(prev => prev.map(a => a.id === updatedAssignment.id ? updatedAssignment : a));
-    
-    // If details panel is open, update its state too
-    if (detailsPanelOpen && selectedAssignment?.id === updatedAssignment.id) {
-      setSelectedAssignment(updatedAssignment);
-    }
-  };
+  const filteredAssignments = mockAssignments.filter(item => {
+    if (filter === 'All') return true;
+    return item.status === filter;
+  });
 
   return (
-    <div className="p-3.5 sm:p-6 w-full h-full overflow-y-auto custom-scrollbar space-y-6 pb-20">
-      
-      {/* Top Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="p-4 sm:p-6 w-full space-y-6 max-w-7xl mx-auto">
+      {/* Title */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold bg-clip-text text-transparent bg-gradient- bg-primary">
-            Assignments
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">Manage coursework, track deadlines, and submit your tasks.</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Academic Assignments</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Submit coursework, track upcoming deadlines, and review faculty grades.</p>
         </div>
-        
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto">
-          {/* Fullscreen Toggle */}
-          <div className="flex items-center gap-2">
-            <button 
-              onClick={toggleFullscreen}
-              className="p-2.5 bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-lg text-slate-500 hover:text-primary flex items-center justify-center transition-colors"
-              title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Mode"}
-            >
-              {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-            </button>
+        <Button variant="primary" icon={Upload} size="sm">
+          Submit Homework
+        </Button>
+      </div>
 
-            {/* View Mode Toggle */}
-            <div className="flex items-center bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-lg p-1 ml-auto sm:ml-0">
-              <button 
-                onClick={() => setViewMode('grid')}
-                className={`p-1.5 rounded-md transition-colors ${viewMode === 'grid' ? 'bg-primary text-white shadow-sm' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+      {/* 4 Summary Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <Card className="p-4 text-center">
+          <span className="text-xs text-slate-500 font-medium">Total Assigned</span>
+          <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1">15</div>
+        </Card>
+        <Card className="p-4 text-center">
+          <span className="text-xs text-slate-500 font-medium">Pending Submission</span>
+          <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">2</div>
+        </Card>
+        <Card className="p-4 text-center">
+          <span className="text-xs text-slate-500 font-medium">Under Review</span>
+          <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1">1</div>
+        </Card>
+        <Card className="p-4 text-center">
+          <span className="text-xs text-slate-500 font-medium">Completed & Graded</span>
+          <div className="text-2xl font-bold text-slate-900 dark:text-white mt-1">12</div>
+        </Card>
+      </div>
+
+      {/* Filter Tabs & Assignments Table */}
+      <Card 
+        title="Assignment Roster" 
+        subtitle="Manage your coursework submissions"
+        action={
+          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+            {['All', 'Pending', 'Submitted', 'Completed'].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setFilter(tab)}
+                className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors ${filter === tab ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}
               >
-                <LayoutGrid className="w-4 h-4" />
+                {tab}
               </button>
-              <button 
-                onClick={() => setViewMode('list')}
-                className={`p-1.5 rounded-md transition-colors ${viewMode === 'list' ? 'bg-primary text-white shadow-sm' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
-              >
-                <ListIcon className="w-4 h-4" />
-              </button>
-            </div>
+            ))}
           </div>
-
-          {/* Search */}
-          <div className="relative w-full sm:w-56">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
-            <input 
-              type="text" 
-              placeholder="Search assignments..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 pr-4 py-2 w-full bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-            />
-          </div>
-
-          {/* Filter Dropdown */}
-          <div className="relative w-full sm:w-44">
-            <Filter className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
-            <select 
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="pl-9 pr-8 py-2 w-full bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium focus:outline-none focus:border-primary appearance-none cursor-pointer"
-            >
-              <option value="All">All Statuses</option>
-              <option value="Not Started">Not Started</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Submitted">Submitted</option>
-              <option value="Graded">Graded</option>
-              <option value="Overdue">Overdue</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* Analytics Dashboard */}
-      <div className="w-full">
-
-        <AssignmentStats />
-      </div>
-
-      {/* Main Content Layout */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-stretch">
-        
-        {/* Assignment Listing (Left/Center) */}
-        <div className="xl:col-span-2 flex flex-col min-h-[600px] relative">
-          <WidgetWrapper id="assignments-list" innerClassName="p-0 h-full overflow-y-auto custom-scrollbar">
-            <div className="p-6 h-full">
-              <AssignmentList 
-                assignments={assignments} 
-                loading={loading} 
-                viewMode={viewMode}
-                onUploadClick={handleOpenUpload}
-                onDetailsClick={handleOpenDetails}
-              />
-            </div>
-          </WidgetWrapper>
-        </div>
-
-        {/* Side Panel (Right) - Calendar */}
-        <div className="xl:col-span-1 flex flex-col relative min-h-[400px]">
-          <WidgetWrapper id="assignments-calendar" innerClassName="p-0 h-full flex flex-col overflow-y-auto custom-scrollbar">
-            <AssignmentCalendar assignments={assignments} />
-          </WidgetWrapper>
-        </div>
-      </div>
-
-      {/* Modals and Slide-overs */}
-      <AssignmentDetailsPanel 
-        assignment={selectedAssignment}
-        isOpen={detailsPanelOpen}
-        onClose={() => setDetailsPanelOpen(false)}
-        onUploadClick={handleOpenUpload}
-      />
-
-      <AssignmentSubmission 
-        assignment={selectedAssignment}
-        isOpen={submissionModalOpen}
-        onClose={() => setSubmissionModalOpen(false)}
-        onSubmitted={handleSubmissionComplete}
-      />
-
+        }
+      >
+        <Table headers={['Assignment Title', 'Course Code', 'Due Date', 'Status', 'Grade / Result']}>
+          {filteredAssignments.map((item) => (
+            <tr key={item.id} className="hover:bg-blue-50/40 dark:hover:bg-blue-950/20 transition-colors">
+              <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+                <span>{item.title}</span>
+              </td>
+              <td className="px-4 py-3 text-slate-600 dark:text-slate-400">{item.course}</td>
+              <td className="px-4 py-3 text-slate-700 dark:text-slate-300 font-medium">{item.due}</td>
+              <td className="px-4 py-3">
+                <Badge variant={item.status === 'Pending' ? 'blue' : 'navy'}>{item.status}</Badge>
+              </td>
+              <td className="px-4 py-3 font-bold text-slate-900 dark:text-white">{item.grade}</td>
+            </tr>
+          ))}
+        </Table>
+      </Card>
     </div>
   );
 };

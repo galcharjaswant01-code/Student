@@ -1,21 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, Search, Settings, LogOut, User, MessageSquare, CheckSquare, Moon, Sun, Command, X, ArrowRight, Menu, LayoutDashboard, ClipboardList, BookOpen, FolderOpen } from 'lucide-react';
-import SidebarToggleButton from './SidebarToggleButton';
-
+import { Bell, Search, Settings, LogOut, User, Menu, X, ArrowRight, Command } from 'lucide-react';
 import useDashboardStore from '../store/useDashboardStore';
 import { useAuth } from '../context/AuthContext';
+import Avatar from './ui/Avatar';
+import Badge from './ui/Badge';
 
 const mockNotifications = [
-  { id: 1, title: 'New Assignment', message: 'Calculus III Chapter 4 assignment is available', time: '10m ago', icon: Bell, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-  { id: 2, title: 'Grade Updated', message: 'Your Physics mid-term was graded: A-', time: '1h ago', icon: CheckSquare, color: 'text-green-500', bg: 'bg-green-500/10' },
+  { id: 1, title: 'New Assignment Available', message: 'Calculus III Chapter 4 assignment has been published.', time: '10m ago' },
+  { id: 2, title: 'Grade Updated', message: 'Physics Mid-term grade updated.', time: '1h ago' },
 ];
 
 const mockSearchResults = [
-  { category: 'Quick Actions', items: ['Create New Assignment', 'View Attendance', 'Toggle Dark Mode'] },
-  { category: 'Pages', items: ['Dashboard', 'Courses', 'Messages', 'Settings'] }
+  { category: 'Quick Actions', items: ['View Attendance', 'Browse Courses', 'AI Assistant'] },
+  { category: 'Pages', items: ['Dashboard', 'Assignments', 'Courses', 'Messages', 'Settings'] }
 ];
-
 
 const TopNavbar = () => {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -23,46 +22,34 @@ const TopNavbar = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
+
   const navigate = useNavigate();
-  const { currentUser, logout } = useAuth();
+  const { currentUser, logout, isGuest } = useAuth();
   
-  const { themePreferences, setTheme, isMobileSidebarOpen, setMobileSidebarOpen, setSidebarCollapsed, userProfile } = useDashboardStore();
+  const { themePreferences, setTheme, isMobileSidebarOpen, setMobileSidebarOpen, userProfile } = useDashboardStore();
   const isDark = themePreferences?.theme !== 'light';
-  const isCollapsed = themePreferences?.isSidebarCollapsed ?? false;
 
   const notifRef = useRef(null);
   const searchRef = useRef(null);
   const searchInputRef = useRef(null);
   const profileRef = useRef(null);
   
-  // Flatten items for keyboard navigation
   const flatItems = (searchResults || []).flatMap(s => s.items || []);
 
-  // Debounced search effect
   useEffect(() => {
     if (!searchQuery) {
       setSearchResults([]);
       return;
     }
     const timer = setTimeout(() => {
-      setIsSearching(true);
-      try {
-        const query = searchQuery.toLowerCase();
-        const results = mockSearchResults.map(section => ({
-          category: section.category,
-          items: section.items.filter(item => item.toLowerCase().includes(query))
-        })).filter(section => section.items.length > 0);
-        
-        setSearchResults(results);
-      } catch (e) {
-        console.error(e);
-        setSearchResults([]);
-      } finally {
-        setIsSearching(false);
-      }
-    }, 300);
+      const query = searchQuery.toLowerCase();
+      const results = mockSearchResults.map(section => ({
+        category: section.category,
+        items: section.items.filter(item => item.toLowerCase().includes(query))
+      })).filter(section => section.items.length > 0);
+      setSearchResults(results);
+    }, 200);
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
@@ -72,292 +59,193 @@ const TopNavbar = () => {
         e.preventDefault();
         setIsSearchOpen(true);
       }
-      if (isSearchOpen) {
-        if (e.key === 'Escape') setIsSearchOpen(false);
-        if (e.key === 'ArrowDown') {
-          e.preventDefault();
-          setSelectedIndex(prev => (prev + 1) % flatItems.length);
-        }
-        if (e.key === 'ArrowUp') {
-          e.preventDefault();
-          setSelectedIndex(prev => (prev - 1 + flatItems.length) % flatItems.length);
-        }
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          const selectedAction = flatItems[selectedIndex];
-          if (selectedAction === 'Toggle Dark Mode') setTheme(isDark ? 'light' : 'dark');
-          setIsSearchOpen(false);
-        }
-      }
     };
-
     const handleClickOutside = (event) => {
-      if (notifRef.current && !notifRef.current.contains(event.target)) {
-        setIsNotificationsOpen(false);
-      }
-      if (searchRef.current && !searchRef.current.contains(event.target)) {
-        setIsSearchOpen(false);
-      }
-      if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setIsProfileOpen(false);
-      }
+      if (notifRef.current && !notifRef.current.contains(event.target)) setIsNotificationsOpen(false);
+      if (searchRef.current && !searchRef.current.contains(event.target)) setIsSearchOpen(false);
+      if (profileRef.current && !profileRef.current.contains(event.target)) setIsProfileOpen(false);
     };
-
     window.addEventListener('keydown', handleKeyDown);
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isSearchOpen, selectedIndex, flatItems, isDark, setTheme]);
+  }, []);
 
   useEffect(() => {
     if (isSearchOpen && searchInputRef.current) {
       setTimeout(() => searchInputRef.current.focus(), 50);
-      setSelectedIndex(0);
     }
   }, [isSearchOpen]);
 
-  const toggleTheme = () => {
-    setTheme(isDark ? 'light' : 'dark');
-  };
-
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/90 dark:bg-[#0F172A]/90 backdrop-blur-md border-b border-slate-200/80 dark:border-white/5">
+    <header className="sticky top-0 z-40 w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-100">
       <div className="flex h-16 items-center justify-between px-4 sm:px-6">
         
-        {/* Left Section */}
-        <div className="flex items-center gap-2 flex-1 relative">
-          
+        {/* Left Section / Mobile Menu / Search */}
+        <div className="flex items-center gap-3 flex-1">
           <button
             onClick={() => setMobileSidebarOpen(!isMobileSidebarOpen)}
-            className="lg:hidden p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 rounded-md transition-colors"
+            className="lg:hidden p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
             title="Toggle Menu"
           >
             <Menu className="w-5 h-5" />
           </button>
           
-          <div className="lg:hidden flex items-center gap-2 pr-2 border-r border-slate-200/50 dark:border-white/10">
-            <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center text-white font-bold text-sm shadow-sm">
-              S
-            </div>
-          </div>
-          
           <div className="relative" ref={searchRef}>
-            {/* Desktop Search Bar */}
             <div 
               onClick={() => setIsSearchOpen(true)}
-              className="hidden sm:flex items-center w-64 bg-slate-100/80 dark:bg-black/20 hover:bg-slate-200/80 dark:hover:bg-black/40 border border-transparent dark:border-white/5 rounded-md px-3 py-2 cursor-text group"
+              className="hidden sm:flex items-center w-64 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700/80 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 cursor-pointer transition-colors"
             >
-              <Search className="w-4 h-4 text-slate-400 group-hover:text-primary" />
-              <span className="ml-2 text-sm text-slate-500 dark:text-slate-400 flex-1 select-none">Search...</span>
-              <div className="flex items-center gap-1 text-[10px] font-medium text-slate-400 dark:text-slate-500 bg-white dark:bg-white/5 px-1.5 py-0.5 rounded border border-slate-200 dark:border-transparent">
+              <Search className="w-4 h-4 text-slate-400" />
+              <span className="ml-2 text-xs text-slate-500 dark:text-slate-400 flex-1">Search portal...</span>
+              <div className="flex items-center gap-1 text-[10px] font-semibold text-slate-400 bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-800">
                 <Command className="w-3 h-3" />
                 <span>K</span>
               </div>
             </div>
 
-            {/* Mobile Search Icon */}
             <button 
               onClick={() => setIsSearchOpen(true)}
-              className="sm:hidden p-2 text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-white rounded-md hover:bg-slate-100 dark:hover:bg-white/5"
+              className="sm:hidden p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"
             >
               <Search className="w-5 h-5" />
             </button>
 
-            {/* Smart Search Dropdown Modal */}
+            {/* Search Modal */}
             {isSearchOpen && (
-              <div
-                className="fixed inset-x-2 top-16 sm:absolute sm:top-0 sm:left-0 sm:right-auto sm:w-[500px] max-w-full bg-white dark:bg-[#0F172A] shadow-2xl border border-slate-200 dark:border-white/10 rounded-xl overflow-hidden z-50"
-              >
-                <div className="p-3 border-b border-slate-100 dark:border-white/5 flex items-center gap-2">
-                  <Search className="w-5 h-5 text-primary" />
+              <div className="fixed inset-x-2 top-16 sm:absolute sm:top-0 sm:left-0 sm:w-[480px] bg-white dark:bg-slate-900 shadow-lg border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden z-50 animate-fade-in">
+                <div className="p-3 border-b border-slate-200 dark:border-slate-800 flex items-center gap-2">
+                  <Search className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                   <input 
                     ref={searchInputRef}
                     type="text" 
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Type a command or search..." 
-                    className="flex-1 bg-transparent border-none outline-none text-slate-900 dark:text-white placeholder-slate-400 text-sm"
+                    placeholder="Search courses, pages, or tools..." 
+                    className="flex-1 bg-transparent border-none outline-none text-slate-900 dark:text-white text-xs"
                   />
-                  <button 
-                    onClick={() => setIsSearchOpen(false)}
-                    className="sm:hidden p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white"
-                  >
+                  <button onClick={() => setIsSearchOpen(false)} className="p-1 text-slate-400 hover:text-slate-700">
                     <X className="w-4 h-4" />
                   </button>
-                  <div className="hidden sm:flex gap-1">
-                    <span className="text-[10px] bg-slate-100 dark:bg-white/10 text-slate-500 px-1.5 py-0.5 rounded">↑↓ navigate</span>
-                    <span className="text-[10px] bg-slate-100 dark:bg-white/10 text-slate-500 px-1.5 py-0.5 rounded">↵ select</span>
-                  </div>
                 </div>
                 
-                <div className="max-h-[60vh] overflow-y-auto p-2 custom-scrollbar">
-                  {!searchQuery && searchResults.length === 0 ? (
-                    <div className="p-4 text-center text-sm text-slate-500">
-                      Type something to start searching...
+                <div className="max-h-72 overflow-y-auto p-2 custom-scrollbar">
+                  {searchResults.map((section, idx) => (
+                    <div key={idx} className="mb-3">
+                      <div className="px-3 py-1 text-[10px] text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wider">
+                        {section.category}
+                      </div>
+                      {section.items.map((item, i) => (
+                        <button 
+                          key={i} 
+                          onClick={() => {
+                            if (item === 'Dashboard') navigate('/dashboard');
+                            if (item === 'Assignments') navigate('/assignments');
+                            if (item === 'Courses') navigate('/courses');
+                            if (item === 'Messages') navigate('/messages');
+                            if (item === 'Settings') navigate('/settings');
+                            setIsSearchOpen(false);
+                          }}
+                          className="w-full text-left px-3 py-2 text-xs rounded-lg text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-600 dark:hover:text-blue-400 flex items-center justify-between transition-colors"
+                        >
+                          <span>{item}</span>
+                          <ArrowRight className="w-3.5 h-3.5 opacity-60" />
+                        </button>
+                      ))}
                     </div>
-                  ) : isSearching ? (
-                    <div className="p-4 text-center text-sm text-slate-500">
-                      Searching for "{searchQuery}"...
-                    </div>
-                  ) : (
-                    <>
-                      {searchResults.map((section, idx) => {
-                        const startIndex = searchResults.slice(0, idx).reduce((acc, s) => acc + s.items.length, 0);
-                        return (
-                          <div key={idx} className="mb-2">
-                            <div className="px-3 py-1.5 text-xs text-primary/80 font-bold uppercase tracking-wider">
-                              {section.category}
-                            </div>
-                            {section.items.map((item, i) => {
-                              const globalIndex = startIndex + i;
-                              const isSelected = selectedIndex === globalIndex;
-                              return (
-                                <button 
-                                  key={i} 
-                                  onMouseEnter={() => setSelectedIndex(globalIndex)}
-                                  onClick={() => {
-                                    if (item === 'Toggle Dark Mode') toggleTheme();
-                                    setIsSearchOpen(false);
-                                  }}
-                                  className={`w-full text-left px-3 py-2.5 text-sm rounded-md transition-colors flex items-center justify-between
-                                    ${isSelected 
-                                      ? 'bg-primary text-white shadow-md shadow-primary/20' 
-                                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
-                                    }`}
-                                >
-                                  <span>{item}</span>
-                                  {isSelected && <ArrowRight className="w-4 h-4 text-white/70" />}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        )
-                      })}
-                    </>
-                  )}
+                  ))}
                 </div>
               </div>
             )}
           </div>
         </div>
 
-        {/* Right Section */}
-        <div className="flex items-center space-x-1.5 sm:space-x-3">
-
+        {/* Right Section / Notifications / Profile */}
+        <div className="flex items-center gap-3">
+          
+          {/* Notifications */}
           <div className="relative" ref={notifRef}>
             <button 
               onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-              className={`p-2 relative rounded-md transition-colors ${
-                isNotificationsOpen 
-                  ? 'bg-primary/10 text-primary dark:bg-white/10 dark:text-white' 
-                  : 'text-slate-500 hover:text-primary hover:bg-primary/10 dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/5'
-              }`}
+              className="p-2 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors relative"
             >
               <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500 border-2 border-white dark:border-[#0F172A]"></span>
-              </span>
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-blue-600" />
             </button>
 
             {isNotificationsOpen && (
-              <div
-                className="absolute right-0 mt-3 w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-white dark:bg-[#0F172A] rounded-xl shadow-xl border border-slate-200 dark:border-white/10 overflow-hidden transform origin-top-right z-50"
-              >
-                <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02]">
-                    <h3 className="font-semibold text-slate-900 dark:text-white">Notifications</h3>
-                    <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-1 rounded-full">
-                      3 New
-                    </span>
-                  </div>
-                  
-                  <div className="max-h-[calc(100vh-200px)] overflow-y-auto custom-scrollbar">
-                    {mockNotifications.map((notif) => (
-                      <div key={notif.id} className="flex gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-white/5 cursor-pointer border-b border-slate-50 dark:border-white/5 last:border-0">
-                        <div className={`mt-1 flex-shrink-0 w-8 h-8 rounded-full ${notif.bg} flex items-center justify-center`}>
-                          <notif.icon className={`w-4 h-4 ${notif.color}`} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between mb-0.5">
-                            <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{notif.title}</p>
-                            <span className="text-[10px] text-slate-500 dark:text-slate-400 whitespace-nowrap ml-2">{notif.time}</span>
-                          </div>
-                          <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2">{notif.message}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="p-2 border-t border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02]">
-                    <button 
-                      onClick={() => {
-                        setIsNotificationsOpen(false);
-                        navigate('/notifications');
-                      }}
-                      className="w-full text-center text-xs font-semibold text-primary hover:text-blue-700 dark:text-accent dark:hover:text-cyan-300 py-1.5"
-                    >
-                      View All Notifications
-                    </button>
-                  </div>
+              <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800 overflow-hidden z-50 animate-fade-in">
+                <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-slate-800">
+                  <h3 className="font-bold text-xs text-slate-900 dark:text-white">Notifications</h3>
+                  <Badge variant="blue">2 New</Badge>
                 </div>
-              )}
-            
+                
+                <div className="max-h-64 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800">
+                  {mockNotifications.map((notif) => (
+                    <div key={notif.id} className="p-3 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                      <div className="flex items-center justify-between">
+                        <p className="text-xs font-semibold text-slate-900 dark:text-white">{notif.title}</p>
+                        <span className="text-[10px] text-slate-400">{notif.time}</span>
+                      </div>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{notif.message}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
-          <div className="flex items-center ml-2 pl-4 border-l border-slate-200 dark:border-white/10 relative" ref={profileRef}>
-            <div 
+          {/* Profile Dropdown */}
+          <div className="relative" ref={profileRef}>
+            <button 
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="w-8 h-8 rounded-full bg-gradient- bg-primary p-[2px] cursor-pointer -primary/20"
+              className="flex items-center gap-2 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
             >
-              {userProfile?.avatar || currentUser?.photoURL ? (
-                <img 
-                  src={userProfile?.avatar || currentUser?.photoURL} 
-                  alt="User avatar" 
-                  className="w-full h-full rounded-full border-2 border-white dark:border-[#0F172A] object-cover"
-                />
-              ) : (
-                <div className="w-full h-full rounded-full border-2 border-white dark:border-[#0F172A] bg-slate-800 flex items-center justify-center">
-                  <User className="w-4 h-4 text-slate-300" />
-                </div>
-              )}
-            </div>
+              <Avatar name={currentUser?.displayName || (isGuest ? 'Guest Visitor' : 'Alex Johnson')} size="sm" />
+            </button>
 
             {isProfileOpen && (
-              <div
-                className="absolute right-0 top-full mt-3 w-56 bg-white dark:bg-[#0F172A] rounded-sm border border-slate-200 dark:border-white/10 overflow-hidden z-50"
-              >
-                <div className="p-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02]">
-                  <p className="font-medium text-slate-900 dark:text-white">
-                    {userProfile?.firstName && userProfile?.lastName ? `${userProfile.firstName} ${userProfile.lastName}` : currentUser?.displayName || 'Alex Johnson'}
+              <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800 overflow-hidden z-50 animate-fade-in">
+                <div className="p-3 border-b border-slate-100 dark:border-slate-800">
+                  <p className="font-bold text-xs text-slate-900 dark:text-white">
+                    {currentUser?.displayName || (isGuest ? 'Guest Visitor' : 'Alex Johnson')}
                   </p>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 truncate">
-                    {userProfile?.email || currentUser?.email || 'alex@university.edu'}
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                    {currentUser?.email || (isGuest ? 'guest@studenthub.edu' : 'alex@university.edu')}
                   </p>
                 </div>
                 
-                <div className="p-1">
-                  <button onClick={() => { setIsProfileOpen(false); navigate('/settings'); }} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 rounded-sm">
-                    <User className="w-4 h-4 text-slate-400" />
-                    My Profile
+                <div className="p-1 space-y-0.5">
+                  <button 
+                    onClick={() => { setIsProfileOpen(false); navigate('/profile'); }}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg transition-colors"
+                  >
+                    <User className="w-4 h-4" />
+                    <span>My Profile</span>
                   </button>
-                  <button onClick={() => { setIsProfileOpen(false); navigate('/settings'); }} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 rounded-sm">
-                    <Settings className="w-4 h-4 text-slate-400" />
-                    Settings
+                  <button 
+                    onClick={() => { setIsProfileOpen(false); navigate('/settings'); }}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-600 dark:hover:text-blue-400 rounded-lg transition-colors"
+                  >
+                    <Settings className="w-4 h-4" />
+                    <span>Settings</span>
                   </button>
-                </div>
-                
-                <div className="p-1 border-t border-slate-100 dark:border-white/5">
-                  <button onClick={async () => { setIsProfileOpen(false); await logout(); navigate('/login'); }} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-sm">
+                  <button 
+                    onClick={async () => { setIsProfileOpen(false); await logout(); navigate('/login'); }}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                  >
                     <LogOut className="w-4 h-4" />
-                    Log Out
+                    <span>Log Out</span>
                   </button>
                 </div>
               </div>
             )}
           </div>
+
         </div>
+
       </div>
     </header>
   );
