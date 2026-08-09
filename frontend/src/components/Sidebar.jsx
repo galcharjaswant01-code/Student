@@ -51,21 +51,27 @@ const Sidebar = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Handle Dragging to Resize Sidebar Width dynamically
+  // Handle Dragging / Pointer move to Resize Sidebar Width dynamically
+  const handlePointerDown = (e) => {
+    e.preventDefault();
+    setIsResizing(true);
+  };
+
   useEffect(() => {
-    const handleMouseMove = (e) => {
+    const handlePointerMove = (e) => {
       if (!isResizing || isCollapsed || isMobile) return;
-      const newWidth = Math.max(200, Math.min(380, e.clientX));
+      // Calculate new width relative to viewport left edge
+      const newWidth = Math.max(180, Math.min(420, e.clientX));
       setSidebarWidth(newWidth);
     };
 
-    const handleMouseUp = () => {
+    const handlePointerUp = () => {
       if (isResizing) setIsResizing(false);
     };
 
     if (isResizing) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+      window.addEventListener('pointermove', handlePointerMove);
+      window.addEventListener('pointerup', handlePointerUp);
       document.body.style.cursor = 'col-resize';
       document.body.style.userSelect = 'none';
     } else {
@@ -74,8 +80,8 @@ const Sidebar = () => {
     }
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
       document.body.style.cursor = 'default';
       document.body.style.userSelect = 'auto';
     };
@@ -96,14 +102,14 @@ const Sidebar = () => {
     <div 
       className={`
         fixed top-0 left-0 z-50
-        flex flex-col h-screen overflow-hidden
+        flex flex-col h-screen
         bg-slate-900 border-r border-slate-800 text-white
-        transition-all duration-150 ease-out select-none
+        transition-all duration-150 ease-out select-none relative
         ${isMobile ? (isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full') : 'translate-x-0'}
       `}
       style={{ width: actualWidth }}
     >
-      {/* Header / Brand & Collapse Toggle */}
+      {/* Header / Brand & Collapse Button */}
       <div className="h-16 flex items-center justify-between px-4 border-b border-slate-800 shrink-0">
         <div className="flex items-center gap-3 overflow-hidden">
           <div className="p-2 rounded-lg border border-blue-500 text-blue-400 bg-transparent shrink-0">
@@ -120,7 +126,7 @@ const Sidebar = () => {
         {!isMobile && (
           <button
             onClick={() => setSidebarCollapsed(!isCollapsed)}
-            className="p-1.5 rounded-lg border border-slate-700 text-slate-400 hover:text-white hover:border-slate-600 bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg border border-slate-700 text-slate-400 hover:text-white hover:border-slate-600 bg-slate-800 transition-colors cursor-pointer"
             title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
           >
             {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
@@ -171,7 +177,7 @@ const Sidebar = () => {
           {!isCollapsed && (
             <button
               onClick={handleLogout}
-              className="p-1.5 text-slate-400 hover:text-white transition-colors rounded-md border border-transparent hover:border-slate-700"
+              className="p-1.5 text-slate-400 hover:text-white transition-colors rounded-md border border-transparent hover:border-slate-700 cursor-pointer"
               title="Log Out"
             >
               <LogOut className="w-4 h-4" />
@@ -180,14 +186,16 @@ const Sidebar = () => {
         </div>
       </div>
 
-      {/* Right Edge Resizable Drag Handle */}
+      {/* Right Edge Drag Handle for Resizing */}
       {!isMobile && !isCollapsed && (
         <div
-          onMouseDown={() => setIsResizing(true)}
-          className={`absolute top-0 right-0 w-1.5 h-full cursor-col-resize hover:bg-blue-500/50 transition-colors z-50 flex items-center justify-center ${isResizing ? 'bg-blue-500' : 'bg-transparent'}`}
-          title="Drag to resize sidebar width"
+          onPointerDown={handlePointerDown}
+          className={`absolute top-0 right-0 w-4 h-full cursor-col-resize z-[60] group flex items-center justify-center transition-colors ${
+            isResizing ? 'bg-blue-600/40' : 'hover:bg-blue-600/20 bg-transparent'
+          }`}
+          title="Click and drag to resize sidebar width"
         >
-          <GripVertical className="w-3 h-3 text-slate-500 opacity-0 hover:opacity-100" />
+          <div className={`w-1 h-12 rounded-full transition-all ${isResizing ? 'bg-blue-500 scale-y-125' : 'bg-slate-700 group-hover:bg-blue-400'}`} />
         </div>
       )}
     </div>
