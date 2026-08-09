@@ -90,7 +90,7 @@ const DEFAULT_VISIBLE_WIDGETS = [
 const useDashboardStore = create((set, get) => ({
   layouts: DEFAULT_LAYOUTS,
   visibleWidgets: DEFAULT_VISIBLE_WIDGETS,
-  themePreferences: { mode: 'comfortable', sidebarWidth: 288, theme: 'dark', isSidebarVisible: true, isSidebarCollapsed: false },
+  themePreferences: { mode: 'comfortable', sidebarWidth: 288, theme: 'light', isSidebarVisible: true, isSidebarCollapsed: false },
   isEditing: false,
   isLoading: false,
   isMobileSidebarOpen: false,
@@ -151,14 +151,10 @@ const useDashboardStore = create((set, get) => ({
     get().saveToBackend();
   },
 
-  setTheme: (theme) => {
-    localStorage.setItem('theme', theme);
-    if (theme === 'light') {
-      document.documentElement.classList.remove('dark');
-    } else {
-      document.documentElement.classList.add('dark');
-    }
-    set((state) => ({ themePreferences: { ...state.themePreferences, theme } }));
+  setTheme: () => {
+    localStorage.setItem('theme', 'light');
+    document.documentElement.classList.remove('dark');
+    set((state) => ({ themePreferences: { ...state.themePreferences, theme: 'light' } }));
     get().saveToBackend();
   },
 
@@ -202,6 +198,7 @@ const useDashboardStore = create((set, get) => ({
           visibleWidgets: fetchedWidgets,
           themePreferences: {
             ...themePrefs,
+            theme: 'light',
             sidebarWidth,
             isSidebarVisible: themePrefs.isSidebarVisible ?? true,
             isSidebarCollapsed: themePrefs.isSidebarCollapsed ?? false

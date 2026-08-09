@@ -20,15 +20,10 @@ import AIToolView from './pages/AIToolView'
 import useDashboardStore from './store/useDashboardStore'
 
 function App() {
-  const { themePreferences } = useDashboardStore();
-
   React.useEffect(() => {
-    if (themePreferences?.theme === 'light') {
-      document.documentElement.classList.remove('dark');
-    } else {
-      document.documentElement.classList.add('dark');
-    }
-  }, [themePreferences?.theme]);
+    document.documentElement.classList.remove('dark');
+    localStorage.setItem('theme', 'light');
+  }, []);
 
   return (
     <ErrorBoundary>

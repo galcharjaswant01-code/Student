@@ -7,19 +7,9 @@ export const THEME_COLORS = {
   'bg-purple-500': {"50":"oklch(97.7% 0.014 308.299)","100":"oklch(94.6% 0.033 307.174)","200":"oklch(90.2% 0.063 306.703)","300":"oklch(82.7% 0.119 306.383)","400":"oklch(71.4% 0.203 305.504)","500":"oklch(62.7% 0.265 303.9)","600":"oklch(55.8% 0.288 302.321)","700":"oklch(49.6% 0.265 301.924)","800":"oklch(43.8% 0.218 303.724)","900":"oklch(38.1% 0.176 304.987)","950":"oklch(29.1% 0.149 302.717)"}
 };
 
-export const applyTheme = (themePreference) => {
+export const applyTheme = () => {
   const root = document.documentElement;
-  if (themePreference === 'dark') {
-    root.classList.add('dark');
-  } else if (themePreference === 'light') {
-    root.classList.remove('dark');
-  } else {
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-  }
+  root.classList.remove('dark');
 };
 
 export const applyAccentColor = (accentColor) => {
@@ -33,8 +23,7 @@ export const applyAccentColor = (accentColor) => {
 };
 
 export const initTheme = () => {
-  const theme = localStorage.getItem('theme') || 'dark';
   const accent = localStorage.getItem('accentColor') || 'bg-indigo-500';
-  applyTheme(theme);
+  applyTheme();
   applyAccentColor(accent);
 };
