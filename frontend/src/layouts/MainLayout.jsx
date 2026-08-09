@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Menu } from 'lucide-react'
 import Sidebar from '../components/Sidebar'
+import RightSidebar from '../components/RightSidebar'
 import TopNavbar from '../components/TopNavbar'
 import Footer from '../components/ui/Footer'
 import useDashboardStore from '../store/useDashboardStore'
@@ -9,15 +10,22 @@ import WorkspaceLayout from '../components/workspace/WorkspaceLayout'
 
 const MainLayout = () => {
   const location = useLocation()
-  const { themePreferences, isMobileSidebarOpen, setMobileSidebarOpen } = useDashboardStore()
-  const isCollapsed = themePreferences?.isSidebarCollapsed ?? false;
-  const currentWidth = themePreferences?.sidebarWidth || 260;
+  const { 
+    themePreferences, 
+    isMobileSidebarOpen, 
+    setMobileSidebarOpen,
+    rightSidebarWidth,
+    isRightSidebarCollapsed
+  } = useDashboardStore()
+
+  const isLeftCollapsed = themePreferences?.isSidebarCollapsed ?? false;
+  const leftWidth = themePreferences?.sidebarWidth || 260;
   
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1280)
 
   useEffect(() => {
     const handleResize = () => {
-      const mobile = window.innerWidth < 1024
+      const mobile = window.innerWidth < 1280
       setIsMobile(mobile)
       if (!mobile) {
         setMobileSidebarOpen(false)
@@ -27,7 +35,8 @@ const MainLayout = () => {
     return () => window.removeEventListener('resize', handleResize)
   }, [setMobileSidebarOpen])
 
-  const sidebarActualWidth = isMobile ? 0 : (isCollapsed ? 76 : currentWidth);
+  const leftSidebarActualWidth = isMobile ? 0 : (isLeftCollapsed ? 76 : leftWidth);
+  const rightSidebarActualWidth = isMobile ? 0 : (isRightSidebarCollapsed ? 48 : rightSidebarWidth);
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 relative font-sans">
@@ -40,13 +49,19 @@ const MainLayout = () => {
         />
       )}
 
-      {/* Movable & Collapsible Sidebar */}
+      {/* Movable & Resizable Left Sidebar */}
       <Sidebar />
 
-      {/* Main Content Area */}
+      {/* Movable & Resizable Right Sidebar */}
+      <RightSidebar />
+
+      {/* Main Content Area (Adjusts margins for both Left & Right Sidebars) */}
       <div 
         className="flex flex-col min-h-screen relative z-0 transition-all duration-150 ease-out w-full max-w-full overflow-x-hidden"
-        style={{ marginLeft: sidebarActualWidth }}
+        style={{ 
+          marginLeft: leftSidebarActualWidth, 
+          marginRight: rightSidebarActualWidth 
+        }}
       >
         <TopNavbar />
         

@@ -90,7 +90,9 @@ const DEFAULT_VISIBLE_WIDGETS = [
 const useDashboardStore = create((set, get) => ({
   layouts: DEFAULT_LAYOUTS,
   visibleWidgets: DEFAULT_VISIBLE_WIDGETS,
-  themePreferences: { mode: 'comfortable', sidebarWidth: 288, theme: 'light', isSidebarVisible: true, isSidebarCollapsed: false },
+  themePreferences: { mode: 'comfortable', sidebarWidth: 260, theme: 'light', isSidebarVisible: true, isSidebarCollapsed: false },
+  rightSidebarWidth: 280,
+  isRightSidebarCollapsed: false,
   isEditing: false,
   isLoading: false,
   isMobileSidebarOpen: false,
@@ -109,6 +111,10 @@ const useDashboardStore = create((set, get) => ({
   setEditing: (editing) => set({ isEditing: editing }),
   setMobileSidebarOpen: (isOpen) => set((state) => ({ 
     isMobileSidebarOpen: typeof isOpen === 'function' ? isOpen(state.isMobileSidebarOpen) : isOpen 
+  })),
+  setRightSidebarWidth: (width) => set({ rightSidebarWidth: width }),
+  setRightSidebarCollapsed: (isCollapsed) => set((state) => ({
+    isRightSidebarCollapsed: typeof isCollapsed === 'function' ? isCollapsed(state.isRightSidebarCollapsed) : isCollapsed
   })),
   
   setLayouts: (newLayouts) => {
