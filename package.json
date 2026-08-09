@@ -1,8 +1,9 @@
 {
   "name": "student-management-system-root",
   "version": "1.0.0",
-  "description": "Root package.json to trick Vercel into building Node.js instead of Django",
+  "private": true,
   "scripts": {
-    "build": "npm install --prefix frontend && npm run build --prefix frontend && node -e \"const fs=require('fs'); fs.mkdirSync('dist', {recursive: true}); fs.cpSync('frontend/dist', 'dist', {recursive: true});\""
+    "postinstall": "npm install --prefix frontend",
+    "build": "npm run build --prefix frontend && node -e \"require('fs').cpSync('frontend/dist', 'dist', {recursive: true})\""
   }
 }
