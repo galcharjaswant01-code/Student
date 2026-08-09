@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { Menu } from 'lucide-react'
 import Sidebar from '../components/Sidebar'
-import RightSidebar from '../components/RightSidebar'
 import TopNavbar from '../components/TopNavbar'
 import Footer from '../components/ui/Footer'
 import useDashboardStore from '../store/useDashboardStore'
@@ -13,19 +12,17 @@ const MainLayout = () => {
   const { 
     themePreferences, 
     isMobileSidebarOpen, 
-    setMobileSidebarOpen,
-    rightSidebarWidth,
-    isRightSidebarCollapsed
+    setMobileSidebarOpen
   } = useDashboardStore()
 
   const isLeftCollapsed = themePreferences?.isSidebarCollapsed ?? false;
   const leftWidth = themePreferences?.sidebarWidth || 260;
   
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 1280)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024)
 
   useEffect(() => {
     const handleResize = () => {
-      const mobile = window.innerWidth < 1280
+      const mobile = window.innerWidth < 1024
       setIsMobile(mobile)
       if (!mobile) {
         setMobileSidebarOpen(false)
@@ -36,8 +33,6 @@ const MainLayout = () => {
   }, [setMobileSidebarOpen])
 
   const leftSidebarActualWidth = isMobile ? 0 : (isLeftCollapsed ? 76 : leftWidth);
-  const quickPanelActualWidth = isMobile ? 0 : (isRightSidebarCollapsed ? 48 : rightSidebarWidth);
-  const totalLeftWidth = leftSidebarActualWidth + quickPanelActualWidth;
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 relative font-sans">
@@ -50,17 +45,14 @@ const MainLayout = () => {
         />
       )}
 
-      {/* Movable & Resizable Left Main Navigation Sidebar */}
+      {/* Single Resizable & Collapsible Left Navigation Sidebar */}
       <Sidebar />
 
-      {/* Movable & Resizable Left Quick Panel (Docked next to main sidebar) */}
-      <RightSidebar leftOffset={leftSidebarActualWidth} />
-
-      {/* Main Content Area (Calculates combined left margin from both left panels) */}
+      {/* Main Content Area */}
       <div 
         className="flex flex-col min-h-screen relative z-0 transition-all duration-150 ease-out w-full max-w-full overflow-x-hidden"
         style={{ 
-          marginLeft: totalLeftWidth, 
+          marginLeft: leftSidebarActualWidth, 
           marginRight: 0 
         }}
       >
