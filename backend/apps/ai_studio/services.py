@@ -19,20 +19,31 @@ def chat_with_gemini(messages, model_name=None):
 def chat_with_ai(messages: list, model: str = 'gemini-2.0-flash') -> str:
     """
     Send a list of messages to Gemini AI and return the response text.
+    Messages should already be in {'role': 'user'|'model', 'parts': ['text']} format.
     """
-    gemini_messages = []
-    user_prompt = ""
-    for msg in messages:
-        role = 'model' if msg['role'] == 'assistant' else msg['role']
-        content = msg.get('parts', [''])[0] if isinstance(msg.get('parts'), list) else msg.get('content', '')
-        if role == 'user':
-            user_prompt = content
-        gemini_messages.append({'role': role, 'parts': [content]})
-        
-    ai_text = chat_with_gemini(gemini_messages, model_name=model)
-    if "Error" in ai_text or "429" in ai_text or "missing" in ai_text.lower():
-        return f"AI Assistant: I am ready to help you with your studies! Regarding '{user_prompt}':\n\nKey Concept Breakdown:\n• Understand the core principles step-by-step.\n• Practice with real-world examples and active recall.\n• Feel free to ask follow-up questions or generate a practice quiz!"
+    # Pass directly to Gemini client — all role normalization and validation
+    # is handled inside gemini_client.chat_with_gemini
+    ai_text = chat_with_gemini(messages, model_name=model)
+
+    # If there's a genuine error (not a successful AI response), return a fallback
+    if ai_text.startswith("Error"):
+        logger.warning(f"AI returned error: {ai_text}")
+        # Extract user prompt for context
+        user_prompt = ''
+        for msg in reversed(messages):
+            parts = msg.get('parts', [''])
+            content = parts[0] if parts else ''
+            if msg.get('role') == 'user' and content:
+                user_prompt = content[:80]
+                break
+        return (
+            f"I'm having trouble connecting to the AI service right now. "
+            f"Please try again in a moment. "
+            f"(Error detail: {ai_text})"
+        )
+
     return ai_text
+
 
 def _generate_json_with_ai(prompt: str, model: str = 'gemini-2.0-flash') -> dict:
     """Helper to query Gemini and extract JSON."""

@@ -10,8 +10,8 @@ from . import services
 class DirectChatView(views.APIView):
     """
     Stateless AI chat endpoint.
-    Accepts: { "messages": [...], "system_prompt": "..." }
-    Returns:  { "response": "..." }
+    POST: { "messages": [{"role": "user"|"assistant", "content": "..."}], "system_prompt": "..." }
+    Returns: { "response": "..." }
     API key is stored securely on the server — never exposed to the frontend.
     """
     permission_classes = (IsAuthenticated,)
@@ -23,17 +23,31 @@ class DirectChatView(views.APIView):
         if not messages:
             return Response({'error': 'messages field is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Build Gemini-format messages with system prompt prepended
-        gemini_messages = [{'role': 'user', 'parts': [system_prompt + '\n\n---']}]
+        # Build Gemini-format messages
+        # Role mapping: 'user' → 'user', 'assistant'/'model' → 'model'
+        gemini_messages = []
         for msg in messages:
-            role = 'model' if msg.get('role') in ('assistant', 'model') else 'user'
-            content = msg.get('content', '')
-            if content.strip():
+            raw_role = msg.get('role', 'user')
+            role = 'model' if raw_role in ('assistant', 'model') else 'user'
+            content = msg.get('content', '').strip()
+            if content:
                 gemini_messages.append({'role': role, 'parts': [content]})
+
+        if not gemini_messages:
+            return Response({'error': 'No valid message content provided.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Inject system prompt as the leading user message (merged with first user msg)
+        # This avoids the "two consecutive user" problem
+        if gemini_messages[0]['role'] == 'user':
+            gemini_messages[0]['parts'][0] = system_prompt + '\n\n---\n\n' + gemini_messages[0]['parts'][0]
+        else:
+            # If first msg is model (edge case), prepend a user message
+            gemini_messages.insert(0, {'role': 'user', 'parts': [system_prompt]})
 
         # Call AI via backend — key never leaves the server
         ai_text = services.chat_with_ai(gemini_messages)
         return Response({'response': ai_text})
+
 
 class AIConversationViewSet(viewsets.ModelViewSet):
     serializer_class = AIConversationSerializer
