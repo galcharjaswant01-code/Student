@@ -19,5 +19,5 @@ COPY . /app/
 
 ENV DJANGO_SETTINGS_MODULE config.settings.prod
 
-CMD ["uvicorn", "config.asgi:application", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "python manage.py collectstatic --no-input && python manage.py migrate --no-input && uvicorn config.asgi:application --host 0.0.0.0 --port ${PORT:-8000}"]
 
