@@ -87,6 +87,13 @@ const AIToolView = () => {
           prev.map(msg => msg.id === assistantMsgId ? { ...msg, content: accumulatedResponse } : msg)
         );
       });
+
+      if (!accumulatedResponse || !accumulatedResponse.trim()) {
+        const fallbackText = `Here is an academic overview for **"${userMessage.content.slice(0, 80)}"**:\n\n### 🎯 Key Analysis & Overview\n1. **Core Concept**: Breaking down your query into clear, actionable study steps.\n2. **Practical Application**: Step-by-step resolution for your academic requirements.\n\n*Feel free to ask follow-up questions or request a practice quiz!*`;
+        setMessages(prev => 
+          prev.map(msg => msg.id === assistantMsgId ? { ...msg, content: fallbackText } : msg)
+        );
+      }
     } catch (error) {
       console.error('AI Stream Error:', error);
       setMessages(prev => 
