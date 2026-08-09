@@ -13,7 +13,7 @@ import {
 import useDashboardStore from '../store/useDashboardStore';
 import Badge from './ui/Badge';
 
-const RightSidebar = () => {
+const RightSidebar = ({ leftOffset = 260 }) => {
   const { rightSidebarWidth, setRightSidebarWidth, isRightSidebarCollapsed, setRightSidebarCollapsed } = useDashboardStore();
   
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1280);
@@ -43,7 +43,7 @@ const RightSidebar = () => {
     return () => clearInterval(interval);
   }, [isTimerRunning, timerSeconds]);
 
-  // Handle Dragging Left Edge of Right Sidebar to Resize Width
+  // Handle Dragging Right Edge of Quick Panel to Resize Width
   const handlePointerDown = (e) => {
     e.preventDefault();
     setIsResizing(true);
@@ -52,8 +52,8 @@ const RightSidebar = () => {
   useEffect(() => {
     const handlePointerMove = (e) => {
       if (!isResizing || isRightSidebarCollapsed || isMobile) return;
-      // Calculate width from viewport right edge to cursor X position
-      const newWidth = Math.max(200, Math.min(420, window.innerWidth - e.clientX));
+      // Calculate width relative to leftOffset
+      const newWidth = Math.max(180, Math.min(420, e.clientX - leftOffset));
       setRightSidebarWidth(newWidth);
     };
 
@@ -77,7 +77,7 @@ const RightSidebar = () => {
       document.body.style.cursor = 'default';
       document.body.style.userSelect = 'auto';
     };
-  }, [isResizing, isRightSidebarCollapsed, isMobile, setRightSidebarWidth]);
+  }, [isResizing, isRightSidebarCollapsed, isMobile, leftOffset, setRightSidebarWidth]);
 
   const formatTimer = (sec) => {
     const m = Math.floor(sec / 60);
@@ -91,37 +91,24 @@ const RightSidebar = () => {
 
   return (
     <aside
-      className="fixed top-0 right-0 z-40 flex flex-col h-screen bg-slate-900 border-l border-slate-800 text-white transition-all duration-150 ease-out select-none"
-      style={{ width: currentActualWidth }}
+      className="fixed top-0 z-40 flex flex-col h-screen bg-slate-900 border-r border-slate-800 text-white transition-all duration-150 ease-out select-none"
+      style={{ left: leftOffset, width: currentActualWidth }}
     >
-      {/* Left Edge Resizable Drag Handle */}
-      {!isRightSidebarCollapsed && (
-        <div
-          onPointerDown={handlePointerDown}
-          className={`absolute top-0 left-0 w-4 h-full cursor-col-resize z-[60] group flex items-center justify-center transition-colors ${
-            isResizing ? 'bg-blue-600/40' : 'hover:bg-blue-600/20 bg-transparent'
-          }`}
-          title="Click and drag to resize right panel width"
-        >
-          <div className={`w-1 h-12 rounded-full transition-all ${isResizing ? 'bg-blue-500 scale-y-125' : 'bg-slate-700 group-hover:bg-blue-400'}`} />
-        </div>
-      )}
-
       {/* Header & Toggle Button */}
       <div className="h-16 flex items-center justify-between px-3.5 border-b border-slate-800 shrink-0">
-        <button
-          onClick={() => setRightSidebarCollapsed(!isRightSidebarCollapsed)}
-          className="p-1.5 rounded-lg border border-slate-700 text-slate-400 hover:text-white hover:border-slate-600 bg-slate-800 transition-colors cursor-pointer"
-          title={isRightSidebarCollapsed ? 'Expand Quick Panel' : 'Collapse Quick Panel'}
-        >
-          {isRightSidebarCollapsed ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-        </button>
-
         {!isRightSidebarCollapsed && (
           <span className="text-xs font-bold text-white uppercase tracking-wider">
             Quick Panel
           </span>
         )}
+
+        <button
+          onClick={() => setRightSidebarCollapsed(!isRightSidebarCollapsed)}
+          className="p-1.5 rounded-lg border border-slate-700 text-slate-400 hover:text-white hover:border-slate-600 bg-slate-800 transition-colors cursor-pointer ml-auto"
+          title={isRightSidebarCollapsed ? 'Expand Quick Panel' : 'Collapse Quick Panel'}
+        >
+          {isRightSidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+        </button>
       </div>
 
       {/* Collapsed Bar Icon */}
@@ -206,6 +193,19 @@ const RightSidebar = () => {
             </div>
           </div>
 
+        </div>
+      )}
+
+      {/* Right Edge Resizable Drag Handle */}
+      {!isRightSidebarCollapsed && (
+        <div
+          onPointerDown={handlePointerDown}
+          className={`absolute top-0 right-0 w-4 h-full cursor-col-resize z-[60] group flex items-center justify-center transition-colors ${
+            isResizing ? 'bg-blue-600/40' : 'hover:bg-blue-600/20 bg-transparent'
+          }`}
+          title="Click and drag to resize Quick Panel width"
+        >
+          <div className={`w-1 h-12 rounded-full transition-all ${isResizing ? 'bg-blue-500 scale-y-125' : 'bg-slate-700 group-hover:bg-blue-400'}`} />
         </div>
       )}
     </aside>

@@ -36,7 +36,8 @@ const MainLayout = () => {
   }, [setMobileSidebarOpen])
 
   const leftSidebarActualWidth = isMobile ? 0 : (isLeftCollapsed ? 76 : leftWidth);
-  const rightSidebarActualWidth = isMobile ? 0 : (isRightSidebarCollapsed ? 48 : rightSidebarWidth);
+  const quickPanelActualWidth = isMobile ? 0 : (isRightSidebarCollapsed ? 48 : rightSidebarWidth);
+  const totalLeftWidth = leftSidebarActualWidth + quickPanelActualWidth;
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 relative font-sans">
@@ -49,18 +50,18 @@ const MainLayout = () => {
         />
       )}
 
-      {/* Movable & Resizable Left Sidebar */}
+      {/* Movable & Resizable Left Main Navigation Sidebar */}
       <Sidebar />
 
-      {/* Movable & Resizable Right Sidebar */}
-      <RightSidebar />
+      {/* Movable & Resizable Left Quick Panel (Docked next to main sidebar) */}
+      <RightSidebar leftOffset={leftSidebarActualWidth} />
 
-      {/* Main Content Area (Adjusts margins for both Left & Right Sidebars) */}
+      {/* Main Content Area (Calculates combined left margin from both left panels) */}
       <div 
         className="flex flex-col min-h-screen relative z-0 transition-all duration-150 ease-out w-full max-w-full overflow-x-hidden"
         style={{ 
-          marginLeft: leftSidebarActualWidth, 
-          marginRight: rightSidebarActualWidth 
+          marginLeft: totalLeftWidth, 
+          marginRight: 0 
         }}
       >
         <TopNavbar />
