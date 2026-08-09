@@ -7,7 +7,7 @@ router.register(r'conversations', views.AIConversationViewSet, basename='ai-conv
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('chat/', views.QuizGeneratorView.as_view(), name='quiz-generator'),
+    path('chat/', views.DirectChatView.as_view(), name='direct-chat'),
     path('quiz/', views.QuizGeneratorView.as_view(), name='quiz-generator'),
     path('study-planner/', views.StudyPlannerView.as_view(), name='study-planner'),
     path('code/', views.CodeAssistantView.as_view(), name='code-assistant'),

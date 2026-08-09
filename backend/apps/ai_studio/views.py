@@ -6,6 +6,35 @@ from .models import AIConversation, AIMessage, QuizHistory, StudyPlan, ResumeAna
 from .serializers import AIConversationSerializer, AIMessageSerializer, QuizHistorySerializer, StudyPlanSerializer, ResumeAnalysisSerializer
 from . import services
 
+
+class DirectChatView(views.APIView):
+    """
+    Stateless AI chat endpoint.
+    Accepts: { "messages": [...], "system_prompt": "..." }
+    Returns:  { "response": "..." }
+    API key is stored securely on the server — never exposed to the frontend.
+    """
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+        messages = request.data.get('messages', [])
+        system_prompt = request.data.get('system_prompt', 'You are a helpful academic assistant.')
+
+        if not messages:
+            return Response({'error': 'messages field is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Build Gemini-format messages with system prompt prepended
+        gemini_messages = [{'role': 'user', 'parts': [system_prompt + '\n\n---']}]
+        for msg in messages:
+            role = 'model' if msg.get('role') in ('assistant', 'model') else 'user'
+            content = msg.get('content', '')
+            if content.strip():
+                gemini_messages.append({'role': role, 'parts': [content]})
+
+        # Call AI via backend — key never leaves the server
+        ai_text = services.chat_with_ai(gemini_messages)
+        return Response({'response': ai_text})
+
 class AIConversationViewSet(viewsets.ModelViewSet):
     serializer_class = AIConversationSerializer
     permission_classes = (IsAuthenticated,)
