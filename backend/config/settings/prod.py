@@ -5,17 +5,14 @@ from decouple import config, Csv
 # Import DATABASE_URL from .env
 DATABASES = get_database_config(BASE_DIR)
 
-# Strictly limit CORS in production, loaded from env var
-CORS_ALLOWED_ORIGINS = config(
-    'CORS_ALLOWED_ORIGINS',
-    default='http://localhost:5173,http://127.0.0.1:5173',
-    cast=Csv()
-)
+# CORS Settings for Production
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 # CSRF Trusted Origins for frontend domains
 CSRF_TRUSTED_ORIGINS = config(
     'CSRF_TRUSTED_ORIGINS',
-    default='http://localhost:5173,http://127.0.0.1:5173',
+    default='http://localhost:5173,http://127.0.0.1:5173,https://*.vercel.app,https://*.onrender.com',
     cast=Csv()
 )
 
