@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "description": "Root package.json to trick Vercel into building Node.js instead of Django",
   "scripts": {
-    "build": "cd frontend && npm install && npm run build"
+    "build": "npm install --prefix frontend && npm run build --prefix frontend && node -e \"const fs=require('fs'); fs.mkdirSync('dist', {recursive: true}); fs.cpSync('frontend/dist', 'dist', {recursive: true});\""
   }
 }
