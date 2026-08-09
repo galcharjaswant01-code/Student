@@ -49,6 +49,18 @@ export function AuthProvider({ children }) {
     return sendPasswordResetEmail(auth, email);
   }
 
+  function loginAsDemoUser() {
+    const demoUser = {
+      uid: 'demo-student-123',
+      email: 'demo@student.edu',
+      displayName: 'Demo Student',
+      emailVerified: true
+    };
+    localStorage.setItem('access_token', 'demo-access-token');
+    setCurrentUser(demoUser);
+    return demoUser;
+  }
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -89,6 +101,7 @@ export function AuthProvider({ children }) {
     logout,
     loginWithGoogle,
     loginWithGoogleRedirect,
+    loginAsDemoUser,
     resetPassword
   };
 

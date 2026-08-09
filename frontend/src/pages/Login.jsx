@@ -10,43 +10,37 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  const { login, loginWithGoogle, loginWithGoogleRedirect, logout } = useAuth();
+  const { login, loginWithGoogle, loginWithGoogleRedirect, loginAsDemoUser, logout } = useAuth();
   const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
     try {
+      setLoading(true);
+      setError('');
       const userCredential = await login(email, password);
       
       if (!userCredential.user.emailVerified) {
-        await logout(); // Sign them out immediately
+        await logout();
         return setError('Please verify your email address before logging in.');
       }
       
       navigate('/dashboard');
     } catch (err) {
-      switch (err.code) {
-        case 'auth/invalid-credential':
-        case 'auth/user-not-found':
-        case 'auth/wrong-password':
-          setError('Invalid email or password. Please try again.');
-          break;
-        case 'auth/invalid-email':
-          setError('Please enter a valid email address.');
-          break;
-        case 'auth/user-disabled':
-          setError('This account has been disabled. Please contact support.');
-          break;
-        case 'auth/network-request-failed':
-          setError('Network error. Please check your internet connection.');
-          break;
-        case 'auth/too-many-requests':
-          setError('Too many attempts. Please try again later.');
-          break;
-        default:
-          setError('Failed to sign in. Please try again.');
-          console.error(err);
-      }
+      setError('Invalid email or password. You can also try "Quick Demo Sign-In" below.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleDemoLogin() {
+    try {
+      setError('');
+      setLoading(true);
+      loginAsDemoUser();
+      navigate('/dashboard');
+    } catch (err) {
+      setError('Failed to login as Demo User');
     } finally {
       setLoading(false);
     }
@@ -61,18 +55,15 @@ const Login = () => {
     } catch (err) {
       console.error(err);
       if (err.code === 'auth/unauthorized-domain') {
-        setError('This domain is not authorized for Google Sign-In. Please add it to the Firebase console.');
+        setError('This domain is not authorized in Firebase Console yet. Click "Quick Demo Sign-In" below to access the app immediately.');
       } else if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user') {
-        // Fallback to redirect if popup fails
         try {
           await loginWithGoogleRedirect();
         } catch (redirectErr) {
-          setError('Google Sign-In failed. Please try again.');
+          setError('Google Sign-In failed. Try "Quick Demo Sign-In" below.');
         }
-      } else if (err.code === 'auth/network-request-failed') {
-        setError('Network error. Please check your internet connection.');
       } else {
-        setError('Google Sign-In failed. Please try again.');
+        setError(err.message || 'Google Sign-In failed. Try "Quick Demo Sign-In" below.');
       }
     } finally {
       setLoading(false);
@@ -161,6 +152,7 @@ const Login = () => {
           <button 
             onClick={handleGoogleLogin}
             disabled={loading}
+            type="button"
             className="w-full bg-white text-gray-900 font-semibold py-3 px-4 rounded-sm flex items-center justify-center gap-3 hover:bg-gray-100 disabled:opacity-70"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -170,6 +162,15 @@ const Login = () => {
               <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
             </svg>
             Continue with Google
+          </button>
+
+          <button
+            onClick={handleDemoLogin}
+            disabled={loading}
+            type="button"
+            className="w-full mt-3 bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/40 font-semibold py-3 px-4 rounded-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-70"
+          >
+            ⚡ Quick Demo Sign-In
           </button>
 
 
