@@ -1,11 +1,12 @@
 # Environments
-env/
-venv/
+/env/
+/venv/
 backend/venv/
 backend/env/
 frontend/bg-env/
 .venv/
-ENV/
+/ENV/
+!backend/config/env/
 
 # Secrets & Local Configurations
 .env
