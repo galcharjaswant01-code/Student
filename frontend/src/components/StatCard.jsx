@@ -1,21 +1,14 @@
 import React from 'react';
 
-const StatCard = ({ icon: Icon, title, subtitle, badge, delayClass = 'delay-0' }) => {
+const StatCard = ({ icon: Icon, title, subtitle }) => {
   return (
-    <div className={`backdrop-blur-md bg-slate-900/60 border border-white/10 rounded-2xl p-4 shadow-xl text-white flex items-center gap-3 transform transition-all duration-300 hover:scale-105 hover:bg-slate-900/80 animate-float ${delayClass}`}>
-      <div className="p-2.5 rounded-xl bg-gradient-to-br from-indigo-500/30 to-purple-500/30 text-indigo-300 border border-indigo-500/20">
-        <Icon className="w-5 h-5 text-indigo-300" />
+    <div className="bg-slate-900/80 border border-slate-700/80 backdrop-blur-xs rounded-lg p-3 text-white flex items-center gap-3">
+      <div className="p-2 rounded-md border border-blue-500/50 text-blue-400 bg-transparent shrink-0">
+        <Icon className="w-4 h-4 text-blue-400" />
       </div>
       <div>
-        <div className="flex items-center gap-2">
-          <span className="text-base font-bold text-white tracking-wide">{title}</span>
-          {badge && (
-            <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-              {badge}
-            </span>
-          )}
-        </div>
-        <p className="text-xs text-slate-300 font-medium">{subtitle}</p>
+        <span className="text-sm font-bold text-white block leading-snug">{title}</span>
+        {subtitle && <span className="text-xs text-slate-300 block font-normal">{subtitle}</span>}
       </div>
     </div>
   );

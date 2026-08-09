@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Logo from '../components/Logo';
+import StatCard from '../components/StatCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import AlertMessage from '../components/AlertMessage';
 import { getFriendlyErrorMessage } from '../utils/authErrors';
-import { Mail, ArrowRight, Compass } from 'lucide-react';
+import { Mail, ArrowRight, Compass, Users, BookOpen, Bot } from 'lucide-react';
 
 const Home = () => {
   const [email, setEmail] = useState('');
@@ -72,31 +73,41 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex items-center justify-center p-4 sm:p-6 lg:p-8 font-sans">
-      <div className="w-full max-w-5xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm sm:shadow-md overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[560px]">
+    <div className="min-h-screen w-full bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex items-center justify-center p-4 sm:p-6 lg:p-8 font-sans">
+      <div className="w-full max-w-5xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[580px]">
         
-        {/* LEFT COLUMN — Realistic Student/University Image */}
-        <div className="lg:col-span-6 relative min-h-[280px] lg:min-h-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+        {/* LEFT COLUMN — Realistic Student Visual Section */}
+        <div className="lg:col-span-6 relative min-h-[300px] lg:min-h-full bg-slate-100 dark:bg-slate-900 overflow-hidden flex flex-col justify-between p-6 sm:p-8">
+          {/* Realistic Student Photography */}
           <img 
             src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1600&auto=format&fit=crop" 
             alt="University students studying together"
-            className="w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover"
           />
-          {/* Natural subtle gradient overlay at bottom for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent flex flex-col justify-end p-8 text-white">
-            <div className="max-w-md space-y-2">
-              <h2 className="text-2xl font-bold text-white tracking-tight">
-                Empowering Student Success
-              </h2>
-              <p className="text-sm text-slate-200 leading-relaxed font-normal">
-                Join thousands of students managing their courses, attendance, and academic progress with ease.
-              </p>
-            </div>
+          
+          {/* Natural Dark Navy Overlay */}
+          <div className="absolute inset-0 bg-slate-950/70" />
+
+          {/* Minimal 3-Color Stats */}
+          <div className="relative z-10 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-2.5 max-w-xs">
+            <StatCard icon={Users} title="10K+ Students" subtitle="Active on platform" />
+            <StatCard icon={BookOpen} title="500+ Resources" subtitle="Academic library" />
+            <StatCard icon={Bot} title="AI Study Assistant" subtitle="Powered learning" />
+          </div>
+
+          {/* Bottom Hero Quote */}
+          <div className="relative z-10 space-y-1 mt-6">
+            <h2 className="text-xl font-bold text-white tracking-tight">
+              StudentHub Academic Portal
+            </h2>
+            <p className="text-xs text-slate-300 font-normal leading-relaxed">
+              Designed for modern university students to organize studies, track attendance, and achieve academic goals.
+            </p>
           </div>
         </div>
 
-        {/* RIGHT COLUMN — Clean & Simple Login Section */}
-        <div className="lg:col-span-6 p-6 sm:p-10 lg:p-12 flex flex-col justify-between bg-white dark:bg-slate-900">
+        {/* RIGHT COLUMN — Clean 3-Color Authentication Section */}
+        <div className="lg:col-span-6 p-6 sm:p-10 lg:p-12 flex flex-col justify-between bg-white dark:bg-slate-950 border-l border-slate-200 dark:border-slate-800">
           
           <div className="space-y-6">
             {/* Logo & Header */}
@@ -107,8 +118,8 @@ const Home = () => {
               <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
                 Welcome to StudentHub
               </h1>
-              <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 font-normal leading-relaxed">
-                Your digital campus for learning and managing academics.
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 font-normal leading-relaxed">
+                Your digital campus for learning, managing academics, and achieving more.
               </p>
             </div>
 
@@ -128,15 +139,15 @@ const Home = () => {
               />
             )}
 
-            {/* Login Options */}
-            <div className="space-y-4">
+            {/* Authentication Buttons (STRICT TRANSPARENT BACKGROUNDS) */}
+            <div className="space-y-3.5">
               
               {/* 1. Continue with Google */}
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/60 text-slate-800 dark:text-slate-100 font-semibold text-sm transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-transparent hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-900 dark:text-slate-100 font-semibold text-sm transition-colors disabled:opacity-50 cursor-pointer"
               >
                 <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -151,16 +162,16 @@ const Home = () => {
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-slate-200 dark:border-slate-800" />
                 </div>
-                <span className="relative px-3 bg-white dark:bg-slate-900 text-xs text-slate-500 font-medium">
-                  or with email magic link
+                <span className="relative px-3 bg-white dark:bg-slate-950 text-xs text-slate-500 font-medium">
+                  or email magic link
                 </span>
               </div>
 
-              {/* 2. Passwordless Magic Link Email Input */}
+              {/* 2. Passwordless Magic Link Email Form */}
               <form onSubmit={handleMagicLinkSubmit} className="space-y-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                    Student Email Address
+                    Student Email
                   </label>
                   <div className="relative">
                     <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
@@ -170,7 +181,7 @@ const Home = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="student@university.edu"
-                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-indigo-600 transition-colors placeholder:text-slate-400"
+                      className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-800 bg-transparent text-slate-900 dark:text-white text-sm focus:outline-none focus:border-blue-600 dark:focus:border-blue-500 transition-colors placeholder:text-slate-400"
                     />
                   </div>
                 </div>
@@ -178,13 +189,13 @@ const Home = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm transition-colors shadow-xs disabled:opacity-50 cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg border border-blue-600 dark:border-blue-500 bg-transparent hover:bg-blue-50/50 dark:hover:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-semibold text-sm transition-colors disabled:opacity-50 cursor-pointer"
                 >
                   {loading ? (
-                    <LoadingSpinner size="sm" className="text-white" />
+                    <LoadingSpinner size="sm" className="text-blue-600 dark:text-blue-400" />
                   ) : (
                     <>
-                      <span>Send Magic Sign-In Link</span>
+                      <span>Continue with Email</span>
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}
@@ -192,13 +203,13 @@ const Home = () => {
               </form>
 
               {/* 3. Continue as Guest */}
-              <div className="pt-2">
+              <div>
                 <button
                   type="button"
                   onClick={handleGuestAccess}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium text-xs transition-colors cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg border border-slate-300 dark:border-slate-800 bg-transparent hover:bg-slate-50 dark:hover:bg-slate-900 text-slate-700 dark:text-slate-300 font-medium text-xs transition-colors cursor-pointer"
                 >
-                  <Compass className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                  <Compass className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                   <span>Continue as Guest</span>
                 </button>
               </div>
@@ -206,19 +217,19 @@ const Home = () => {
             </div>
           </div>
 
-          {/* Footer & Links */}
-          <div className="pt-6 mt-6 border-t border-slate-200 dark:border-slate-800 space-y-3 text-center text-xs text-slate-500 dark:text-slate-400">
+          {/* Footer */}
+          <div className="pt-6 mt-6 border-t border-slate-200 dark:border-slate-800 space-y-2 text-center text-xs text-slate-500 dark:text-slate-400">
             <div>
               New student?{' '}
               <Link 
                 to="/signup" 
-                className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold"
+                className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
               >
                 Create your account
               </Link>
             </div>
 
-            <div className="flex items-center justify-center gap-4 text-[11px] text-slate-400">
+            <div className="flex items-center justify-center gap-3 text-[11px] text-slate-400">
               <a href="#privacy" className="hover:underline">Privacy Policy</a>
               <span>•</span>
               <a href="#terms" className="hover:underline">Terms of Service</a>
