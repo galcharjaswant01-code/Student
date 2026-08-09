@@ -32,7 +32,7 @@ const MainLayout = () => {
   const sidebarActualWidth = isMobile ? 0 : (isCollapsed ? 80 : width);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0B1120] text-gray-900 dark:text-gray-100 relative">
+    <div className="min-h-screen bg-white dark:bg-[#050505] text-gray-900 dark:text-gray-100 relative">
       <AnimatedBackground />
 
       {/* Mobile Drawer Backdrop */}
@@ -50,32 +50,31 @@ const MainLayout = () => {
 
       {/* Main Content Area */}
       <div 
-        className="flex flex-col min-h-screen relative z-0 transition-all duration-300 ease-in-out"
+        className="flex flex-col min-h-screen relative z-0 transition-all duration-300 ease-in-out w-full max-w-full overflow-x-hidden"
         style={{ marginLeft: sidebarActualWidth }}
       >
         <TopNavbar />
         
-        <main className="flex-1 p-0 sm:p-6 relative">
+        <main className="flex-1 p-0 relative w-full overflow-x-hidden">
           <WorkspaceLayout>
-            
             <div
               key={location.pathname}
               className="w-full h-full"
             >
               <Outlet />
             </div>
-          
           </WorkspaceLayout>
         </main>
       </div>
 
-      {/* Floating Mobile Menu Button */}
+      {/* Floating Mobile Menu Button (Fallback) */}
       {isMobile && !isMobileSidebarOpen && (
         <button
           onClick={() => setMobileSidebarOpen(true)}
-          className="fixed bottom-6 left-6 z-[60] p-4 bg-primary text-white rounded-full -primary/50 flex items-center justify-center lg:hidden"
+          className="fixed bottom-5 left-5 z-40 p-3 bg-primary text-white rounded-full shadow-lg shadow-primary/30 flex items-center justify-center lg:hidden hover:scale-105 active:scale-95 transition-all"
+          title="Open Menu"
         >
-          <Menu className="w-6 h-6" />
+          <Menu className="w-5 h-5" />
         </button>
       )}
 
@@ -84,3 +83,4 @@ const MainLayout = () => {
 }
 
 export default MainLayout
+

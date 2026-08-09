@@ -123,15 +123,23 @@ const TopNavbar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/70 dark:bg-[#0F172A]/70 border-b border-slate-200/50 dark:border-white/5">
+    <header className="sticky top-0 z-40 w-full bg-white/90 dark:bg-[#0F172A]/90 backdrop-blur-md border-b border-slate-200/80 dark:border-white/5">
       <div className="flex h-16 items-center justify-between px-4 sm:px-6">
         
         {/* Left Section */}
-        <div className="flex items-center gap-2.5 flex-1 relative">
+        <div className="flex items-center gap-2 flex-1 relative">
+          
+          <button
+            onClick={() => setMobileSidebarOpen(!isMobileSidebarOpen)}
+            className="lg:hidden p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 rounded-md transition-colors"
+            title="Toggle Menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
           
           <div className="lg:hidden flex items-center gap-2 pr-2 border-r border-slate-200/50 dark:border-white/10">
-            <div className="w-8 h-8 rounded-xl bg-gradient- bg-primary flex items-center justify-center">
-              <span className="text-white font-bold text-sm">S</span>
+            <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center text-white font-bold text-sm shadow-sm">
+              S
             </div>
           </div>
           
@@ -139,11 +147,11 @@ const TopNavbar = () => {
             {/* Desktop Search Bar */}
             <div 
               onClick={() => setIsSearchOpen(true)}
-              className="hidden sm:flex items-center w-64 bg-slate-100/80 dark:bg-black/20 hover:bg-slate-200/80 dark:hover:bg-black/40 border border-transparent dark:border-white/5 rounded-xl px-3 py-2 cursor-text group transition-all"
+              className="hidden sm:flex items-center w-64 bg-slate-100/80 dark:bg-black/20 hover:bg-slate-200/80 dark:hover:bg-black/40 border border-transparent dark:border-white/5 rounded-md px-3 py-2 cursor-text group"
             >
               <Search className="w-4 h-4 text-slate-400 group-hover:text-primary" />
               <span className="ml-2 text-sm text-slate-500 dark:text-slate-400 flex-1 select-none">Search...</span>
-              <div className="flex items-center gap-1 text-[10px] font-medium text-slate-400 dark:text-slate-500 bg-white dark:bg-white/5 px-1.5 py-0.5 rounded-lg border border-slate-200 dark:border-transparent">
+              <div className="flex items-center gap-1 text-[10px] font-medium text-slate-400 dark:text-slate-500 bg-white dark:bg-white/5 px-1.5 py-0.5 rounded border border-slate-200 dark:border-transparent">
                 <Command className="w-3 h-3" />
                 <span>K</span>
               </div>
@@ -152,94 +160,105 @@ const TopNavbar = () => {
             {/* Mobile Search Icon */}
             <button 
               onClick={() => setIsSearchOpen(true)}
-              className="sm:hidden p-2 text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
+              className="sm:hidden p-2 text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-white rounded-md hover:bg-slate-100 dark:hover:bg-white/5"
             >
               <Search className="w-5 h-5" />
             </button>
 
             {/* Smart Search Dropdown Modal */}
-            
-              {isSearchOpen && (
-                <div
-                  className="fixed sm:absolute top-16 sm:top-0 left-4 sm:left-0 right-4 sm:right-auto w-auto sm:w-[500px] max-w-[500px] bg-white/95 dark:bg-[#0F172A]/95 shadow-3xl border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden z-50"
-                >
-                  <div className="p-3 border-b border-slate-100 dark:border-white/5 flex items-center gap-2">
-                    <Search className="w-5 h-5 text-primary" />
-                    <input 
-                      ref={searchInputRef}
-                      type="text" 
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Type a command or search..." 
-                      className="flex-1 bg-transparent border-none outline-none text-slate-900 dark:text-white placeholder-slate-400 text-sm"
-                    />
-                    <div className="flex gap-1">
-                      <span className="text-[10px] bg-slate-100 dark:bg-white/10 text-slate-500 px-1.5 py-0.5 rounded-xl">↑↓ to navigate</span>
-                      <span className="text-[10px] bg-slate-100 dark:bg-white/10 text-slate-500 px-1.5 py-0.5 rounded-xl">↵ to select</span>
-                    </div>
-                  </div>
-                  
-                  <div className="max-h-[60vh] overflow-y-auto p-2 custom-scrollbar">
-                    {!searchQuery && searchResults.length === 0 ? (
-                      <div className="p-4 text-center text-sm text-slate-500">
-                        Type something to start searching...
-                      </div>
-                    ) : isSearching ? (
-                      <div className="p-4 text-center text-sm text-slate-500">
-                        Searching for "{searchQuery}"...
-                      </div>
-                    ) : (
-                      <>
-                        {searchResults.map((section, idx) => {
-                          const startIndex = searchResults.slice(0, idx).reduce((acc, s) => acc + s.items.length, 0);
-                          return (
-                            <div key={idx} className="mb-2">
-                              <div className="px-3 py-1.5 text-xs text-primary/80 font-bold uppercase tracking-wider">
-                                {section.category}
-                              </div>
-                              {section.items.map((item, i) => {
-                                const globalIndex = startIndex + i;
-                                const isSelected = selectedIndex === globalIndex;
-                                return (
-                                  <button 
-                                    key={i} 
-                                    onMouseEnter={() => setSelectedIndex(globalIndex)}
-                                    onClick={() => {
-                                      if (item === 'Toggle Dark Mode') toggleTheme();
-                                      setIsSearchOpen(false);
-                                    }}
-                                    className={`w-full text-left px-3 py-2.5 text-sm rounded-xl transition-colors flex items-center justify-between
-                                      ${isSelected 
-                                        ? 'bg-primary text-white shadow-md shadow-primary/20' 
-                                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
-                                      }`}
-                                  >
-                                    <span>{item}</span>
-                                    {isSelected && <ArrowRight className="w-4 h-4 text-white/70" />}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          )
-                        })}
-                      </>
-                    )}
+            {isSearchOpen && (
+              <div
+                className="fixed inset-x-2 top-16 sm:absolute sm:top-0 sm:left-0 sm:right-auto sm:w-[500px] max-w-full bg-white dark:bg-[#0F172A] shadow-2xl border border-slate-200 dark:border-white/10 rounded-xl overflow-hidden z-50"
+              >
+                <div className="p-3 border-b border-slate-100 dark:border-white/5 flex items-center gap-2">
+                  <Search className="w-5 h-5 text-primary" />
+                  <input 
+                    ref={searchInputRef}
+                    type="text" 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Type a command or search..." 
+                    className="flex-1 bg-transparent border-none outline-none text-slate-900 dark:text-white placeholder-slate-400 text-sm"
+                  />
+                  <button 
+                    onClick={() => setIsSearchOpen(false)}
+                    className="sm:hidden p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                  <div className="hidden sm:flex gap-1">
+                    <span className="text-[10px] bg-slate-100 dark:bg-white/10 text-slate-500 px-1.5 py-0.5 rounded">↑↓ navigate</span>
+                    <span className="text-[10px] bg-slate-100 dark:bg-white/10 text-slate-500 px-1.5 py-0.5 rounded">↵ select</span>
                   </div>
                 </div>
-              )}
-            
+                
+                <div className="max-h-[60vh] overflow-y-auto p-2 custom-scrollbar">
+                  {!searchQuery && searchResults.length === 0 ? (
+                    <div className="p-4 text-center text-sm text-slate-500">
+                      Type something to start searching...
+                    </div>
+                  ) : isSearching ? (
+                    <div className="p-4 text-center text-sm text-slate-500">
+                      Searching for "{searchQuery}"...
+                    </div>
+                  ) : (
+                    <>
+                      {searchResults.map((section, idx) => {
+                        const startIndex = searchResults.slice(0, idx).reduce((acc, s) => acc + s.items.length, 0);
+                        return (
+                          <div key={idx} className="mb-2">
+                            <div className="px-3 py-1.5 text-xs text-primary/80 font-bold uppercase tracking-wider">
+                              {section.category}
+                            </div>
+                            {section.items.map((item, i) => {
+                              const globalIndex = startIndex + i;
+                              const isSelected = selectedIndex === globalIndex;
+                              return (
+                                <button 
+                                  key={i} 
+                                  onMouseEnter={() => setSelectedIndex(globalIndex)}
+                                  onClick={() => {
+                                    if (item === 'Toggle Dark Mode') toggleTheme();
+                                    setIsSearchOpen(false);
+                                  }}
+                                  className={`w-full text-left px-3 py-2.5 text-sm rounded-md transition-colors flex items-center justify-between
+                                    ${isSelected 
+                                      ? 'bg-primary text-white shadow-md shadow-primary/20' 
+                                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
+                                    }`}
+                                >
+                                  <span>{item}</span>
+                                  {isSelected && <ArrowRight className="w-4 h-4 text-white/70" />}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )
+                      })}
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Right Section */}
-        <div className="flex items-center space-x-2 sm:space-x-4">
+        <div className="flex items-center space-x-1.5 sm:space-x-3">
           
-
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-white rounded-md hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
+            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          >
+            {isDark ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-slate-600" />}
+          </button>
 
           <div className="relative" ref={notifRef}>
             <button 
               onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-              className={`p-2 relative rounded-sm  ${
+              className={`p-2 relative rounded-md transition-colors ${
                 isNotificationsOpen 
                   ? 'bg-primary/10 text-primary dark:bg-white/10 dark:text-white' 
                   : 'text-slate-500 hover:text-primary hover:bg-primary/10 dark:text-slate-400 dark:hover:text-white dark:hover:bg-white/5'
@@ -252,12 +271,11 @@ const TopNavbar = () => {
               </span>
             </button>
 
-            
-              {isNotificationsOpen && (
-                <div
-                  className="absolute right-0 mt-3 w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-white dark:bg-[#0F172A] rounded-sm border border-slate-200 dark:border-white/10 overflow-hidden transform origin-top-right z-50"
-                >
-                  <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02]">
+            {isNotificationsOpen && (
+              <div
+                className="absolute right-0 mt-3 w-[calc(100vw-2rem)] sm:w-80 max-w-sm bg-white dark:bg-[#0F172A] rounded-xl shadow-xl border border-slate-200 dark:border-white/10 overflow-hidden transform origin-top-right z-50"
+              >
+                <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/[0.02]">
                     <h3 className="font-semibold text-slate-900 dark:text-white">Notifications</h3>
                     <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-1 rounded-full">
                       3 New

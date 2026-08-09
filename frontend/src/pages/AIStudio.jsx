@@ -63,13 +63,13 @@ const AIStudio = () => {
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/20 dark:bg-purple-500/10 rounded-full blur-[100px] pointer-events-none" />
 
       {/* Header Section */}
-      <div className="px-6 py-8 md:px-10 z-10 shrink-0">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+      <div className="px-3.5 py-5 sm:px-6 md:px-10 z-10 shrink-0">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
           <div>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 mb-2">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 mb-1">
               AI Studio
             </h1>
-            <p className="text-slate-500 dark:text-slate-400 font-medium">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium">
               Your intelligent learning hub. What do you want to master today?
             </p>
           </div>
@@ -93,28 +93,28 @@ const AIStudio = () => {
 
         {/* Stats Row */}
         {stats && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-md rounded-2xl p-4 border border-slate-200 dark:border-white/5 shadow-sm">
-              <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Chats Today</div>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6">
+            <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-md rounded-2xl p-3 sm:p-4 border border-slate-200 dark:border-white/5 shadow-sm">
+              <div className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Chats Today</div>
+              <div className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 {stats.chatsToday} <Bot className="w-4 h-4 text-primary" />
               </div>
             </div>
-            <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-md rounded-2xl p-4 border border-slate-200 dark:border-white/5 shadow-sm">
-              <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Tokens Used</div>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-md rounded-2xl p-3 sm:p-4 border border-slate-200 dark:border-white/5 shadow-sm">
+              <div className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Tokens Used</div>
+              <div className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 {stats.tokensUsed.toLocaleString()} <Zap className="w-4 h-4 text-amber-500" />
               </div>
             </div>
-            <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-md rounded-2xl p-4 border border-slate-200 dark:border-white/5 shadow-sm">
-              <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Files Analyzed</div>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-md rounded-2xl p-3 sm:p-4 border border-slate-200 dark:border-white/5 shadow-sm">
+              <div className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Files Analyzed</div>
+              <div className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 {stats.filesUploaded} <FileText className="w-4 h-4 text-emerald-500" />
               </div>
             </div>
-            <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-md rounded-2xl p-4 border border-slate-200 dark:border-white/5 shadow-sm">
-              <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Time Saved</div>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <div className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-md rounded-2xl p-3 sm:p-4 border border-slate-200 dark:border-white/5 shadow-sm">
+              <div className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Time Saved</div>
+              <div className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 {stats.timeSaved} <Clock className="w-4 h-4 text-purple-500" />
               </div>
             </div>
@@ -122,7 +122,7 @@ const AIStudio = () => {
         )}
 
         {/* Categories */}
-        <div className="flex overflow-x-auto gap-3 pb-2 custom-scrollbar">
+        <div className="flex overflow-x-auto gap-2.5 pb-2 custom-scrollbar">
           {TOOL_CATEGORIES.map(category => {
             const isActive = activeCategory === category.id;
             const Icon = category.icon;
@@ -131,7 +131,7 @@ const AIStudio = () => {
                 key={category.id}
                 onClick={() => setActiveCategory(category.id)}
                 className={`
-                  whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 active:scale-[0.95] flex items-center gap-2
+                  whitespace-nowrap px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-300 active:scale-[0.95] flex items-center gap-1.5
                   ${isActive 
                     ? 'bg-gradient-to-r from-slate-700 to-slate-800 text-white shadow-md shadow-slate-900/20 border border-transparent' 
                     : 'bg-white/50 dark:bg-slate-800/50 backdrop-blur-md text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10 hover:bg-white/80 dark:hover:bg-slate-700/50'}
@@ -145,7 +145,7 @@ const AIStudio = () => {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 overflow-y-auto px-6 md:px-10 pb-10 z-10 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto px-3.5 sm:px-6 md:px-10 pb-10 z-10 custom-scrollbar">
         
         {filteredTools.length === 0 ? (
           <div className="w-full h-64 flex flex-col items-center justify-center bg-white/40 dark:bg-slate-800/40 backdrop-blur-sm rounded-2xl border border-white/20 dark:border-white/5 border-dashed">

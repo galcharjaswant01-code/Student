@@ -66,49 +66,64 @@ const Assignments = () => {
   };
 
   return (
-    <div className="p-6 w-full h-full overflow-y-auto custom-scrollbar space-y-6 pb-20 relative">
-      {/* Background Orbs */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 dark:bg-primary/10 rounded-full blur-[100px] pointer-events-none z-0" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/20 dark:bg-purple-500/10 rounded-full blur-[100px] pointer-events-none z-0" />
+    <div className="p-3.5 sm:p-6 w-full h-full overflow-y-auto custom-scrollbar space-y-6 pb-20">
       
       {/* Top Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400">
+          <h1 className="text-2xl sm:text-3xl font-extrabold bg-clip-text text-transparent bg-gradient- bg-primary">
             Assignments
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">Manage coursework, track deadlines, and submit your tasks.</p>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">Manage coursework, track deadlines, and submit your tasks.</p>
         </div>
         
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto">
           {/* Fullscreen Toggle */}
-          <button 
-            onClick={toggleFullscreen}
-            className="p-2.5 bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-xl text-slate-500 hover:text-primary flex items-center justify-center backdrop-blur-sm transition-colors"
-            title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Mode"}
-          >
-            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-          </button>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={toggleFullscreen}
+              className="p-2.5 bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-lg text-slate-500 hover:text-primary flex items-center justify-center transition-colors"
+              title={isFullscreen ? "Exit Fullscreen" : "Fullscreen Mode"}
+            >
+              {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+            </button>
+
+            {/* View Mode Toggle */}
+            <div className="flex items-center bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-lg p-1 ml-auto sm:ml-0">
+              <button 
+                onClick={() => setViewMode('grid')}
+                className={`p-1.5 rounded-md transition-colors ${viewMode === 'grid' ? 'bg-primary text-white shadow-sm' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+              <button 
+                onClick={() => setViewMode('list')}
+                className={`p-1.5 rounded-md transition-colors ${viewMode === 'list' ? 'bg-primary text-white shadow-sm' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+              >
+                <ListIcon className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
 
           {/* Search */}
-          <div className="relative">
+          <div className="relative w-full sm:w-56">
             <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
             <input 
               type="text" 
               placeholder="Search assignments..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 pr-4 py-2.5 w-full md:w-64 bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-medium focus:outline-none focus:border-primary backdrop-blur-sm"
+              className="pl-9 pr-4 py-2 w-full bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
           </div>
 
           {/* Filter Dropdown */}
-          <div className="relative">
+          <div className="relative w-full sm:w-44">
             <Filter className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
             <select 
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className="pl-9 pr-8 py-2.5 bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-medium focus:outline-none focus:border-primary appearance-none cursor-pointer backdrop-blur-sm"
+              className="pl-9 pr-8 py-2 w-full bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-lg text-sm font-medium focus:outline-none focus:border-primary appearance-none cursor-pointer"
             >
               <option value="All">All Statuses</option>
               <option value="Not Started">Not Started</option>
@@ -118,27 +133,12 @@ const Assignments = () => {
               <option value="Overdue">Overdue</option>
             </select>
           </div>
-
-          {/* View Mode Toggle */}
-          <div className="flex items-center bg-white/70 dark:bg-slate-800/70 border border-slate-200 dark:border-white/10 rounded-xl p-1 backdrop-blur-sm">
-            <button 
-              onClick={() => setViewMode('grid')}
-              className={`p-1.5 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-primary text-white ' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
-            >
-              <LayoutGrid className="w-4 h-4" />
-            </button>
-            <button 
-              onClick={() => setViewMode('list')}
-              className={`p-1.5 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-primary text-white ' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
-            >
-              <ListIcon className="w-4 h-4" />
-            </button>
-          </div>
         </div>
       </div>
 
       {/* Analytics Dashboard */}
       <div className="w-full">
+
         <AssignmentStats />
       </div>
 

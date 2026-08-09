@@ -130,10 +130,10 @@ const Signup = () => {
       <div
         className="w-full max-w-md relative z-10"
       >
-        <div className="bg-gray-900/60 rounded-sm p-8 border border-white/10 -[0_0_40px_rgba(0,0,0,0.5)]">
-          <div className="flex flex-col items-center mb-8">
-            <h2 className="text-2xl font-bold text-white mb-2">Create your account</h2>
-            <p className="text-gray-400 text-sm">Join Student Management System and start learning</p>
+        <div className="bg-gray-900/60 rounded-xl p-5 sm:p-8 border border-white/10 shadow-2xl backdrop-blur-md">
+          <div className="flex flex-col items-center mb-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">Create your account</h2>
+            <p className="text-gray-400 text-xs sm:text-sm text-center">Join Student Management System and start learning</p>
           </div>
 
           {error && (

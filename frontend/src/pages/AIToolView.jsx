@@ -237,10 +237,10 @@ const AIToolView = () => {
       </div>
 
       {/* Chat Area */}
-      <div className="flex-1 overflow-y-auto p-6 custom-scrollbar z-10 space-y-6">
+      <div className="flex-1 overflow-y-auto p-3.5 sm:p-6 custom-scrollbar z-10 space-y-4 sm:space-y-6">
         {messages.map((msg) => (
           <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-[85%] md:max-w-[75%] rounded-2xl p-5 ${
+            <div className={`max-w-[92%] sm:max-w-[85%] md:max-w-[75%] rounded-2xl p-3.5 sm:p-5 ${
               msg.role === 'user' 
                 ? 'bg-gradient-to-br from-slate-700 to-slate-800 text-white shadow-md shadow-slate-900/10 rounded-tr-sm' 
                 : 'bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-white/5 text-slate-800 dark:text-slate-200 shadow-sm rounded-tl-sm'

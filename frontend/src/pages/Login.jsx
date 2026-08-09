@@ -79,13 +79,13 @@ const Login = () => {
       <div
         className="w-full max-w-md relative z-10"
       >
-        <div className="bg-gray-900/60 rounded-sm p-8 border border-white/10 -[0_0_40px_rgba(0,0,0,0.5)]">
-          <div className="flex flex-col items-center mb-8">
-            <div className="w-12 h-12 rounded-sm bg-gradient- bg-blue-500 flex items-center justify-center -blue-500/20 mb-4 border border-white/10">
-              <span className="text-white font-bold text-3xl leading-none tracking-tighter">S</span>
+        <div className="bg-gray-900/60 rounded-xl p-5 sm:p-8 border border-white/10 shadow-2xl backdrop-blur-md">
+          <div className="flex flex-col items-center mb-6">
+            <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30 mb-3 border border-white/10">
+              <span className="text-white font-bold text-2xl leading-none tracking-tighter">S</span>
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Welcome back</h2>
-            <p className="text-gray-400 text-sm">Sign in to continue to Student Management System</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-white mb-1">Welcome back</h2>
+            <p className="text-gray-400 text-xs sm:text-sm text-center">Sign in to continue to Student Management System</p>
           </div>
 
           {error && (
