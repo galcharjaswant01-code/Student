@@ -10,7 +10,19 @@ from django.conf import settings
 from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
+from django.http import JsonResponse
+
+def root_view(request):
+    return JsonResponse({
+        "status": "online",
+        "message": "Student Management System Backend API is running successfully.",
+        "documentation": "/api/docs/"
+    })
+
 urlpatterns = [
+    # Root Health Check
+    path('', root_view, name='root'),
+
     # Django Admin
     path('admin/', admin.site.urls),
 
