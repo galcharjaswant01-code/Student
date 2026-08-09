@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-
-import { Search, Filter, LayoutGrid, List as ListIcon, Maximize2, Minimize2 } from 'lucide-react';
+import { useLocation, Link } from 'react-router-dom';
+import { Search, Filter, LayoutGrid, List as ListIcon, Maximize2, Minimize2, Compass, ArrowRight } from 'lucide-react';
 import { useWorkspace } from '../context/WorkspaceContext';
+import { useAuth } from '../context/AuthContext';
 
 import CourseStats from '../components/courses/CourseStats';
 import CourseCategories from '../components/courses/CourseCategories';
@@ -12,6 +13,10 @@ import { coursesAPI } from '../services/mockDjangoCoursesApi';
 import WidgetWrapper from '../components/WidgetWrapper';
 
 const Courses = () => {
+  const { isGuest } = useAuth();
+  const location = useLocation();
+  const guestNotice = location.state?.guestNotice;
+
   const [courses, setCourses] = useState([]);
   const [stats, setStats] = useState(null);
   const [paths, setPaths] = useState(null);
@@ -60,6 +65,30 @@ const Courses = () => {
   return (
     <div className="p-3.5 sm:p-6 w-full h-full overflow-y-auto custom-scrollbar space-y-6 sm:space-y-8 pb-20 relative overflow-x-hidden">
       
+      {/* Guest Mode Banner */}
+      {(isGuest || guestNotice) && (
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-indigo-900/40 via-purple-900/30 to-slate-900/60 border border-indigo-500/30 backdrop-blur-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-slate-200 text-xs sm:text-sm animate-fade-in shadow-lg">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+              <Compass className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="font-bold text-white">Guest Visitor Preview Mode</p>
+              <p className="text-slate-300 text-xs mt-0.5">
+                {guestNotice || 'Browsing public courses and university catalogue. Sign in with a student account to unlock your personal dashboard, attendance tracking, assignments & AI studio.'}
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/login"
+            className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-colors shrink-0 flex items-center gap-1.5 shadow-md shadow-indigo-600/30"
+          >
+            <span>Sign In as Student</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+      )}
+
       {selectedCourse && (
         <CourseViewer 
           course={selectedCourse} 

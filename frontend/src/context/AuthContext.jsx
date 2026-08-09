@@ -7,7 +7,10 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   signInWithRedirect,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  sendSignInLinkToEmail,
+  isSignInWithEmailLink,
+  signInWithEmailLink
 } from 'firebase/auth';
 import { auth } from '../firebase';
 import axios from 'axios';
@@ -28,33 +31,69 @@ export function AuthProvider({ children }) {
   }
 
   function login(email, password) {
+    localStorage.removeItem('is_guest_mode');
     return signInWithEmailAndPassword(auth, email, password);
   }
 
   function logout() {
+    localStorage.removeItem('is_guest_mode');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    setCurrentUser(null);
     return signOut(auth);
   }
 
   function loginWithGoogle() {
+    localStorage.removeItem('is_guest_mode');
     const provider = new GoogleAuthProvider();
     return signInWithPopup(auth, provider);
   }
 
   function loginWithGoogleRedirect() {
+    localStorage.removeItem('is_guest_mode');
     const provider = new GoogleAuthProvider();
     return signInWithRedirect(auth, provider);
+  }
+
+  function sendMagicLink(email) {
+    const actionCodeSettings = {
+      url: `${window.location.origin}/verify`,
+      handleCodeInApp: true,
+    };
+    window.localStorage.setItem('emailForSignIn', email);
+    return sendSignInLinkToEmail(auth, email, actionCodeSettings);
+  }
+
+  function verifyMagicLink(email, href) {
+    localStorage.removeItem('is_guest_mode');
+    return signInWithEmailLink(auth, email, href);
   }
 
   function resetPassword(email) {
     return sendPasswordResetEmail(auth, email);
   }
 
+  function loginAsGuest() {
+    const guestUser = {
+      uid: 'guest-visitor-' + Date.now(),
+      email: 'guest@studenthub.edu',
+      displayName: 'Guest Visitor',
+      isGuest: true,
+      emailVerified: false
+    };
+    localStorage.setItem('is_guest_mode', 'true');
+    setCurrentUser(guestUser);
+    return guestUser;
+  }
+
   function loginAsDemoUser() {
+    localStorage.removeItem('is_guest_mode');
     const demoUser = {
       uid: 'demo-student-123',
       email: 'demo@student.edu',
       displayName: 'Demo Student',
-      emailVerified: true
+      emailVerified: true,
+      isGuest: false
     };
     localStorage.setItem('access_token', 'demo-access-token');
     setCurrentUser(demoUser);
@@ -64,6 +103,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        localStorage.removeItem('is_guest_mode');
         try {
           const idToken = await user.getIdToken();
           const apiBaseUrl = getApiBaseUrl();
@@ -71,22 +111,32 @@ export function AuthProvider({ children }) {
             token: idToken
           });
 
-          
           if (response.data.tokens) {
             localStorage.setItem('access_token', response.data.tokens.access);
             localStorage.setItem('refresh_token', response.data.tokens.refresh);
-            setCurrentUser({ ...user, djangoData: response.data.user });
+            setCurrentUser({ ...user, isGuest: false, djangoData: response.data.user });
           } else {
-            setCurrentUser(user);
+            setCurrentUser({ ...user, isGuest: false });
           }
         } catch (error) {
           console.error("Failed to sync with Django backend:", error);
-          setCurrentUser(user);
+          setCurrentUser({ ...user, isGuest: false });
         }
       } else {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        setCurrentUser(null);
+        const isGuestMode = localStorage.getItem('is_guest_mode');
+        if (isGuestMode === 'true') {
+          setCurrentUser({
+            uid: 'guest-visitor',
+            email: 'guest@studenthub.edu',
+            displayName: 'Guest Visitor',
+            isGuest: true,
+            emailVerified: false
+          });
+        } else {
+          localStorage.removeItem('access_token');
+          localStorage.removeItem('refresh_token');
+          setCurrentUser(null);
+        }
       }
       setLoading(false);
     });
@@ -96,11 +146,16 @@ export function AuthProvider({ children }) {
 
   const value = {
     currentUser,
+    isGuest: !!currentUser?.isGuest,
     login,
     signup,
     logout,
     loginWithGoogle,
     loginWithGoogleRedirect,
+    sendMagicLink,
+    verifyMagicLink,
+    isSignInWithEmailLink: (href) => isSignInWithEmailLink(auth, href),
+    loginAsGuest,
     loginAsDemoUser,
     resetPassword
   };
@@ -111,3 +166,4 @@ export function AuthProvider({ children }) {
     </AuthContext.Provider>
   );
 }
+
