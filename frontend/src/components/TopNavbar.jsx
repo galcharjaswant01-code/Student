@@ -246,14 +246,36 @@ const TopNavbar = () => {
         {/* Right Section */}
         <div className="flex items-center space-x-1.5 sm:space-x-3">
           
-          {/* Theme Toggle Button */}
-          <button
-            onClick={toggleTheme}
-            className="p-2 text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-white rounded-md hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
-            title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-          >
-            {isDark ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-slate-600" />}
-          </button>
+          {/* Light / Dark Mode Toggle Segmented Control */}
+          <div className="flex items-center bg-slate-100 dark:bg-slate-800/80 p-1 rounded-lg border border-slate-200/80 dark:border-white/10 shadow-inner">
+            <button
+              type="button"
+              onClick={() => setTheme('light')}
+              className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-md transition-all ${
+                !isDark 
+                  ? 'bg-white text-amber-600 shadow-sm border border-slate-200/60' 
+                  : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+              }`}
+              title="Switch to Light Mode"
+            >
+              <Sun className="w-3.5 h-3.5 text-amber-500" />
+              <span className="hidden xs:inline sm:inline">Light</span>
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => setTheme('dark')}
+              className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold rounded-md transition-all ${
+                isDark 
+                  ? 'bg-slate-900 text-indigo-400 shadow-sm border border-indigo-500/30' 
+                  : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+              }`}
+              title="Switch to Dark Mode"
+            >
+              <Moon className="w-3.5 h-3.5 text-indigo-400" />
+              <span className="hidden xs:inline sm:inline">Dark</span>
+            </button>
+          </div>
 
           <div className="relative" ref={notifRef}>
             <button 

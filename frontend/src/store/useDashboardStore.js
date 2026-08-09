@@ -152,6 +152,12 @@ const useDashboardStore = create((set, get) => ({
   },
 
   setTheme: (theme) => {
+    localStorage.setItem('theme', theme);
+    if (theme === 'light') {
+      document.documentElement.classList.remove('dark');
+    } else {
+      document.documentElement.classList.add('dark');
+    }
     set((state) => ({ themePreferences: { ...state.themePreferences, theme } }));
     get().saveToBackend();
   },

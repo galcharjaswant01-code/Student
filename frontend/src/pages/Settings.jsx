@@ -9,6 +9,7 @@ import useDashboardStore from '../store/useDashboardStore';
 
 const TABS = [
   { id: 'profile', label: 'Profile', icon: User },
+  { id: 'appearance', label: 'Appearance & Theme', icon: Palette },
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'security', label: 'Security', icon: Shield },
 ];
@@ -124,6 +125,71 @@ const Settings = () => {
       </div>
     </div>
   );
+
+  const renderAppearance = () => {
+    const themePreferences = useDashboardStore.getState().themePreferences;
+    const setTheme = useDashboardStore.getState().setTheme;
+    const isDark = themePreferences?.theme !== 'light';
+
+    return (
+      <div className="space-y-8">
+        <div>
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Theme & Appearance</h3>
+          <p className="text-gray-500 dark:text-slate-400 text-sm">Choose your preferred application theme mode.</p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Light Mode Card */}
+          <button
+            type="button"
+            onClick={() => setTheme('light')}
+            className={`p-5 rounded-xl border text-left transition-all relative flex flex-col justify-between ${
+              !isDark
+                ? 'border-indigo-600 ring-2 ring-indigo-500/20 bg-white text-slate-900 shadow-md'
+                : 'border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/40 text-slate-600 dark:text-slate-400 hover:border-slate-400'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 rounded-lg bg-amber-500/10 text-amber-500">
+                <Sun className="w-6 h-6" />
+              </div>
+              {!isDark && (
+                <span className="text-xs font-bold bg-indigo-600 text-white px-2.5 py-1 rounded-full">Active</span>
+              )}
+            </div>
+            <div>
+              <h4 className="font-bold text-base text-slate-900 dark:text-white mb-1">Light Mode</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Clean white background, high contrast text and vibrant dashboard cards.</p>
+            </div>
+          </button>
+
+          {/* Dark Mode Card */}
+          <button
+            type="button"
+            onClick={() => setTheme('dark')}
+            className={`p-5 rounded-xl border text-left transition-all relative flex flex-col justify-between ${
+              isDark
+                ? 'border-indigo-500 ring-2 ring-indigo-500/20 bg-slate-900 text-white shadow-md'
+                : 'border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/40 text-slate-600 dark:text-slate-400 hover:border-slate-400'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="p-3 rounded-lg bg-indigo-500/10 text-indigo-400">
+                <Moon className="w-6 h-6" />
+              </div>
+              {isDark && (
+                <span className="text-xs font-bold bg-indigo-500 text-white px-2.5 py-1 rounded-full">Active</span>
+              )}
+            </div>
+            <div>
+              <h4 className="font-bold text-base text-slate-900 dark:text-white mb-1">Dark Mode</h4>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Sleek dark navy background, comfortable night reading and reduced eye strain.</p>
+            </div>
+          </button>
+        </div>
+      </div>
+    );
+  };
 
   const renderNotifications = () => (
     <div
@@ -247,6 +313,7 @@ const Settings = () => {
           <div className="flex-1 max-w-2xl relative">
             
               {activeTab === 'profile' && <div key="profile">{renderProfile()}</div>}
+              {activeTab === 'appearance' && <div key="appearance">{renderAppearance()}</div>}
               {activeTab === 'notifications' && <div key="notifications">{renderNotifications()}</div>}
               {activeTab === 'security' && <div key="security">{renderSecurity()}</div>}
             
