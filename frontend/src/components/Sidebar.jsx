@@ -82,7 +82,7 @@ const Sidebar = () => {
               <span
                 className="text-xl font-bold bg-clip-text text-transparent bg-gradient- bg-slate-900 dark:bg-white dark: whitespace-nowrap"
               >
-                SyncSpace
+                Student Management
               </span>
             )}
           

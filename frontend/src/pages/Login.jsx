@@ -94,7 +94,7 @@ const Login = () => {
               <span className="text-white font-bold text-3xl leading-none tracking-tighter">S</span>
             </div>
             <h2 className="text-2xl font-bold text-white mb-2">Welcome back</h2>
-            <p className="text-gray-400 text-sm">Sign in to continue to SyncSpace</p>
+            <p className="text-gray-400 text-sm">Sign in to continue to Student Management System</p>
           </div>
 
           {error && (

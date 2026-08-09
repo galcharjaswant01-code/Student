@@ -133,7 +133,7 @@ const Signup = () => {
         <div className="bg-gray-900/60 rounded-sm p-8 border border-white/10 -[0_0_40px_rgba(0,0,0,0.5)]">
           <div className="flex flex-col items-center mb-8">
             <h2 className="text-2xl font-bold text-white mb-2">Create your account</h2>
-            <p className="text-gray-400 text-sm">Join SyncSpace and start learning</p>
+            <p className="text-gray-400 text-sm">Join Student Management System and start learning</p>
           </div>
 
           {error && (
