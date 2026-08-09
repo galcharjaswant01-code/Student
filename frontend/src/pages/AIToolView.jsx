@@ -27,7 +27,8 @@ const AIToolView = () => {
   const [copiedId, setCopiedId] = useState(null);
   const [attachments, setAttachments] = useState([]);
   const [showKeyModal, setShowKeyModal] = useState(false);
-  const [customKey, setCustomKey] = useState(() => localStorage.getItem('groq_api_key') || '');
+  const [geminiKey, setGeminiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
+  const [groqKey, setGroqKey] = useState(() => localStorage.getItem('groq_api_key') || '');
   const messagesEndRef = useRef(null);
 
   const toolConfig = TOOL_DEFINITIONS[toolId] || {
@@ -56,8 +57,13 @@ const AIToolView = () => {
   }, [toolId]);
 
   const saveKey = () => {
-    if (customKey.trim()) {
-      localStorage.setItem('groq_api_key', customKey.trim());
+    if (geminiKey.trim()) {
+      localStorage.setItem('gemini_api_key', geminiKey.trim());
+    } else {
+      localStorage.removeItem('gemini_api_key');
+    }
+    if (groqKey.trim()) {
+      localStorage.setItem('groq_api_key', groqKey.trim());
     } else {
       localStorage.removeItem('groq_api_key');
     }
@@ -158,7 +164,7 @@ const AIToolView = () => {
             title="Configure Groq API Key"
           >
             <Key className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-            <span className="hidden sm:inline">{localStorage.getItem('groq_api_key') ? 'Key Active' : 'Set Groq Key'}</span>
+            <span className="hidden sm:inline">{(localStorage.getItem('gemini_api_key') || localStorage.getItem('groq_api_key')) ? '🟢 Key Active' : 'Set API Key'}</span>
           </button>
 
           <Button variant="secondary" size="sm" icon={Trash2} onClick={clearChat}>
@@ -182,16 +188,33 @@ const AIToolView = () => {
             </div>
 
             <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-              To use live Groq AI streaming directly on Vercel, paste your Groq API key below (<code className="text-blue-600 font-mono">gsk_...</code>). It will be saved securely in your browser's LocalStorage.
+              Add your <strong>Google Gemini</strong> or <strong>Groq</strong> API key to enable live AI streaming. Keys are saved in your browser's localStorage only.
             </p>
 
-            <input
-              type="password"
-              value={customKey}
-              onChange={(e) => setCustomKey(e.target.value)}
-              placeholder="Paste Groq API Key (gsk_...)"
-              className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-transparent text-slate-900 dark:text-white focus:border-blue-600 outline-none font-mono"
-            />
+            <div className="space-y-3">
+              <div>
+                <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider block mb-1">Google Gemini API Key (Recommended — free, no CORS)</label>
+                <input
+                  type="password"
+                  value={geminiKey}
+                  onChange={(e) => setGeminiKey(e.target.value)}
+                  placeholder="Paste Gemini API Key (AIza...)"
+                  className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-transparent text-slate-900 dark:text-white focus:border-blue-600 outline-none font-mono"
+                />
+              </div>
+              <div>
+                <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider block mb-1">Groq API Key (Optional fallback)</label>
+                <input
+                  type="password"
+                  value={groqKey}
+                  onChange={(e) => setGroqKey(e.target.value)}
+                  placeholder="Paste Groq API Key (gsk_...)"
+                  className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-transparent text-slate-900 dark:text-white focus:border-blue-600 outline-none font-mono"
+                />
+              </div>
+            </div>
+
+            <p className="text-[11px] text-slate-400 dark:text-slate-500">Get a free Gemini key at <a href="https://aistudio.google.com/app/apikey" target="_blank" className="text-blue-600 underline">aistudio.google.com</a></p>
 
             <div className="flex items-center justify-end gap-2 pt-2">
               <Button variant="secondary" size="sm" onClick={() => setShowKeyModal(false)}>Cancel</Button>
