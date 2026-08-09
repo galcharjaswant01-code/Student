@@ -43,10 +43,18 @@ export function AuthProvider({ children }) {
     return signOut(auth);
   }
 
-  function loginWithGoogle() {
+  async function loginWithGoogle() {
     localStorage.removeItem('is_guest_mode');
     const provider = new GoogleAuthProvider();
-    return signInWithPopup(auth, provider);
+    try {
+      return await signInWithPopup(auth, provider);
+    } catch (err) {
+      if (err.code === 'auth/popup-blocked' || err.code === 'auth/popup-closed-by-user') {
+        console.warn('Popup blocked or closed, falling back to Google Auth Redirect...');
+        return await signInWithRedirect(auth, provider);
+      }
+      throw err;
+    }
   }
 
   function loginWithGoogleRedirect() {

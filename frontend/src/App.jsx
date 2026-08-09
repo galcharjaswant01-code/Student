@@ -39,20 +39,20 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             
-            {/* Student App Portal Routes */}
+            {/* Student App Portal Routes (All accessible in guest & authenticated mode) */}
             <Route element={<MainLayout />}>
-              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-              <Route path="/attendance" element={<ProtectedRoute><Attendance /></ProtectedRoute>} />
-              <Route path="/assignments" element={<ProtectedRoute><Assignments /></ProtectedRoute>} />
+              <Route path="/dashboard" element={<ProtectedRoute allowGuest={true}><Dashboard /></ProtectedRoute>} />
+              <Route path="/attendance" element={<ProtectedRoute allowGuest={true}><Attendance /></ProtectedRoute>} />
+              <Route path="/assignments" element={<ProtectedRoute allowGuest={true}><Assignments /></ProtectedRoute>} />
               <Route path="/courses" element={<ProtectedRoute allowGuest={true}><Courses /></ProtectedRoute>} />
               <Route path="/resources" element={<ProtectedRoute allowGuest={true}><Resources /></ProtectedRoute>} />
-              <Route path="/ai-studio" element={<ProtectedRoute><AIStudio /></ProtectedRoute>} />
-              <Route path="/ai-studio/tool/:toolId" element={<ProtectedRoute><AIToolView /></ProtectedRoute>} />
-              <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
-              <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
-              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-              <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-              <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+              <Route path="/ai-studio" element={<ProtectedRoute allowGuest={true}><AIStudio /></ProtectedRoute>} />
+              <Route path="/ai-studio/tool/:toolId" element={<ProtectedRoute allowGuest={true}><AIToolView /></ProtectedRoute>} />
+              <Route path="/messages" element={<ProtectedRoute allowGuest={true}><Messages /></ProtectedRoute>} />
+              <Route path="/calendar" element={<ProtectedRoute allowGuest={true}><Calendar /></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute allowGuest={true}><Profile /></ProtectedRoute>} />
+              <Route path="/settings" element={<ProtectedRoute allowGuest={true}><Settings /></ProtectedRoute>} />
+              <Route path="/notifications" element={<ProtectedRoute allowGuest={true}><Notifications /></ProtectedRoute>} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
           </Routes>
