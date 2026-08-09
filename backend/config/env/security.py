@@ -10,4 +10,4 @@ def get_debug() -> bool:
 
 def get_allowed_hosts() -> list:
     """Returns the ALLOWED_HOSTS list."""
-    return config('ALLOWED_HOSTS', default='127.0.0.1,localhost', cast=Csv())
+    return config('ALLOWED_HOSTS', default='*,127.0.0.1,localhost,.onrender.com,.vercel.app', cast=Csv())
