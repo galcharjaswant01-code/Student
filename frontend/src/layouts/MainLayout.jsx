@@ -11,7 +11,7 @@ const MainLayout = () => {
   const location = useLocation()
   const { themePreferences, isMobileSidebarOpen, setMobileSidebarOpen } = useDashboardStore()
   const isCollapsed = themePreferences?.isSidebarCollapsed ?? false;
-  const width = themePreferences?.sidebarWidth || 270;
+  const currentWidth = themePreferences?.sidebarWidth || 260;
   
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024)
 
@@ -27,7 +27,7 @@ const MainLayout = () => {
     return () => window.removeEventListener('resize', handleResize)
   }, [setMobileSidebarOpen])
 
-  const sidebarActualWidth = isMobile ? 0 : (isCollapsed ? 80 : 270);
+  const sidebarActualWidth = isMobile ? 0 : (isCollapsed ? 76 : currentWidth);
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 relative font-sans">
@@ -40,12 +40,12 @@ const MainLayout = () => {
         />
       )}
 
-      {/* Sidebar */}
+      {/* Movable & Collapsible Sidebar */}
       <Sidebar />
 
       {/* Main Content Area */}
       <div 
-        className="flex flex-col min-h-screen relative z-0 transition-all duration-300 ease-in-out w-full max-w-full overflow-x-hidden"
+        className="flex flex-col min-h-screen relative z-0 transition-all duration-150 ease-out w-full max-w-full overflow-x-hidden"
         style={{ marginLeft: sidebarActualWidth }}
       >
         <TopNavbar />
