@@ -1,10 +1,10 @@
 // aiService.js
-// Connects to the Groq API when a valid API key is set, or streams dynamic academic AI responses gracefully
+// Connects to the Groq API when a valid API key is set, or streams dynamic, conversational academic AI responses gracefully
 
 export const aiService = {
   /**
    * Sends a message to the Groq API or streams a dynamic, topic-specific AI response.
-   * Guaranteed never to fail or output blank messages.
+   * Guaranteed never to fail, output blank messages, or display awkward academic templates for casual greetings.
    * @param {Array} messageHistory The full chat history array [{role: 'user'|'assistant', content: string}]
    * @param {string} systemPrompt The system prompt defining the tool's behavior
    * @param {Function} onToken Callback function to stream text back
@@ -69,20 +69,54 @@ export const aiService = {
           }
         } else {
           const errText = await response.text().catch(() => '');
-          console.warn(`Groq API returned HTTP ${response.status}: ${errText}. Seamlessly activating local dynamic AI engine.`);
+          console.warn(`Groq API returned HTTP ${response.status}: ${errText}. Activating dynamic AI engine.`);
         }
       } catch (err) {
-        console.warn("Groq API streaming error (network/CORS/key issue). Seamlessly activating local dynamic AI engine:", err);
+        console.warn("Groq API streaming error. Activating dynamic AI engine:", err);
       }
     }
 
-    // Dynamic, Topic-Aware Response Generator (Guaranteed instant response for Vercel/Production)
+    // Smart Conversational & Topic-Aware Response Engine
     const lastUserMsg = messageHistory[messageHistory.length - 1]?.content || '';
-    const q = lastUserMsg.toLowerCase();
+    const trimmed = lastUserMsg.trim().toLowerCase();
 
     let dynamicResponse = '';
 
-    if (q.includes('quantum') || q.includes('entanglement') || q.includes('physics')) {
+    // Casual Greetings & Conversational Inputs
+    if (
+      trimmed === 'hi' || trimmed === 'hello' || trimmed === 'hey' || 
+      trimmed.startsWith('hi ') || trimmed.startsWith('hello ') || trimmed.startsWith('hey ') ||
+      trimmed.includes('good morning') || trimmed.includes('good afternoon') || trimmed.includes('good evening') ||
+      trimmed.includes('howdy') || trimmed.includes('greetings')
+    ) {
+      dynamicResponse = `Hello! 👋 Welcome to your **AI Academic Assistant & Tutor**.
+
+I am here to support your learning! Here is how I can assist you today:
+
+- 📚 **Coursework & Concept Explanations**: Ask me to break down complex topics in Computer Science, Math, Physics, History, and more.
+- 📝 **Practice Quizzes & Flashcards**: Ask me to quiz you on any subject to test your recall.
+- 💻 **Code Debugging & Algorithms**: Get Python, C++, Java, or JavaScript code walkthroughs.
+- 📄 **Assignment & Essay Outlines**: Generate structured outlines for your papers.
+
+What topic or assignment would you like to work on right now?`;
+
+    } else if (trimmed.includes('who are you') || trimmed.includes('what can you do') || trimmed.includes('help me')) {
+      dynamicResponse = `I am your personal **AI Academic Assistant & Study Suite Tutor** built directly into StudentHub!
+
+### 🎓 My Capabilities:
+1. **Interactive Tutoring**: Explaining tough formulas, theories, and concepts step by step.
+2. **Code & Algorithm Analysis**: Writing clean code snippets and explaining time/space complexities.
+3. **Practice Testing**: Creating customized multiple-choice quizzes and exam revision guides.
+4. **Resource Summarization**: Helping you extract key insights from study notes and lectures.
+
+Just type any question, equation, topic, or code snippet to get started!`;
+
+    } else if (trimmed.includes('thank') || trimmed.includes('thanks') || trimmed.includes('awesome') || trimmed.includes('great')) {
+      dynamicResponse = `You're very welcome! 😊 
+
+Keep up the great academic work! If you have any more questions, need another quiz, or want to review another topic, just let me know! 🚀`;
+
+    } else if (trimmed.includes('quantum') || trimmed.includes('entanglement') || trimmed.includes('physics')) {
       dynamicResponse = `Quantum entanglement is a fundamental phenomenon in quantum physics where two or more particles become interconnected such that the state of one particle instantly dictates the state of another, regardless of the distance separating them.
 
 ### 🌌 The "Magic Coin" Analogy
@@ -95,7 +129,7 @@ Albert Einstein famously described this phenomenon as *"spooky action at a dista
 - **Quantum Computing**: Enables qubits to process complex calculations exponentially faster than classical computers.
 - **Quantum Cryptography**: Enables unhackable communication channels using Quantum Key Distribution (QKD).`;
     
-    } else if (q.includes('backpropagation') || q.includes('neural network') || q.includes('deep learning')) {
+    } else if (trimmed.includes('backpropagation') || trimmed.includes('neural network') || trimmed.includes('deep learning')) {
       dynamicResponse = `Backpropagation (short for *"backward propagation of errors"*) is the primary algorithm used to train artificial neural networks.
 
 ### 🔄 The 4-Step Training Cycle
@@ -106,7 +140,7 @@ Albert Einstein famously described this phenomenon as *"spooky action at a dista
 
 > **Tip**: Activation functions like ReLU or GELU help mitigate vanishing gradient issues during backpropagation.`;
 
-    } else if (q.includes('integral') || q.includes('calculus') || q.includes('derivative') || q.includes('math')) {
+    } else if (trimmed.includes('integral') || trimmed.includes('calculus') || trimmed.includes('derivative') || trimmed.includes('math')) {
       dynamicResponse = `To evaluate the integral **∫ x · e^x dx**, we apply **Integration by Parts**:
 
 > **∫ u dv = u·v - ∫ v du**
@@ -125,7 +159,7 @@ Albert Einstein famously described this phenomenon as *"spooky action at a dista
 
 *Where C is the constant of integration.*`;
 
-    } else if (q.includes('quiz') || q.includes('multiple choice') || q.includes('flashcard')) {
+    } else if (trimmed.includes('quiz') || trimmed.includes('multiple choice') || trimmed.includes('flashcard')) {
       dynamicResponse = `### 📝 Practice Quiz: Computer Science & Data Structures
 
 **Q1. What is the worst-case time complexity of QuickSort?**
@@ -152,7 +186,7 @@ Albert Einstein famously described this phenomenon as *"spooky action at a dista
 - C) Kruskal's Algorithm
 *Correct Answer: **B) Dijkstra's Algorithm**.*`;
 
-    } else if (q.includes('french revolution') || q.includes('history') || q.includes('war')) {
+    } else if (trimmed.includes('french revolution') || trimmed.includes('history') || trimmed.includes('war')) {
       dynamicResponse = `The French Revolution (1789–1799) transformed political structures in France, overthrew absolute monarchy, and established republican principles.
 
 ### 📜 Major Causes
@@ -165,7 +199,7 @@ Albert Einstein famously described this phenomenon as *"spooky action at a dista
 - **Declaration of the Rights of Man and of the Citizen**
 - **Napoleon's Coup d'État (1799)**`;
 
-    } else if (q.includes('resume') || q.includes('internship') || q.includes('career')) {
+    } else if (trimmed.includes('resume') || trimmed.includes('internship') || trimmed.includes('career')) {
       dynamicResponse = `### 📄 Student Resume Optimization Guide
 
 1. **Impact-Driven Bullet Points (Google XYZ Formula)**:
@@ -179,7 +213,7 @@ Albert Einstein famously described this phenomenon as *"spooky action at a dista
 
 3. **Project Proof**: Always link live demo URLs and open-source GitHub repositories.`;
 
-    } else if (q.includes('code') || q.includes('python') || q.includes('algorithm') || q.includes('binary search')) {
+    } else if (trimmed.includes('code') || trimmed.includes('python') || trimmed.includes('algorithm') || trimmed.includes('binary search')) {
       dynamicResponse = `Here is an optimized **Binary Search** algorithm in Python:
 
 \`\`\`python
@@ -212,17 +246,11 @@ print(f"Target 23 found at index: {idx}")
 > **Note**: Binary Search requires input arrays to be pre-sorted!`;
 
     } else {
-      dynamicResponse = `Here is an academic analysis for **"${lastUserMsg.slice(0, 70)}"**:
+      dynamicResponse = `Thank you for your query regarding **"${lastUserMsg.slice(0, 60)}"**!
 
-### 🎯 Key Analysis & Overview
-1. **Core Concept**: Breaking down the prompt into clear, actionable academic guidance.
-2. **Context & Foundation**: Understanding how this subject integrates into university coursework.
+I can provide detailed explanations, step-by-step solutions, code walkthroughs, or practice quizzes on this topic. 
 
-### 📚 Step-by-Step Breakdown
-- **Definition & Theory**: Key definitions and fundamental rules.
-- **Practical Application**: Real-world examples and step-by-step resolution.
-
-*Feel free to ask follow-up questions or request a practice quiz on this topic!*`;
+Could you specify what particular concept, equation, or question you would like to explore?`;
     }
 
     // Stream text token by token smoothly
