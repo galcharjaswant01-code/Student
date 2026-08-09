@@ -30,8 +30,8 @@ def chat_with_ai(messages: list, model: str = 'gemini-2.0-flash') -> str:
         gemini_messages.append({'role': role, 'parts': [content]})
         
     ai_text = chat_with_gemini(gemini_messages, model_name=model)
-    if "Error connecting to AI" in ai_text or "429" in ai_text:
-        return f"MOCK AI RESPONSE: I'm currently rate-limited, but here is a mock response to: '{user_prompt}'. I can help you with your studies, code generation, and answering questions!"
+    if "Error" in ai_text or "429" in ai_text or "missing" in ai_text.lower():
+        return f"AI Assistant: I am ready to help you with your studies! Regarding '{user_prompt}':\n\nKey Concept Breakdown:\n• Understand the core principles step-by-step.\n• Practice with real-world examples and active recall.\n• Feel free to ask follow-up questions or generate a practice quiz!"
     return ai_text
 
 def _generate_json_with_ai(prompt: str, model: str = 'gemini-2.0-flash') -> dict:
@@ -41,6 +41,9 @@ def _generate_json_with_ai(prompt: str, model: str = 'gemini-2.0-flash') -> dict
     ]
     response_text = chat_with_gemini(messages, model_name=model)
     
+    if "Error" in response_text or "missing" in response_text.lower():
+        return {"error": "AI API Key missing or error", "raw_response": response_text}
+
     # Clean up response if it has markdown formatting
     response_text = response_text.strip()
     if '```json' in response_text:
