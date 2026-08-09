@@ -4,20 +4,25 @@ import {
   ChevronLeft, 
   Clock, 
   CheckSquare, 
-  Bell, 
+  MessageSquare, 
   FileText, 
   Play, 
   Pause, 
-  RotateCcw
+  RotateCcw,
+  Send,
+  User,
+  Paperclip
 } from 'lucide-react';
 import useDashboardStore from '../store/useDashboardStore';
 import Badge from './ui/Badge';
+import Avatar from './ui/Avatar';
 
 const RightSidebar = ({ leftOffset = 260 }) => {
   const { rightSidebarWidth, setRightSidebarWidth, isRightSidebarCollapsed, setRightSidebarCollapsed } = useDashboardStore();
   
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1280);
   const [isResizing, setIsResizing] = useState(false);
+  const [activeTab, setActiveTab] = useState('messages'); // 'messages' | 'tools'
 
   // Quick Study Timer State
   const [timerSeconds, setTimerSeconds] = useState(1500); // 25 min Pomodoro
@@ -25,6 +30,14 @@ const RightSidebar = ({ leftOffset = 260 }) => {
 
   // Quick Note State
   const [quickNote, setQuickNote] = useState(localStorage.getItem('quickNote') || 'Calculus Chapter 4 formulas review at 5 PM.');
+
+  // Academic Messages State inside Quick Panel
+  const [chatMessages, setChatMessages] = useState([
+    { id: 1, sender: 'them', text: 'Hello Alex! Did you get a chance to solve practice set #4?', time: '10:30 AM' },
+    { id: 2, sender: 'me', text: 'Yes Dr. Jenkins, I completed questions 1 through 8.', time: '10:35 AM' },
+    { id: 3, sender: 'them', text: 'Please review the solution sheet for Chapter 4.', time: '10:42 AM' }
+  ]);
+  const [chatInput, setChatInput] = useState('');
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1280);
@@ -52,8 +65,7 @@ const RightSidebar = ({ leftOffset = 260 }) => {
   useEffect(() => {
     const handlePointerMove = (e) => {
       if (!isResizing || isRightSidebarCollapsed || isMobile) return;
-      // Calculate width relative to leftOffset
-      const newWidth = Math.max(180, Math.min(420, e.clientX - leftOffset));
+      const newWidth = Math.max(220, Math.min(420, e.clientX - leftOffset));
       setRightSidebarWidth(newWidth);
     };
 
@@ -79,6 +91,17 @@ const RightSidebar = ({ leftOffset = 260 }) => {
     };
   }, [isResizing, isRightSidebarCollapsed, isMobile, leftOffset, setRightSidebarWidth]);
 
+  const handleSendChat = (e) => {
+    e.preventDefault();
+    if (!chatInput.trim()) return;
+
+    setChatMessages(prev => [
+      ...prev,
+      { id: Date.now(), sender: 'me', text: chatInput.trim(), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+    ]);
+    setChatInput('');
+  };
+
   const formatTimer = (sec) => {
     const m = Math.floor(sec / 60);
     const s = sec % 60;
@@ -94,12 +117,23 @@ const RightSidebar = ({ leftOffset = 260 }) => {
       className="fixed top-0 z-40 flex flex-col h-screen bg-slate-900 border-r border-slate-800 text-white transition-all duration-150 ease-out select-none"
       style={{ left: leftOffset, width: currentActualWidth }}
     >
-      {/* Header & Toggle Button */}
+      {/* Header & Section Switcher */}
       <div className="h-16 flex items-center justify-between px-3.5 border-b border-slate-800 shrink-0">
         {!isRightSidebarCollapsed && (
-          <span className="text-xs font-bold text-white uppercase tracking-wider">
-            Quick Panel
-          </span>
+          <div className="flex items-center gap-1.5 bg-slate-950/80 p-1 rounded-lg border border-slate-800">
+            <button
+              onClick={() => setActiveTab('messages')}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-colors ${activeTab === 'messages' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-400 hover:text-white'}`}
+            >
+              Messages
+            </button>
+            <button
+              onClick={() => setActiveTab('tools')}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-colors ${activeTab === 'tools' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-400 hover:text-white'}`}
+            >
+              Quick Tools
+            </button>
+          </div>
         )}
 
         <button
@@ -111,87 +145,141 @@ const RightSidebar = ({ leftOffset = 260 }) => {
         </button>
       </div>
 
-      {/* Collapsed Bar Icon */}
+      {/* Collapsed Bar Icons */}
       {isRightSidebarCollapsed && (
         <div className="flex-1 flex flex-col items-center py-6 space-y-6">
-          <Clock className="w-5 h-5 text-blue-400" />
-          <FileText className="w-5 h-5 text-slate-400" />
-          <Bell className="w-5 h-5 text-slate-400" />
+          <MessageSquare className="w-5 h-5 text-blue-400 cursor-pointer" onClick={() => { setRightSidebarCollapsed(false); setActiveTab('messages'); }} />
+          <Clock className="w-5 h-5 text-slate-400 cursor-pointer" onClick={() => { setRightSidebarCollapsed(false); setActiveTab('tools'); }} />
+          <FileText className="w-5 h-5 text-slate-400 cursor-pointer" onClick={() => { setRightSidebarCollapsed(false); setActiveTab('tools'); }} />
         </div>
       )}
 
       {/* Expanded Content Panel */}
       {!isRightSidebarCollapsed && (
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-6">
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-3.5 space-y-4 flex flex-col">
           
-          {/* Study Pomodoro Timer */}
-          <div className="p-4 rounded-xl border border-slate-800 bg-slate-950/60 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-blue-400" />
-                Study Session Timer
-              </span>
-              <Badge variant="blue">Pomodoro</Badge>
-            </div>
-
-            <div className="text-center py-2">
-              <span className="text-3xl font-extrabold text-blue-400 font-mono tracking-tight">
-                {formatTimer(timerSeconds)}
-              </span>
-            </div>
-
-            <div className="flex items-center justify-center gap-2">
-              <button
-                onClick={() => setIsTimerRunning(!isTimerRunning)}
-                className="px-3 py-1.5 rounded-lg border border-blue-500 bg-transparent text-blue-400 hover:bg-blue-950/40 text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
-              >
-                {isTimerRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-                <span>{isTimerRunning ? 'Pause' : 'Start'}</span>
-              </button>
-              <button
-                onClick={() => { setIsTimerRunning(false); setTimerSeconds(1500); }}
-                className="p-1.5 rounded-lg border border-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
-                title="Reset Timer"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-
-          {/* Quick Scratchpad Note */}
-          <div className="p-4 rounded-xl border border-slate-800 bg-slate-950/60 space-y-2">
-            <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-              <FileText className="w-3.5 h-3.5 text-blue-400" />
-              Quick Study Note
-            </span>
-            <textarea
-              value={quickNote}
-              onChange={(e) => {
-                setQuickNote(e.target.value);
-                localStorage.setItem('quickNote', e.target.value);
-              }}
-              placeholder="Jot down a quick formula or task..."
-              className="w-full h-24 p-2.5 rounded-lg border border-slate-800 bg-slate-900 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 custom-scrollbar resize-none"
-            />
-          </div>
-
-          {/* Upcoming Reminders */}
-          <div className="p-4 rounded-xl border border-slate-800 bg-slate-950/60 space-y-3">
-            <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-              <CheckSquare className="w-3.5 h-3.5 text-blue-400" />
-              Today's Key Tasks
-            </span>
-            <div className="space-y-2 text-xs">
-              <div className="p-2 rounded-lg border border-slate-800 bg-slate-900 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-blue-400 shrink-0" />
-                <span className="text-slate-200 truncate">Submit Calculus Problem Set</span>
+          {/* TAB 1: Messages Section in Quick Panel */}
+          {activeTab === 'messages' && (
+            <div className="flex-1 flex flex-col justify-between space-y-3 h-full min-h-[400px]">
+              
+              {/* Contact Info Header */}
+              <div className="p-2.5 rounded-xl border border-slate-800 bg-slate-950/60 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <Avatar name="Dr. Sarah Jenkins" size="sm" />
+                  <div>
+                    <p className="text-xs font-bold text-white leading-tight">Dr. Sarah Jenkins</p>
+                    <p className="text-[10px] text-blue-400">Calculus III Professor</p>
+                  </div>
+                </div>
+                <Badge variant="blue">Online</Badge>
               </div>
-              <div className="p-2 rounded-lg border border-slate-800 bg-slate-900 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-slate-600 shrink-0" />
-                <span className="text-slate-200 truncate">Review Trees & Graphs PDF</span>
+
+              {/* Chat Feed */}
+              <div className="flex-1 p-2 rounded-xl border border-slate-800 bg-slate-950/40 overflow-y-auto custom-scrollbar space-y-2 max-h-[360px]">
+                {chatMessages.map((msg) => (
+                  <div key={msg.id} className={`flex flex-col ${msg.sender === 'me' ? 'items-end' : 'items-start'}`}>
+                    <div className={`px-3 py-2 rounded-lg text-xs leading-relaxed max-w-[85%] ${msg.sender === 'me' ? 'bg-blue-600 text-white rounded-br-none' : 'bg-slate-800 text-slate-100 rounded-bl-none border border-slate-700'}`}>
+                      {msg.text}
+                    </div>
+                    <span className="text-[9px] text-slate-400 mt-0.5 px-1">{msg.time}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Quick Message Input Form */}
+              <form onSubmit={handleSendChat} className="flex items-center gap-1.5 pt-1">
+                <input
+                  type="text"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  placeholder="Message Dr. Jenkins..."
+                  className="flex-1 py-2 px-3 rounded-lg border border-slate-800 bg-slate-900 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500"
+                />
+                <button
+                  type="submit"
+                  disabled={!chatInput.trim()}
+                  className="p-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                </button>
+              </form>
+
+            </div>
+          )}
+
+          {/* TAB 2: Quick Tools (Timer, Scratchpad Notes, Tasks) */}
+          {activeTab === 'tools' && (
+            <div className="space-y-4">
+              {/* Study Pomodoro Timer */}
+              <div className="p-3.5 rounded-xl border border-slate-800 bg-slate-950/60 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5 text-blue-400" />
+                    Study Session Timer
+                  </span>
+                  <Badge variant="blue">Pomodoro</Badge>
+                </div>
+
+                <div className="text-center py-1">
+                  <span className="text-2xl font-extrabold text-blue-400 font-mono tracking-tight">
+                    {formatTimer(timerSeconds)}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-center gap-2">
+                  <button
+                    onClick={() => setIsTimerRunning(!isTimerRunning)}
+                    className="px-3 py-1 rounded-lg border border-blue-500 bg-transparent text-blue-400 hover:bg-blue-950/40 text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                  >
+                    {isTimerRunning ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
+                    <span>{isTimerRunning ? 'Pause' : 'Start'}</span>
+                  </button>
+                  <button
+                    onClick={() => { setIsTimerRunning(false); setTimerSeconds(1500); }}
+                    className="p-1 rounded-lg border border-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                    title="Reset Timer"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Quick Scratchpad Note */}
+              <div className="p-3.5 rounded-xl border border-slate-800 bg-slate-950/60 space-y-2">
+                <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                  <FileText className="w-3.5 h-3.5 text-blue-400" />
+                  Quick Study Note
+                </span>
+                <textarea
+                  value={quickNote}
+                  onChange={(e) => {
+                    setQuickNote(e.target.value);
+                    localStorage.setItem('quickNote', e.target.value);
+                  }}
+                  placeholder="Jot down a quick formula or task..."
+                  className="w-full h-20 p-2 rounded-lg border border-slate-800 bg-slate-900 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500 custom-scrollbar resize-none"
+                />
+              </div>
+
+              {/* Upcoming Reminders */}
+              <div className="p-3.5 rounded-xl border border-slate-800 bg-slate-950/60 space-y-2.5">
+                <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                  <CheckSquare className="w-3.5 h-3.5 text-blue-400" />
+                  Today's Key Tasks
+                </span>
+                <div className="space-y-1.5 text-xs">
+                  <div className="p-2 rounded-lg border border-slate-800 bg-slate-900 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-blue-400 shrink-0" />
+                    <span className="text-slate-200 truncate">Submit Calculus Problem Set</span>
+                  </div>
+                  <div className="p-2 rounded-lg border border-slate-800 bg-slate-900 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-slate-600 shrink-0" />
+                    <span className="text-slate-200 truncate">Review Trees & Graphs PDF</span>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
         </div>
       )}
