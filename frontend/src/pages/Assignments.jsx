@@ -14,6 +14,9 @@ const mockAssignments = [
 ];
 
 const Assignments = () => {
+  const handleSubmit = () => {
+    alert('Homework submitted!');
+  };
   const [filter, setFilter] = useState('All');
 
   const filteredAssignments = mockAssignments.filter(item => {
@@ -27,9 +30,11 @@ const Assignments = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Academic Assignments</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Submit coursework, track upcoming deadlines, and review faculty grades.</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          Submit coursework, track upcoming deadlines, and review faculty grades.
+        </p>
         </div>
-        <Button variant="primary" icon={Upload} size="sm">
+        <Button variant="primary" icon={Upload} size="sm" onClick={() => alert('Homework submitted!')}>
           Submit Homework
         </Button>
       </div>
@@ -60,15 +65,18 @@ const Assignments = () => {
         subtitle="Manage your coursework submissions"
         action={
           <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
-            {['All', 'Pending', 'Submitted', 'Completed'].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setFilter(tab)}
-                className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors ${filter === tab ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}
-              >
-                {tab}
-              </button>
-            ))}
+            {['All', 'Pending', 'Submitted', 'Completed'].map((tab) => {
+              /* Messages button removed */
+              return (
+                <button
+                  key={tab}
+                  onClick={() => setFilter(tab)}
+                  className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors ${filter === tab ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}
+                >
+                  {tab}
+                </button>
+              );
+            })}
           </div>
         }
       >
