@@ -8,7 +8,7 @@ import {
   BookOpen, 
   FolderOpen, 
   Bot, 
-  MessageSquare, 
+ 
   Calendar, 
   User, 
   Settings, 
@@ -28,7 +28,7 @@ const menuItems = [
   { icon: BookOpen, label: 'Courses', path: '/courses' },
   { icon: FolderOpen, label: 'Resources', path: '/resources' },
   { icon: Bot, label: 'AI Studio', path: '/ai-studio' },
-  { icon: MessageSquare, label: 'Messages', path: '/messages' },
+
   { icon: Calendar, label: 'Calendar', path: '/calendar' },
   { icon: User, label: 'Profile', path: '/profile' },
   { icon: Settings, label: 'Settings', path: '/settings' },

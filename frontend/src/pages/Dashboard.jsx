@@ -1,8 +1,8 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
-  TrendingUp, BookOpen, Clock, Calendar as CalendarIcon, CheckCircle, 
-  ArrowRight, MessageSquare, ClipboardList, FolderOpen, User, Plus, Compass, Bot, Sparkles
+  TrendingUp, BookOpen, Clock, Calendar as CalendarIcon, 
+  CheckCircle, ArrowRight, ClipboardList, FolderOpen, User, Plus, Compass, Bot, Sparkles
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Card from '../components/ui/Card';
@@ -41,10 +41,7 @@ const Dashboard = () => {
     { title: 'AI Ethics Case Study.pdf', size: '3.1 MB', type: 'Reading Material' },
   ];
 
-  const recentMessages = [
-    { sender: 'Dr. Sarah Jenkins', text: 'Solution sheet for Chapter 4 has been uploaded.', time: '10m ago' },
-    { sender: 'Physics Study Group', text: 'Meeting in campus library at 3 PM today.', time: '1h ago' },
-  ];
+  // recentMessages removed as messages section is permanently removed
 
   return (
     <div className="p-4 sm:p-6 w-full space-y-6 max-w-7xl mx-auto">
@@ -178,9 +175,7 @@ const Dashboard = () => {
               <Button variant="secondary" size="sm" icon={Bot} onClick={() => navigate('/ai-studio')}>
                 AI Studio
               </Button>
-              <Button variant="secondary" size="sm" icon={MessageSquare} onClick={() => navigate('/messages')}>
-                Messages
-              </Button>
+                {/* Messages button removed */}
             </div>
           </Card>
 
@@ -199,21 +194,7 @@ const Dashboard = () => {
             </div>
           </Card>
 
-          {/* Messages */}
-          <Card title="Recent Messages">
-            <div className="space-y-3">
-              {recentMessages.map((msg, idx) => (
-                <div key={idx} className="p-2.5 rounded-lg border border-slate-100 dark:border-slate-800 space-y-1 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-900 dark:text-white">{msg.sender}</span>
-                    <span className="text-[10px] text-slate-400">{msg.time}</span>
-                  </div>
-                  <p className="text-slate-500 dark:text-slate-400 text-[11px] truncate">{msg.text}</p>
-                </div>
-              ))}
-            </div>
-          </Card>
-
+          // Recent Messages card removed
         </div>
 
       </div>

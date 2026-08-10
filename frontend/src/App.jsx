@@ -13,7 +13,7 @@ import Assignments from './pages/Assignments'
 import Attendance from './pages/Attendance'
 import Courses from './pages/Courses'
 import Resources from './pages/Resources'
-import Messages from './pages/Messages'
+
 import Calendar from './pages/Calendar'
 import Profile from './pages/Profile'
 import Settings from './pages/Settings'
@@ -48,7 +48,7 @@ function App() {
               <Route path="/resources" element={<ProtectedRoute allowGuest={true}><Resources /></ProtectedRoute>} />
               <Route path="/ai-studio" element={<ProtectedRoute allowGuest={true}><AIStudio /></ProtectedRoute>} />
               <Route path="/ai-studio/tool/:toolId" element={<ProtectedRoute allowGuest={true}><AIToolView /></ProtectedRoute>} />
-              <Route path="/messages" element={<ProtectedRoute allowGuest={true}><Messages /></ProtectedRoute>} />
+
               <Route path="/calendar" element={<ProtectedRoute allowGuest={true}><Calendar /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute allowGuest={true}><Profile /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute allowGuest={true}><Settings /></ProtectedRoute>} />
