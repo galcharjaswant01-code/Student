@@ -1,6 +1,6 @@
 from rest_framework import viewsets, views, status
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from .models import AIConversation, AIMessage, QuizHistory, StudyPlan, ResumeAnalysis
 from .serializers import AIConversationSerializer, AIMessageSerializer, QuizHistorySerializer, StudyPlanSerializer, ResumeAnalysisSerializer
@@ -14,7 +14,7 @@ class DirectChatView(views.APIView):
     Returns: { "response": "..." }
     API key is stored securely on the server — never exposed to the frontend.
     """
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         messages = request.data.get('messages', [])
@@ -89,7 +89,7 @@ class AIConversationViewSet(viewsets.ModelViewSet):
         return Response({'response': ai_response, 'message_id': str(ai_msg.id)})
 
 class QuizGeneratorView(views.APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         topic = request.data.get('topic', '')
@@ -102,6 +102,8 @@ class QuizGeneratorView(views.APIView):
 
     def put(self, request):
         """Save quiz result to history."""
+        if not request.user or not request.user.is_authenticated:
+            return Response({'message': 'Quiz result not saved (guest mode)'}, status=status.HTTP_200_OK)
         serializer = QuizHistorySerializer(data={**request.data, 'user': request.user.id})
         if serializer.is_valid():
             serializer.save(user=request.user)
@@ -109,7 +111,7 @@ class QuizGeneratorView(views.APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class StudyPlannerView(views.APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         subject = request.data.get('subject', '')
@@ -118,21 +120,26 @@ class StudyPlannerView(views.APIView):
             return Response({'error': 'Subject is required.'}, status=status.HTTP_400_BAD_REQUEST)
         result = services.generate_study_plan(subject, days)
 
-        # Auto-save to DB
-        plan = StudyPlan.objects.create(
-            user=request.user,
-            subject=subject,
-            duration_days=days,
-            plan_data=result
-        )
-        return Response({**result, 'plan_id': str(plan.id)})
+        # Auto-save to DB if user is authenticated
+        plan_id = None
+        if request.user and request.user.is_authenticated:
+            plan = StudyPlan.objects.create(
+                user=request.user,
+                subject=subject,
+                duration_days=days,
+                plan_data=result
+            )
+            plan_id = str(plan.id)
+        return Response({**result, 'plan_id': plan_id})
 
     def get(self, request):
+        if not request.user or not request.user.is_authenticated:
+            return Response([])
         plans = StudyPlan.objects.filter(user=request.user)
         return Response(StudyPlanSerializer(plans, many=True).data)
 
 class CodeAssistantView(views.APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         prompt = request.data.get('prompt', '')
@@ -143,7 +150,7 @@ class CodeAssistantView(views.APIView):
         return Response(result)
 
 class NotesSummarizerView(views.APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         text = request.data.get('text', '')
@@ -153,7 +160,7 @@ class NotesSummarizerView(views.APIView):
         return Response(result)
 
 class ResumeAnalyzerView(views.APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         import random
@@ -170,15 +177,17 @@ class ResumeAnalyzerView(views.APIView):
             ],
             'keywordsToInclude': ['Python', 'Django', 'REST API', 'PostgreSQL', 'Docker'],
         }
-        result = ResumeAnalysis.objects.create(
-            user=request.user,
-            resume_file=resume_file,
-            ats_score=ats_score,
-            analysis_result=analysis,
-            improvements=analysis['improvements'],
-            keywords=analysis['keywordsToInclude'],
-        )
-        return Response(ResumeAnalysisSerializer(result).data, status=status.HTTP_201_CREATED)
+        if request.user and request.user.is_authenticated:
+            result = ResumeAnalysis.objects.create(
+                user=request.user,
+                resume_file=resume_file,
+                ats_score=ats_score,
+                analysis_result=analysis,
+                improvements=analysis['improvements'],
+                keywords=analysis['keywordsToInclude'],
+            )
+            return Response(ResumeAnalysisSerializer(result).data, status=status.HTTP_201_CREATED)
+        return Response(analysis, status=status.HTTP_200_OK)
 
 class AIUsageStatsView(views.APIView):
     permission_classes = (IsAuthenticated,)
