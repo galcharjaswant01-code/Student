@@ -7,10 +7,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
   signInWithRedirect,
-  sendPasswordResetEmail,
-  sendSignInLinkToEmail,
-  isSignInWithEmailLink,
-  signInWithEmailLink
+  sendPasswordResetEmail
 } from 'firebase/auth';
 import { auth } from '../firebase';
 import axios from 'axios';
@@ -63,19 +60,7 @@ export function AuthProvider({ children }) {
     return signInWithRedirect(auth, provider);
   }
 
-  function sendMagicLink(email) {
-    const actionCodeSettings = {
-      url: `${window.location.origin}/verify`,
-      handleCodeInApp: true,
-    };
-    window.localStorage.setItem('emailForSignIn', email);
-    return sendSignInLinkToEmail(auth, email, actionCodeSettings);
-  }
 
-  function verifyMagicLink(email, href) {
-    localStorage.removeItem('is_guest_mode');
-    return signInWithEmailLink(auth, email, href);
-  }
 
   function resetPassword(email) {
     return sendPasswordResetEmail(auth, email);
@@ -160,9 +145,7 @@ export function AuthProvider({ children }) {
     logout,
     loginWithGoogle,
     loginWithGoogleRedirect,
-    sendMagicLink,
-    verifyMagicLink,
-    isSignInWithEmailLink: (href) => isSignInWithEmailLink(auth, href),
+
     loginAsGuest,
     loginAsDemoUser,
     resetPassword

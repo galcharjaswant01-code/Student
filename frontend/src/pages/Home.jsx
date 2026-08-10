@@ -6,17 +6,16 @@ import StatCard from '../components/StatCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import AlertMessage from '../components/AlertMessage';
 import { getFriendlyErrorMessage } from '../utils/authErrors';
-import { Mail, ArrowRight, Compass, Users, BookOpen, Bot } from 'lucide-react';
+import { ArrowRight, Compass, Users, BookOpen, Bot } from 'lucide-react';
 
 const Home = () => {
-  const [email, setEmail] = useState('');
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   
   const { 
     loginWithGoogle, 
-    sendMagicLink, 
     loginAsGuest,
     currentUser 
   } = useAuth();
@@ -45,27 +44,7 @@ const Home = () => {
     }
   };
 
-  const handleMagicLinkSubmit = async (e) => {
-    e.preventDefault();
-    if (!email) {
-      setError('Please enter a valid email address.');
-      return;
-    }
 
-    setError('');
-    setSuccessMsg('');
-    setLoading(true);
-
-    try {
-      await sendMagicLink(email);
-      setSuccessMsg(`A magic sign-in link has been sent to ${email}. Please check your inbox.`);
-    } catch (err) {
-      console.error('Magic link error:', err);
-      setError(getFriendlyErrorMessage(err));
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleGuestAccess = () => {
     loginAsGuest();
@@ -157,50 +136,6 @@ const Home = () => {
                 </svg>
                 <span>Continue with Google</span>
               </button>
-
-              <div className="relative flex items-center justify-center py-1">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-slate-200 dark:border-slate-800" />
-                </div>
-                <span className="relative px-3 bg-white dark:bg-slate-950 text-xs text-slate-500 font-medium">
-                  or email magic link
-                </span>
-              </div>
-
-              {/* 2. Passwordless Magic Link Email Form */}
-              <form onSubmit={handleMagicLinkSubmit} className="space-y-3">
-                <div>
-                  <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                    Student Email
-                  </label>
-                  <div className="relative">
-                    <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="student@university.edu"
-                      className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-800 bg-transparent text-slate-900 dark:text-white text-sm focus:outline-none focus:border-blue-600 dark:focus:border-blue-500 transition-colors placeholder:text-slate-400"
-                    />
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg border border-blue-600 dark:border-blue-500 bg-transparent hover:bg-blue-50/50 dark:hover:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-semibold text-sm transition-colors disabled:opacity-50 cursor-pointer"
-                >
-                  {loading ? (
-                    <LoadingSpinner size="sm" className="text-blue-600 dark:text-blue-400" />
-                  ) : (
-                    <>
-                      <span>Continue with Email</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
-              </form>
 
               {/* 3. Continue as Guest */}
               <div>
