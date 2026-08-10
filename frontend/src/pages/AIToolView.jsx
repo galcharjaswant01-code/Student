@@ -6,7 +6,13 @@ import {
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { aiService } from '../services/aiService';
+import { aiApi } from '../services/aiApi';
 import Button from '../components/ui/Button';
+
+import InteractiveQuiz from '../components/ai/InteractiveQuiz';
+import InteractiveStudyPlan from '../components/ai/InteractiveStudyPlan';
+import InteractiveCode from '../components/ai/InteractiveCode';
+import InteractiveResume from '../components/ai/InteractiveResume';
 
 const TOOL_DEFINITIONS = {
   'ai-tutor': {
@@ -129,40 +135,82 @@ const AIToolView = () => {
     setIsTyping(true);
 
     const assistantMsgId = (Date.now() + 1).toString();
-    setMessages(prev => [...prev, { id: assistantMsgId, role: 'assistant', content: '' }]);
 
-    let accumulated = '';
     try {
-      const systemPrompt = `You are an expert academic AI assistant acting as a ${toolConfig.name}. Provide clear, accurate, well-formatted markdown responses to help university students excel in their studies.`;
+      if (toolId === 'quiz-generator') {
+        setMessages(prev => [...prev, { id: assistantMsgId, role: 'assistant', content: 'Generating your custom practice quiz...', widgetType: null }]);
+        const res = await aiApi.generateQuiz(textToSend, 'Medium', 4);
+        setMessages(prev => prev.map(msg => msg.id === assistantMsgId ? {
+          ...msg,
+          content: `Here is your generated practice quiz on **"${textToSend}"**:`,
+          widgetType: 'quiz',
+          widgetData: res
+        } : msg));
 
-      const historyForApi = [
-        ...messages.map(m => ({ role: m.role, content: m.content })),
-        { role: 'user', content: userMessage.content },
-      ];
+      } else if (toolId === 'study-planner') {
+        setMessages(prev => [...prev, { id: assistantMsgId, role: 'assistant', content: 'Designing your study schedule...', widgetType: null }]);
+        const res = await aiApi.generateStudyPlan(textToSend, 7);
+        setMessages(prev => prev.map(msg => msg.id === assistantMsgId ? {
+          ...msg,
+          content: `Here is your customized study plan for **"${textToSend}"**:`,
+          widgetType: 'study-plan',
+          widgetData: res
+        } : msg));
 
-      await aiService.sendMessageStream(historyForApi, systemPrompt, (chunk) => {
-        accumulated += chunk;
-        setMessages(prev =>
-          prev.map(msg =>
-            msg.id === assistantMsgId ? { ...msg, content: accumulated } : msg
-          )
-        );
-      });
+      } else if (toolId === 'code-assistant') {
+        setMessages(prev => [...prev, { id: assistantMsgId, role: 'assistant', content: 'Analyzing and generating code...', widgetType: null }]);
+        const res = await aiApi.generateCode(textToSend, 'python');
+        setMessages(prev => prev.map(msg => msg.id === assistantMsgId ? {
+          ...msg,
+          content: `Here is the solution for **"${textToSend}"**:`,
+          widgetType: 'code',
+          widgetData: res
+        } : msg));
 
-      if (!accumulated.trim()) {
-        const fallback = `### 🎯 Academic Overview: "${textToSend.slice(0, 80)}"\n\nHere is a structured breakdown:\n\n1. **Core Concept** — Understanding the fundamental principles.\n2. **Practical Steps** — Apply active recall and worked examples.\n3. **Next Action** — Ask a follow-up or request a practice quiz!\n\n*The AI backend may be starting up. Please retry in a moment.*`;
-        setMessages(prev =>
-          prev.map(msg =>
-            msg.id === assistantMsgId ? { ...msg, content: fallback } : msg
-          )
-        );
+      } else if (toolId === 'resume-analyzer') {
+        setMessages(prev => [...prev, { id: assistantMsgId, role: 'assistant', content: 'Analyzing resume formatting & ATS keywords...', widgetType: null }]);
+        const res = await aiApi.analyzeResume(attachments[0] || null);
+        setMessages(prev => prev.map(msg => msg.id === assistantMsgId ? {
+          ...msg,
+          content: `Here is your ATS Resume Compatibility Analysis:`,
+          widgetType: 'resume',
+          widgetData: res
+        } : msg));
+
+      } else {
+        // AI Tutor / Notes Summarizer — word-by-word stream
+        setMessages(prev => [...prev, { id: assistantMsgId, role: 'assistant', content: '' }]);
+        let accumulated = '';
+        const systemPrompt = `You are an expert academic AI assistant acting as a ${toolConfig.name}. Provide clear, accurate, well-formatted markdown responses to help university students excel in their studies.`;
+        const historyForApi = [
+          ...messages.map(m => ({ role: m.role, content: m.content })),
+          { role: 'user', content: userMessage.content },
+        ];
+
+        await aiService.sendMessageStream(historyForApi, systemPrompt, (chunk) => {
+          accumulated += chunk;
+          setMessages(prev =>
+            prev.map(msg =>
+              msg.id === assistantMsgId ? { ...msg, content: accumulated } : msg
+            )
+          );
+        });
+
+        if (!accumulated.trim()) {
+          const fallback = `### 🎯 Academic Overview: "${textToSend.slice(0, 80)}"\n\nHere is a structured breakdown:\n\n1. **Core Concept** — Understanding fundamental principles.\n2. **Practical Steps** — Apply active recall & practice problems.\n3. **Next Steps** — Ask follow-up questions or generate a quiz!`;
+          setMessages(prev =>
+            prev.map(msg =>
+              msg.id === assistantMsgId ? { ...msg, content: fallback } : msg
+            )
+          );
+        }
       }
     } catch (err) {
-      console.error('AI stream error:', err);
+      console.error('AI Processing Error:', err);
       setMessages(prev =>
         prev.map(msg =>
           msg.id === assistantMsgId
-            ? { ...msg, content: 'There was an error reaching the AI. Please try again in a moment.' }
+            ? { ...msg, content: 'There was an error reaching the AI service. Please try again in a moment.' }
             : msg
         )
       );
@@ -220,10 +268,9 @@ const AIToolView = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Secure indicator — no key exposure */}
           <div
             className="px-2.5 py-1.5 rounded-lg border border-green-300 dark:border-green-800 text-green-700 dark:text-green-400 text-xs font-semibold flex items-center gap-1.5"
-            title="AI powered by secure backend — your API key is never exposed"
+            title="AI powered by secure server endpoints"
           >
             <Shield className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Secure AI</span>
@@ -258,9 +305,26 @@ const AIToolView = () => {
                 </div>
               )}
 
-              <div className="prose dark:prose-invert prose-xs sm:prose-sm max-w-none">
-                <ReactMarkdown>{msg.content}</ReactMarkdown>
-              </div>
+              {/* Text Message */}
+              {msg.content && (
+                <div className="prose dark:prose-invert prose-xs sm:prose-sm max-w-none">
+                  <ReactMarkdown>{msg.content}</ReactMarkdown>
+                </div>
+              )}
+
+              {/* Interactive Widgets */}
+              {msg.widgetType === 'quiz' && msg.widgetData && (
+                <InteractiveQuiz data={msg.widgetData} />
+              )}
+              {msg.widgetType === 'study-plan' && msg.widgetData && (
+                <InteractiveStudyPlan data={msg.widgetData} />
+              )}
+              {msg.widgetType === 'code' && msg.widgetData && (
+                <InteractiveCode data={msg.widgetData} />
+              )}
+              {msg.widgetType === 'resume' && msg.widgetData && (
+                <InteractiveResume data={msg.widgetData} />
+              )}
 
               {msg.role === 'assistant' && msg.content && (
                 <button
