@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { useWorkspace } from '../../context/WorkspaceContext';
-import { X, ChevronRight, ClipboardList, FileText, BookOpen as BookIcon, FolderOpen as FolderIcon, MessageSquare as MessageIcon, Calendar as CalendarIcon, Sparkles as SparklesIcon, TrendingUp as TrendingUpIcon, Bell as BellIcon } from 'lucide-react';
+import { X, ChevronRight, ClipboardList, FileText, BookOpen as BookIcon, FolderOpen as FolderIcon, Calendar as CalendarIcon, Sparkles as SparklesIcon, TrendingUp as TrendingUpIcon, Bell as BellIcon } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const GLOBAL_NAV_ITEMS = [

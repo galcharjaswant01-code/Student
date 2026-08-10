@@ -13,7 +13,7 @@ const mockNotifications = [
 
 const mockSearchResults = [
   { category: 'Quick Actions', items: ['View Attendance', 'Browse Courses', 'AI Assistant'] },
-  { category: 'Pages', items: ['Dashboard', 'Assignments', 'Courses', 'Messages', 'Settings'] }
+  { category: 'Pages', items: ['Dashboard', 'Assignments', 'Courses', 'Settings'] }
 ];
 
 const TopNavbar = () => {
@@ -144,7 +144,7 @@ const TopNavbar = () => {
                             if (item === 'Dashboard') navigate('/dashboard');
                             if (item === 'Assignments') navigate('/assignments');
                             if (item === 'Courses') navigate('/courses');
-                            if (item === 'Messages') navigate('/messages');
+
                             if (item === 'Settings') navigate('/settings');
                             setIsSearchOpen(false);
                           }}

@@ -13,7 +13,7 @@ import Assignments from './pages/Assignments'
 import Attendance from './pages/Attendance'
 import Courses from './pages/Courses'
 import Resources from './pages/Resources'
-import Messages from './pages/Messages'
+
 import Calendar from './pages/Calendar'
 import Profile from './pages/Profile'
 import Settings from './pages/Settings'
@@ -53,7 +53,7 @@ function App() {
               <Route path="/profile" element={<ProtectedRoute allowGuest={true}><Profile /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute allowGuest={true}><Settings /></ProtectedRoute>} />
               <Route path="/notifications" element={<ProtectedRoute allowGuest={true}><Notifications /></ProtectedRoute>} />
-              <Route path="/messages" element={<ProtectedRoute allowGuest={true}><Messages /></ProtectedRoute>} />
+
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
           </Routes>
