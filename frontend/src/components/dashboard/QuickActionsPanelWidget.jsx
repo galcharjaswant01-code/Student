@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Zap, CheckSquare, CalendarPlus, Download, MessageSquare, Sparkles } from 'lucide-react';
+import { Zap, CheckSquare, CalendarPlus, Download, Sparkles } from 'lucide-react';
 
 
 const QuickActionsPanelWidget = () => {

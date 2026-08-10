@@ -4,7 +4,6 @@ import {
   ChevronLeft, 
   Clock, 
   CheckSquare, 
-  MessageSquare, 
   FileText, 
   Play, 
   Pause, 
@@ -22,7 +21,7 @@ const RightSidebar = ({ leftOffset = 260 }) => {
   
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1280);
   const [isResizing, setIsResizing] = useState(false);
-  const [activeTab, setActiveTab] = useState('messages'); // 'messages' | 'tools'
+  const [activeTab, setActiveTab] = useState('tools'); // 'tools' only
 
   // Quick Study Timer State
   const [timerSeconds, setTimerSeconds] = useState(1500); // 25 min Pomodoro
@@ -30,14 +29,6 @@ const RightSidebar = ({ leftOffset = 260 }) => {
 
   // Quick Note State
   const [quickNote, setQuickNote] = useState(localStorage.getItem('quickNote') || 'Calculus Chapter 4 formulas review at 5 PM.');
-
-  // Academic Messages State inside Quick Panel
-  const [chatMessages, setChatMessages] = useState([
-    { id: 1, sender: 'them', text: 'Hello Alex! Did you get a chance to solve practice set #4?', time: '10:30 AM' },
-    { id: 2, sender: 'me', text: 'Yes Dr. Jenkins, I completed questions 1 through 8.', time: '10:35 AM' },
-    { id: 3, sender: 'them', text: 'Please review the solution sheet for Chapter 4.', time: '10:42 AM' }
-  ]);
-  const [chatInput, setChatInput] = useState('');
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1280);
@@ -91,17 +82,6 @@ const RightSidebar = ({ leftOffset = 260 }) => {
     };
   }, [isResizing, isRightSidebarCollapsed, isMobile, leftOffset, setRightSidebarWidth]);
 
-  const handleSendChat = (e) => {
-    e.preventDefault();
-    if (!chatInput.trim()) return;
-
-    setChatMessages(prev => [
-      ...prev,
-      { id: Date.now(), sender: 'me', text: chatInput.trim(), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
-    ]);
-    setChatInput('');
-  };
-
   const formatTimer = (sec) => {
     const m = Math.floor(sec / 60);
     const s = sec % 60;
@@ -121,12 +101,6 @@ const RightSidebar = ({ leftOffset = 260 }) => {
       <div className="h-16 flex items-center justify-between px-3.5 border-b border-slate-800 shrink-0">
         {!isRightSidebarCollapsed && (
           <div className="flex items-center gap-1.5 bg-slate-950/80 p-1 rounded-lg border border-slate-800">
-            <button
-              onClick={() => setActiveTab('messages')}
-              className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-colors ${activeTab === 'messages' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-400 hover:text-white'}`}
-            >
-              Messages
-            </button>
             <button
               onClick={() => setActiveTab('tools')}
               className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-colors ${activeTab === 'tools' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-400 hover:text-white'}`}
@@ -148,7 +122,7 @@ const RightSidebar = ({ leftOffset = 260 }) => {
       {/* Collapsed Bar Icons */}
       {isRightSidebarCollapsed && (
         <div className="flex-1 flex flex-col items-center py-6 space-y-6">
-          <MessageSquare className="w-5 h-5 text-blue-400 cursor-pointer" onClick={() => { setRightSidebarCollapsed(false); setActiveTab('messages'); }} />
+
           <Clock className="w-5 h-5 text-slate-400 cursor-pointer" onClick={() => { setRightSidebarCollapsed(false); setActiveTab('tools'); }} />
           <FileText className="w-5 h-5 text-slate-400 cursor-pointer" onClick={() => { setRightSidebarCollapsed(false); setActiveTab('tools'); }} />
         </div>
@@ -157,57 +131,8 @@ const RightSidebar = ({ leftOffset = 260 }) => {
       {/* Expanded Content Panel */}
       {!isRightSidebarCollapsed && (
         <div className="flex-1 overflow-y-auto custom-scrollbar p-3.5 space-y-4 flex flex-col">
-          
-          {/* TAB 1: Messages Section in Quick Panel */}
-          {activeTab === 'messages' && (
-            <div className="flex-1 flex flex-col justify-between space-y-3 h-full min-h-[400px]">
-              
-              {/* Contact Info Header */}
-              <div className="p-2.5 rounded-xl border border-slate-800 bg-slate-950/60 flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <Avatar name="Dr. Sarah Jenkins" size="sm" />
-                  <div>
-                    <p className="text-xs font-bold text-white leading-tight">Dr. Sarah Jenkins</p>
-                    <p className="text-[10px] text-blue-400">Calculus III Professor</p>
-                  </div>
-                </div>
-                <Badge variant="blue">Online</Badge>
-              </div>
 
-              {/* Chat Feed */}
-              <div className="flex-1 p-2 rounded-xl border border-slate-800 bg-slate-950/40 overflow-y-auto custom-scrollbar space-y-2 max-h-[360px]">
-                {chatMessages.map((msg) => (
-                  <div key={msg.id} className={`flex flex-col ${msg.sender === 'me' ? 'items-end' : 'items-start'}`}>
-                    <div className={`px-3 py-2 rounded-lg text-xs leading-relaxed max-w-[85%] ${msg.sender === 'me' ? 'bg-blue-600 text-white rounded-br-none' : 'bg-slate-800 text-slate-100 rounded-bl-none border border-slate-700'}`}>
-                      {msg.text}
-                    </div>
-                    <span className="text-[9px] text-slate-400 mt-0.5 px-1">{msg.time}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Quick Message Input Form */}
-              <form onSubmit={handleSendChat} className="flex items-center gap-1.5 pt-1">
-                <input
-                  type="text"
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  placeholder="Message Dr. Jenkins..."
-                  className="flex-1 py-2 px-3 rounded-lg border border-slate-800 bg-slate-900 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-blue-500"
-                />
-                <button
-                  type="submit"
-                  disabled={!chatInput.trim()}
-                  className="p-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
-                >
-                  <Send className="w-3.5 h-3.5" />
-                </button>
-              </form>
-
-            </div>
-          )}
-
-          {/* TAB 2: Quick Tools (Timer, Scratchpad Notes, Tasks) */}
+          {/* TAB: Quick Tools (Timer, Scratchpad Notes, Tasks) */}
           {activeTab === 'tools' && (
             <div className="space-y-4">
               {/* Study Pomodoro Timer */}
