@@ -137,14 +137,14 @@ const Signup = () => {
           {showOtp ? (
             <form onSubmit={handleVerifyOtp} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Enter 6-digit OTP</label>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Enter 4-digit OTP</label>
                 <div className="relative">
                   <KeyRound className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
                   <input 
                     type="text" 
                     required
-                    maxLength="6"
-                    placeholder="123456" 
+                    maxLength="4"
+                    placeholder="1234" 
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
                     className="w-full bg-gray-950/50 border border-gray-800 rounded-sm py-3 pl-10 pr-4 text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 placeholder:text-gray-600 text-center tracking-widest text-lg font-bold"
@@ -153,7 +153,7 @@ const Signup = () => {
               </div>
               <button 
                 type="submit" 
-                disabled={loading || otp.length < 6}
+                disabled={loading || otp.length < 4}
                 className="w-full bg-gradient- bg-blue-600 hover:bg-blue-500 hover: text-white font-bold py-3 px-4 rounded-sm flex items-center justify-center gap-2 -[0_0_20px_rgba(79,70,229,0.3)] hover:-[0_0_25px_rgba(79,70,229,0.5)] mt-6 disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {loading ? 'Verifying...' : 'Verify Email'}

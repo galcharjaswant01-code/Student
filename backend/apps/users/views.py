@@ -243,8 +243,8 @@ class SendVerificationOTPView(views.APIView):
         if not email:
             return Response({'error': 'Email is required.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        # Generate 6-digit OTP
-        otp_code = f"{random.randint(100000, 999999)}"
+        # Generate 4-digit OTP
+        otp_code = f"{random.randint(1000, 9999)}"
         
         # Invalidate old OTPs for this email
         EmailOTP.objects.filter(email=email).delete()

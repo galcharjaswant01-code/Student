@@ -4,7 +4,7 @@ import { AuthProvider } from './context/AuthContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import ProtectedRoute from './components/ProtectedRoute'
 import Home from './pages/Home'
-import VerifyMagicLink from './pages/VerifyMagicLink'
+// import VerifyMagicLink from './pages/VerifyMagicLink'
 import Signup from './pages/Signup'
 import ForgotPassword from './pages/ForgotPassword'
 import MainLayout from './layouts/MainLayout'
@@ -35,7 +35,7 @@ function App() {
             {/* First Page / Landing & Login Routes */}
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Home />} />
-            <Route path="/verify" element={<VerifyMagicLink />} />
+            {/* <Route path="/verify" element={<VerifyMagicLink />} /> */}
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             

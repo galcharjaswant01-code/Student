@@ -60,7 +60,7 @@ class AdminProfile(models.Model):
 
 class EmailOTP(models.Model):
     email = models.EmailField()
-    otp_code = models.CharField(max_length=6)
+    otp_code = models.CharField(max_length=4)
     created_at = models.DateTimeField(auto_now_add=True)
     is_verified = models.BooleanField(default=False)
 

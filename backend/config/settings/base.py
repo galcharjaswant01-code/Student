@@ -6,6 +6,7 @@ Base settings shared across all environments.
 from pathlib import Path
 from datetime import timedelta
 from config.env.security import get_secret_key, get_debug, get_allowed_hosts
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -45,7 +46,7 @@ INSTALLED_APPS = [
     'apps.assignments',
     'apps.courses',
     'apps.resources',
-    'apps.messages',
+
     'apps.ai_studio',
     'apps.notifications',
     'apps.analytics',
@@ -195,8 +196,13 @@ SPECTACULAR_SETTINGS = {
 # ============================================================
 # Email Configuration (override in prod.py)
 # ============================================================
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='no-reply@example.com')
 # ============================================================
 # File Upload Settings
 # ============================================================
