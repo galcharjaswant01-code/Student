@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
-import Badge from '../components/ui/Badge';
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, BookOpen, ClipboardList, Clock, ShieldCheck } from 'lucide-react';
+import { format } from 'date-fns';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, BookOpen, ClipboardList, Clock, ShieldCheck, Plus } from 'lucide-react';
+import EventModal from '../components/calendar/EventModal';
 
-const mockEvents = [
+const initialEvents = [
   { date: 'Aug 10', time: '09:00 AM', title: 'Calculus III Lecture', type: 'Class', details: 'Hall 302' },
   { date: 'Aug 10', time: '11:59 PM', title: 'Calculus Assignment 4 Due', type: 'Assignment', details: 'Online Submission' },
   { date: 'Aug 12', time: '11:30 AM', title: 'Data Structures Lab Exam', type: 'Exam', details: 'Computer Lab 4' },
@@ -13,6 +14,9 @@ const mockEvents = [
 
 const Calendar = () => {
   const [currentMonth, setCurrentMonth] = useState('August 2026');
+  const [events, setEvents] = useState(initialEvents);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   return (
     <div className="p-4 sm:p-6 w-full space-y-6 max-w-7xl mx-auto">
@@ -27,6 +31,7 @@ const Calendar = () => {
           <Button variant="secondary" size="sm" icon={ChevronLeft}>Prev</Button>
           <span className="text-sm font-bold text-slate-900 dark:text-white px-2">{currentMonth}</span>
           <Button variant="secondary" size="sm" icon={ChevronRight}>Next</Button>
+          <Button variant="primary" size="sm" icon={Plus} onClick={() => setIsModalOpen(true)}>Event</Button>
         </div>
       </div>
 
@@ -61,16 +66,16 @@ const Calendar = () => {
         <div className="lg:col-span-4 space-y-4">
           <Card title="Upcoming Events & Exams" subtitle="August 10 - August 15">
             <div className="space-y-3">
-              {mockEvents.map((evt, idx) => (
-                <div key={idx} className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 space-y-1.5 hover:border-blue-600/50 transition-colors">
+              {events.map((evt, idx) => (
+                <div key={idx} className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 space-y-1.5 hover:border-blue-600/50 transition-colors" onClick={() => { setSelectedEvent(evt); setIsModalOpen(true); }} style={{ cursor: 'pointer' }}>
                   <div className="flex items-center justify-between">
                     <Badge variant={evt.type === 'Exam' ? 'blue' : 'navy'}>{evt.type}</Badge>
-                    <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400">{evt.date}</span>
+                    <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400">{evt.start ? format(new Date(evt.start), 'MMM dd') : evt.date}</span>
                   </div>
                   <h4 className="text-xs font-bold text-slate-900 dark:text-white">{evt.title}</h4>
                   <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800/60">
-                    <span>{evt.time}</span>
-                    <span>{evt.details}</span>
+                    <span>{evt.start ? format(new Date(evt.start), 'hh:mm a') : evt.time}</span>
+                    <span>{evt.details || ''}</span>
                   </div>
                 </div>
               ))}
@@ -78,6 +83,23 @@ const Calendar = () => {
           </Card>
         </div>
       </div>
+      <EventModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedEvent(null);
+        }}
+        onSave={(newEvent) => {
+          if (newEvent.id) {
+            setEvents((prev) => prev.map((e) => (e.id === newEvent.id ? newEvent : e)));
+          } else {
+            newEvent.id = Date.now();
+            setEvents((prev) => [...prev, newEvent]);
+          }
+        }}
+        onDelete={(id) => setEvents((prev) => prev.filter((e) => e.id !== id))}
+        event={selectedEvent}
+      />
     </div>
   );
 };

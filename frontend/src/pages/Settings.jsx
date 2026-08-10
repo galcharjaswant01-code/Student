@@ -3,12 +3,11 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Badge from '../components/ui/Badge';
-import { User, Bell, Moon, Sun, Lock, Shield, Check } from 'lucide-react';
-import useDashboardStore from '../store/useDashboardStore';
+import { User, Lock, Shield, Check } from 'lucide-react';
+
 
 const Settings = () => {
-  const { themePreferences, setTheme } = useDashboardStore();
-  const isDark = themePreferences?.theme !== 'light';
+
 
   const [activeTab, setActiveTab] = useState('Account');
   const [savedMsg, setSavedMsg] = useState('');
@@ -24,7 +23,7 @@ const Settings = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Portal Settings</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Configure account preferences, notifications, security, and theme appearance.</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Configure account preferences, notifications, and security.</p>
         </div>
         <Button variant="primary" icon={Check} onClick={handleSave}>
           Save Settings
@@ -39,15 +38,15 @@ const Settings = () => {
 
       {/* Tabs */}
       <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
-        {['Account', 'Notifications', 'Appearance', 'Security', 'Privacy'].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${activeTab === tab ? 'border border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400 bg-transparent' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}
-          >
-            {tab}
-          </button>
-        ))}
+          {['Account', 'Notifications', 'Security', 'Privacy'].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${activeTab === tab ? 'border border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400 bg-transparent' : 'text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}
+            >
+              {tab}
+            </button>
+          ))}
       </div>
 
       {/* Settings Tab Panes */}
@@ -79,28 +78,6 @@ const Settings = () => {
               </div>
               <input type="checkbox" defaultChecked className="accent-blue-600 w-4 h-4" />
             </label>
-          </div>
-        </Card>
-      )}
-
-      {activeTab === 'Appearance' && (
-        <Card title="Theme & Visual Appearance" subtitle="Choose light or dark mode font theme">
-          <div className="flex items-center gap-4 pt-2">
-            <button
-              onClick={() => setTheme('light')}
-              className={`p-4 rounded-xl border flex flex-col items-center gap-2 w-36 transition-colors ${!isDark ? 'border-blue-600 text-blue-600 font-bold bg-blue-50/50' : 'border-slate-200 dark:border-slate-800 text-slate-500'}`}
-            >
-              <Sun className="w-6 h-6" />
-              <span className="text-xs">Light Mode</span>
-            </button>
-
-            <button
-              onClick={() => setTheme('dark')}
-              className={`p-4 rounded-xl border flex flex-col items-center gap-2 w-36 transition-colors ${isDark ? 'border-blue-500 text-blue-400 font-bold bg-blue-950/40' : 'border-slate-200 dark:border-slate-800 text-slate-500'}`}
-            >
-              <Moon className="w-6 h-6" />
-              <span className="text-xs">Dark Mode</span>
-            </button>
           </div>
         </Card>
       )}
