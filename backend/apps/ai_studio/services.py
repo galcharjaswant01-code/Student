@@ -1,7 +1,10 @@
 import json
 import logging
+import re
+import ast
 from api.gemini_client import chat_with_gemini as _chat_with_gemini
 from api.openai_client import chat_with_openai as _chat_with_openai
+from api.groq_client import chat_with_groq as _chat_with_groq
 from config.env.ai_config import AIConfig
 
 logger = logging.getLogger(__name__)
@@ -9,33 +12,34 @@ logger = logging.getLogger(__name__)
 def chat_with_gemini(messages, model_name=None):
     provider = AIConfig.DEFAULT_PROVIDER
     if not model_name or 'gemini' in model_name:
-        model_name = AIConfig.MODELS.get(provider, 'gpt-4o-mini')
+        model_name = AIConfig.MODELS.get(provider, 'gemini-2.0-flash')
         
     if provider == 'openai':
-        return _chat_with_openai(messages, model_name)
+        res = _chat_with_openai(messages, model_name)
     else:
-        return _chat_with_gemini(messages, model_name)
+        res = _chat_with_gemini(messages, model_name)
+
+    if res.startswith("Error"):
+        logger.warning(f"Primary AI provider ({provider}) error: {res}. Trying Groq fallback...")
+        groq_res = _chat_with_groq(messages)
+        if not groq_res.startswith("Error"):
+            return groq_res
+
+    return res
 
 def chat_with_ai(messages: list, model: str = 'gemini-2.0-flash') -> str:
     """
-    Send a list of messages to Gemini AI and return the response text.
-    Messages should already be in {'role': 'user'|'model', 'parts': ['text']} format.
+    Send a list of messages to AI (Gemini with Groq fallback) and return response text.
     """
-    # Pass directly to Gemini client — all role normalization and validation
-    # is handled inside gemini_client.chat_with_gemini
-    ai_text = chat_with_gemini(messages, model_name=model)
+    ai_text = _chat_with_gemini(messages, model_name=model)
 
-    # If there's a genuine error (not a successful AI response), return a fallback
     if ai_text.startswith("Error"):
-        logger.warning(f"AI returned error: {ai_text}")
-        # Extract user prompt for context
-        user_prompt = ''
-        for msg in reversed(messages):
-            parts = msg.get('parts', [''])
-            content = parts[0] if parts else ''
-            if msg.get('role') == 'user' and content:
-                user_prompt = content[:80]
-                break
+        logger.warning(f"Gemini API returned error: {ai_text}. Falling back to Groq...")
+        groq_res = _chat_with_groq(messages)
+        if not groq_res.startswith("Error"):
+            return groq_res
+
+        logger.error(f"Groq fallback error: {groq_res}")
         return (
             f"I'm having trouble connecting to the AI service right now. "
             f"Please try again in a moment. "
@@ -45,25 +49,48 @@ def chat_with_ai(messages: list, model: str = 'gemini-2.0-flash') -> str:
     return ai_text
 
 
-def _generate_json_with_ai(prompt: str, model: str = 'gemini-2.0-flash') -> dict:
-    """Helper to query Gemini and extract JSON."""
-    messages = [
-        {'role': 'user', 'parts': [f'You are a helpful AI that outputs only valid JSON. Do not include markdown code blocks like ```json, just output the raw JSON object.\n\n{prompt}']}
-    ]
-    response_text = chat_with_gemini(messages, model_name=model)
-    
-    if "Error" in response_text or "missing" in response_text.lower():
-        return {"error": "AI API Key missing or error", "raw_response": response_text}
-
-    # Clean up response if it has markdown formatting
+def _clean_and_parse_json(response_text: str) -> dict:
     response_text = response_text.strip()
     if '```json' in response_text:
         response_text = response_text.split('```json')[1].split('```')[0].strip()
     elif '```' in response_text:
         response_text = response_text.split('```')[1].split('```')[0].strip()
-        
+
     try:
-        return json.loads(response_text)
+        return json.loads(response_text, strict=False)
+    except Exception:
+        pass
+
+    # Fix unclosed quotes before delimiters like , ] }
+    fixed = re.sub(r'(":[ \t]*")([^"\n]*?)(?=[,\]\}])', r'\1\2"', response_text)
+    try:
+        return json.loads(fixed, strict=False)
+    except Exception:
+        pass
+
+    import ast
+    try:
+        val = ast.literal_eval(response_text)
+        if isinstance(val, dict):
+            return val
+    except Exception:
+        pass
+
+    return json.loads(response_text)
+
+
+def _generate_json_with_ai(prompt: str, model: str = 'gemini-2.0-flash') -> dict:
+    """Helper to query AI (with fallback) and extract JSON."""
+    messages = [
+        {'role': 'user', 'parts': [f'You are a helpful AI that outputs only valid JSON. Strictly format valid JSON keys and values. Do not include markdown code blocks like ```json, just output the raw JSON object.\n\n{prompt}']}
+    ]
+    response_text = chat_with_ai(messages, model=model)
+    
+    if "Error" in response_text or "missing" in response_text.lower():
+        return {"error": "AI API Key missing or error", "raw_response": response_text}
+
+    try:
+        return _clean_and_parse_json(response_text)
     except Exception as e:
         logger.error(f"Failed to parse JSON from AI: {response_text}. Error: {e}")
         return {"error": str(e), "raw_response": response_text}
