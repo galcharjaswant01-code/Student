@@ -8,10 +8,11 @@ const API_BASE = `${getApiBaseUrl()}/api/v1/ai-studio`;
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('access_token');
-  return {
-    'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
+  const headers = { 'Content-Type': 'application/json' };
+  if (token && token !== 'null' && token !== 'undefined') {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  return headers;
 };
 
 export const aiService = {

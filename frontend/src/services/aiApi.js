@@ -10,11 +10,11 @@ let currentConversationId = null;
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('access_token');
-  return {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
+  const headers = {};
+  if (token && token !== 'null' && token !== 'undefined') {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  return { headers };
 };
 
 export const aiApi = {
