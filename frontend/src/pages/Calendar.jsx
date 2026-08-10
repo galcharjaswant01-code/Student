@@ -2,22 +2,25 @@ import React, { useState } from 'react';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
-import { format, isSameDay } from 'date-fns';
+import { format, isSameDay, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval } from 'date-fns';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, BookOpen, ClipboardList, Clock, ShieldCheck, Plus } from 'lucide-react';
 import EventModal from '../components/calendar/EventModal';
 
 const initialEvents = [
-  { date: 'Aug 10', time: '09:00 AM', title: 'Calculus III Lecture', type: 'Class', details: 'Hall 302' },
-  { date: 'Aug 10', time: '11:59 PM', title: 'Calculus Assignment 4 Due', type: 'Assignment', details: 'Online Submission' },
-  { date: 'Aug 12', time: '11:30 AM', title: 'Data Structures Lab Exam', type: 'Exam', details: 'Computer Lab 4' },
-  { date: 'Aug 15', time: '02:00 PM', title: 'AI Ethics Guest Seminar', type: 'Event', details: 'Auditorium B' },
+  { id: 1, date: 'Aug 10', time: '09:00 AM', title: 'Calculus III Lecture', type: 'Class', details: 'Hall 302' },
+  { id: 2, date: 'Aug 10', time: '11:59 PM', title: 'Calculus Assignment 4 Due', type: 'Assignment', details: 'Online Submission' },
+  { id: 3, date: 'Aug 12', time: '11:30 AM', title: 'Data Structures Lab Exam', type: 'Exam', details: 'Computer Lab 4' },
+  { id: 4, date: 'Aug 15', time: '02:00 PM', title: 'AI Ethics Guest Seminar', type: 'Event', details: 'Auditorium B' },
 ];
 
 const Calendar = () => {
-  const [currentMonth, setCurrentMonth] = useState('August 2026');
+  // keep a Date object for the displayed month
+  const [displayDate, setDisplayDate] = useState(new Date('2026-08-01'));
+  const currentMonth = format(displayDate, 'MMMM yyyy');
   const [events, setEvents] = useState(initialEvents);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+
 
   return (
     <div className="p-4 sm:p-6 w-full space-y-6 max-w-7xl mx-auto">
@@ -29,9 +32,9 @@ const Calendar = () => {
         </div>
         
         <div className="flex items-center gap-2">
-          <Button variant="secondary" size="sm" icon={ChevronLeft}>Prev</Button>
+          <Button variant="secondary" size="sm" icon={ChevronLeft} onClick={() => setDisplayDate(prev => subMonths(prev, 1))}>Prev</Button>
           <span className="text-sm font-bold text-slate-900 dark:text-white px-2">{currentMonth}</span>
-          <Button variant="secondary" size="sm" icon={ChevronRight}>Next</Button>
+          <Button variant="secondary" size="sm" icon={ChevronRight} onClick={() => setDisplayDate(prev => addMonths(prev, 1))}>Next</Button>
           <Button variant="primary" size="sm" icon={Plus} onClick={() => setIsModalOpen(true)}>Event</Button>
         </div>
       </div>
@@ -39,43 +42,47 @@ const Calendar = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Month View Days Grid */}
         <div className="lg:col-span-8">
-          <Card title="August 2026 Schedule">
+          <Card title={currentMonth + " Schedule"}>
             <div className="grid grid-cols-7 gap-1 text-center text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 py-2 border-b border-slate-100 dark:border-slate-800">
               <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
             </div>
             
             <div className="grid grid-cols-7 gap-1 text-xs">
-              {Array.from({ length: 31 }).map((_, i) => {
-                const day = i + 1;
-                const dayDate = new Date(`${currentMonth.split(' ')[0]} ${day}, ${currentMonth.split(' ')[1]}`);
-                const dayEvents = events.filter(e => {
-  const evDate = e.start ? new Date(e.start) : new Date(`${e.date} ${e.time}`);
-  return isSameDay(evDate, dayDate);
-});
-                const isSelected = day === 10;
-                return (
-                  <div
-                    key={day}
-                    className={`h-16 p-1.5 rounded-lg border flex flex-col justify-between transition-colors ${isSelected ? 'border-blue-600 dark:border-blue-500 bg-blue-50/50 dark:bg-blue-950/30 font-bold' : 'border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900'}`}
-                    onClick={() => {
-                      if (dayEvents.length) {
-                        const ev = dayEvents[0];
-                        const start = ev.start ? ev.start : new Date(`${ev.date} ${ev.time}`).toISOString();
-                        setSelectedEvent({ ...ev, start });
-                        setIsModalOpen(true);
-                      }
-                    }}
-                    style={{ cursor: dayEvents.length ? 'pointer' : 'default' }}
-                  >
-                    <span className="text-slate-900 dark:text-slate-100">{day}</span>
-                    {dayEvents.length > 0 && (
-                      <span className="w-2 h-2 rounded-full bg-indigo-600 mx-auto mt-1" />
-                    )}
-                    {day === 10 && <span className="w-2 h-2 rounded-full bg-blue-600 mx-auto" />}
-                    {day === 12 && <span className="w-2 h-2 rounded-full bg-slate-900 dark:bg-white mx-auto" />}
-                  </div>
-                );
-              })}
+              {(() => {
+                const start = startOfMonth(displayDate);
+                const end = endOfMonth(displayDate);
+                const days = eachDayOfInterval({ start, end });
+                return days.map((dayDate) => {
+                  const day = dayDate.getDate();
+                  const dayEvents = events.filter(e => {
+                    const evDate = e.start ? new Date(e.start) : new Date(e.date);
+                    return isSameDay(evDate, dayDate);
+                  });
+                  const isToday = isSameDay(dayDate, new Date());
+                  return (
+                    <div
+                      key={dayDate.toISOString()}
+                      className={`h-24 p-1.5 rounded-lg border flex flex-col gap-1 overflow-hidden transition-colors ${isToday ? 'border-blue-600 dark:border-blue-500 bg-blue-50/50 dark:bg-blue-950/30 font-bold' : 'border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900'}`}
+                      onClick={() => {
+                        if (dayEvents.length) {
+                          const ev = dayEvents[0];
+                          setSelectedEvent({ ...ev });
+                          setIsModalOpen(true);
+                        }
+                      }}
+                      style={{ cursor: dayEvents.length ? 'pointer' : 'default' }}
+                    >
+                      <span className="text-slate-900 dark:text-slate-100">{day}</span>
+                      {/* render event titles as text */}
+                      {dayEvents.map((ev) => (
+                        <div key={ev.id} className="text-[10px] text-indigo-600 truncate" title={ev.title}>
+                          {ev.title}
+                        </div>
+                      ))}
+                    </div>
+                  );
+                });
+              })()}
             </div>
           </Card>
         </div>
