@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
-import { format } from 'date-fns';
+import { format, isSameDay } from 'date-fns';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, BookOpen, ClipboardList, Clock, ShieldCheck, Plus } from 'lucide-react';
 import EventModal from '../components/calendar/EventModal';
 
@@ -47,13 +47,30 @@ const Calendar = () => {
             <div className="grid grid-cols-7 gap-1 text-xs">
               {Array.from({ length: 31 }).map((_, i) => {
                 const day = i + 1;
+                const dayDate = new Date(`${currentMonth.split(' ')[0]} ${day}, ${currentMonth.split(' ')[1]}`);
+                const dayEvents = events.filter(e => {
+  const evDate = e.start ? new Date(e.start) : new Date(`${e.date} ${e.time}`);
+  return isSameDay(evDate, dayDate);
+});
                 const isSelected = day === 10;
                 return (
                   <div
                     key={day}
                     className={`h-16 p-1.5 rounded-lg border flex flex-col justify-between transition-colors ${isSelected ? 'border-blue-600 dark:border-blue-500 bg-blue-50/50 dark:bg-blue-950/30 font-bold' : 'border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900'}`}
+                    onClick={() => {
+                      if (dayEvents.length) {
+                        const ev = dayEvents[0];
+                        const start = ev.start ? ev.start : new Date(`${ev.date} ${ev.time}`).toISOString();
+                        setSelectedEvent({ ...ev, start });
+                        setIsModalOpen(true);
+                      }
+                    }}
+                    style={{ cursor: dayEvents.length ? 'pointer' : 'default' }}
                   >
                     <span className="text-slate-900 dark:text-slate-100">{day}</span>
+                    {dayEvents.length > 0 && (
+                      <span className="w-2 h-2 rounded-full bg-indigo-600 mx-auto mt-1" />
+                    )}
                     {day === 10 && <span className="w-2 h-2 rounded-full bg-blue-600 mx-auto" />}
                     {day === 12 && <span className="w-2 h-2 rounded-full bg-slate-900 dark:bg-white mx-auto" />}
                   </div>
