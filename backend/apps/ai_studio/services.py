@@ -10,42 +10,22 @@ from config.env.ai_config import AIConfig
 logger = logging.getLogger(__name__)
 
 def chat_with_gemini(messages, model_name=None):
-    provider = AIConfig.DEFAULT_PROVIDER
     if not model_name or 'gemini' in model_name:
-        model_name = AIConfig.MODELS.get(provider, 'gemini-2.0-flash')
-        
-    if provider == 'openai':
-        res = _chat_with_openai(messages, model_name)
-    else:
-        res = _chat_with_gemini(messages, model_name)
+        model_name = 'gemini-3.6-flash'
+    return _chat_with_gemini(messages, model_name=model_name)
 
-    if res.startswith("Error"):
-        logger.warning(f"Primary AI provider ({provider}) error: {res}. Trying Groq fallback...")
-        groq_res = _chat_with_groq(messages)
-        if not groq_res.startswith("Error"):
-            return groq_res
-
-    return res
-
-def chat_with_ai(messages: list, model: str = 'gemini-2.0-flash') -> str:
+def chat_with_ai(messages: list, model: str = 'gemini-3.6-flash') -> str:
     """
-    Send a list of messages to AI (Gemini with Groq fallback) and return response text.
+    Send a list of messages strictly to Gemini API and return response text.
     """
     ai_text = _chat_with_gemini(messages, model_name=model)
-
     if ai_text.startswith("Error"):
-        logger.warning(f"Gemini API returned error: {ai_text}. Falling back to Groq...")
-        groq_res = _chat_with_groq(messages)
-        if not groq_res.startswith("Error"):
-            return groq_res
-
-        logger.error(f"Groq fallback error: {groq_res}")
+        logger.error(f"Gemini API returned error: {ai_text}")
         return (
             f"I'm having trouble connecting to the AI service right now. "
             f"Please try again in a moment. "
             f"(Error detail: {ai_text})"
         )
-
     return ai_text
 
 
@@ -79,7 +59,7 @@ def _clean_and_parse_json(response_text: str) -> dict:
     return json.loads(response_text)
 
 
-def _generate_json_with_ai(prompt: str, model: str = 'gemini-2.0-flash') -> dict:
+def _generate_json_with_ai(prompt: str, model: str = 'gemini-3.6-flash') -> dict:
     """Helper to query AI (with fallback) and extract JSON."""
     messages = [
         {'role': 'user', 'parts': [f'You are a helpful AI that outputs only valid JSON. Strictly format valid JSON keys and values. Do not include markdown code blocks like ```json, just output the raw JSON object.\n\n{prompt}']}
@@ -174,7 +154,7 @@ Data:
 {json.dumps(stats_data, indent=2)}"""
     
     messages = [{'role': 'user', 'parts': [prompt]}]
-    ai_text = chat_with_gemini(messages, model_name='gemini-2.0-flash')
+    ai_text = chat_with_gemini(messages, model_name='gemini-3.6-flash')
     if "Error connecting to AI" in ai_text or "429" in ai_text:
         return "You're doing great! This is a mock summary since the AI API is rate-limited. Keep up the good work on your assignments and focus on reviewing subjects you find challenging."
     return ai_text

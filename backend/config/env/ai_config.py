@@ -8,7 +8,7 @@ class AIConfig:
     
     # Models mapping
     MODELS = {
-        'gemini': 'gemini-2.0-flash',
+        'gemini': 'gemini-3.6-flash',
         'openai': 'gpt-4o-mini',
         'ollama': 'llama3'
     }

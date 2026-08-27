@@ -5,7 +5,7 @@ from decouple import config
 logger = logging.getLogger(__name__)
 
 
-def chat_with_gemini(messages, model_name='gemini-2.0-flash'):
+def chat_with_gemini(messages, model_name='gemini-3.6-flash'):
     """
     Interact with the Gemini API.
     Reads GEMINI_API_KEY fresh on every call so Render env var changes
@@ -41,9 +41,13 @@ def chat_with_gemini(messages, model_name='gemini-2.0-flash'):
             elif role not in ('user', 'model'):
                 role = 'user'
 
-            parts = msg.get('parts', [''])
-            if isinstance(parts, str):
+            parts = msg.get('parts')
+            if not parts and 'content' in msg:
+                parts = [msg['content']]
+            elif isinstance(parts, str):
                 parts = [parts]
+            elif parts is None:
+                parts = []
             parts = [str(p) for p in parts if str(p).strip()]
             if not parts:
                 continue

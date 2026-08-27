@@ -18,7 +18,7 @@ class AIConversation(TimeStampedModel):
             ('recommendations', 'AI Recommendations'),
         ]
     )
-    model_used = models.CharField(max_length=100, default='gemini-1.5-pro')
+    model_used = models.CharField(max_length=100, default='gemini-3.6-flash')
     total_tokens = models.IntegerField(default=0)
     is_archived = models.BooleanField(default=False)
 

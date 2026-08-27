@@ -10,5 +10,5 @@ from api.gemini_client import chat_with_gemini
 from apps.ai_studio.services import chat_with_ai
 
 messages = [{'role': 'user', 'parts': ['Hello']}]
-print("Direct Client:", chat_with_gemini(messages, model_name='gemini-3.5-flash'))
+print("Direct Client:", chat_with_gemini(messages, model_name='gemini-3.6-flash'))
 print("Services Helper:", chat_with_ai([{'role': 'user', 'content': 'Hello'}]))
