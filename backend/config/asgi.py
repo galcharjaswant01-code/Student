@@ -20,10 +20,9 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.dev')
 # Initialize Django ASGI application early
 django_asgi_app = get_asgi_application()
 
-from apps.messages.routing import websocket_urlpatterns as chat_patterns
 from apps.notifications.routing import websocket_urlpatterns as notification_patterns
 
-all_websocket_patterns = chat_patterns + notification_patterns
+all_websocket_patterns = notification_patterns
 
 application = ProtocolTypeRouter({
     'http': django_asgi_app,
